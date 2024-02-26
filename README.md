@@ -15,8 +15,8 @@
 ; pipenv shell
 
 # Create a test and development database (This assumes you have postgres)
-; createdb MAKERS_BNB
-; createdb MAKERS_BNB_test
+; createdb DRIP
+; createdb DRIP_test
 
 # Seed the development database (ensure you have run `pipenv shell` first)
 ; python seed_dev_database.py
