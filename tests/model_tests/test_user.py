@@ -19,7 +19,7 @@ def test_user_constructs():
 # Note, hashed_password not included in str representation
 def test_user_format():
     user = User(1, "John", "Doe", "jdoe", "jdoe@email.com", "Password123!")
-    assert str(user) == "User: 1, John, Doe, jdoe, jdoe@email.com, default_image, , []"
+    assert str(user) == "User: 1, John, Doe, jdoe, jdoe@email.com, default_image, "
 
 
 # tests two User objects with the same data are found equal

@@ -20,12 +20,12 @@ CREATE SEQUENCE users_id_seq;
 
 CREATE TABLE users (
     id INTEGER PRIMARY KEY DEFAULT nextval('users_id_seq'),
-    firstname VARCHAR(255), 
-    lastname VARCHAR(255),
-    username VARCHAR(255) UNIQUE,
-    email VARCHAR(255) UNIQUE,
-    hashed_password VARCHAR(255),
-    avatar VARCHAR(255), -- it will come as a string, in the future we will add the images to cloudinary 
+    first_name VARCHAR(255) NOT NULL, 
+    last_name VARCHAR(255) NOT NULL,
+    username VARCHAR(255) NOT NULL UNIQUE,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    hashed_password BYTEA NOT NULL,
+    avatar_url_string VARCHAR(255), -- it will come as a string, in the future we will add the images to cloudinary 
     address VARCHAR(255),
 );
 
@@ -90,15 +90,22 @@ CREATE TABLE plants (
 );
 
 
+-- USER TEST SEED --
+INSERT INTO users (first_name, last_name, username, email, hashed_password, avatar_url_string, address) VALUES ("user", "1", "user_1", "user1@email.com", "Password123!", "test_image1.png", "test_address1");
+INSERT INTO users (first_name, last_name, username, email, hashed_password, avatar_url_string, address) VALUES ("user", "2", "user_2", "user2@email.com", "Password123!", "test_image2.png", "test_address2");
+INSERT INTO users (first_name, last_name, username, email, hashed_password, avatar_url_string, address) VALUES ("user", "3", "user_3", "user3@email.com", "Password123!", "test_image3.png", "test_address3");
+INSERT INTO users (first_name, last_name, username, email, hashed_password, avatar_url_string, address) VALUES ("user", "4", "user_4", "user4@email.com", "Password123!", "test_image4.png", "test_address4");
+INSERT INTO users (first_name, last_name, username, email, hashed_password, avatar_url_string, address) VALUES ("user", "5", "user_5", "user5@email.com", "Password123!", "test_image5.png", "test_address5");
 
- -- some date for testing purposes 
-INSERT INTO users (firstname, lastname, username, email, hashed_password, avatar, address) VALUES ('user_firstname', 'user_lastname', 'user_01', 'user_01@gmail.com', 'userpassword', 'avatar.png', 'User House, Duke of Wellington Avenue, London, V6X0 7PG ');
-INSERT INTO users (firstname, lastname, username, email, hashed_password, avatar, address) VALUES ('user_firstname', 'user_lastname', 'user_02', 'user_02@gmail.com', 'userpassword', 'avatar.png', 'User House, Duke of Wellington Avenue, London, V6X0 7PG ');
+
 INSERT INTO chats (received_from, sent_to, message, date, user_id) VALUES ('user_01', 'user_02', 'hello user 01', '2023-10-19 10:23:54', 1);
+
 INSERT INTO help_request (date, title, message, daterange, user_id, maxprice) VALUES ('2023-10-19 10:23:54', 'title_01', 'help request sent', '[2023-02-01, 2023-03-01]', 1, 50);
 INSERT INTO help_offers (message, status, user_id) VALUES ('Offering help', TRUE, 1);
+
 INSERT INTO user_plants (user_id, plant_id, quantity) VALUES (1, 1, 3);
 INSERT INTO user_plants (user_id, plant_id, quantity) VALUES (1, 2, 2);
+
 INSERT INTO plants (common_name, latin_name, photo, watering_frequency) VALUES ('African sheepbush', 'Pentzia incana', 'plant_01.png', 'two times a week');
 INSERT INTO plants (common_name, latin_name, photo, watering_frequency) VALUES ('Alder', 'Alnus. Black alder', 'plant_02.png', 'one a week');
 INSERT INTO plants (common_name, latin_name, photo, watering_frequency) VALUES ('Almond', 'Prunus dulcis', 'plant_03.png', 'once a month');

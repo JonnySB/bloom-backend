@@ -21,7 +21,6 @@ class UserRepository:
                 "None",
                 row["avatar_url_string"],
                 row["address"],
-                row["plants"],
             )
             users.append(user)
         return users
@@ -32,8 +31,8 @@ class UserRepository:
         self.connection.execute(
             """
             INSERT INTO users
-            (first_name, last_name, username, email, hashed_password, avatar_url_string, address, plants)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
+            (first_name, last_name, username, email, hashed_password, avatar_url_string, address)
+            VALUES (%s, %s, %s, %s, %s, %s, %s);
             """,
             [
                 user.first_name,
@@ -43,7 +42,6 @@ class UserRepository:
                 user.hashed_password,
                 user.avatar_url_string,
                 user.address,
-                user.plants,
             ],
         )
 
@@ -103,5 +101,4 @@ class UserRepository:
             "None",
             row["avatar_url_string"],
             row["address"],
-            row["plants"],
         )

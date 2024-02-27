@@ -12,7 +12,6 @@ class User:
         password: str,
         avatar_url_string: str = "default_image",
         address: str = "",
-        plants: list = [],  # WILL NEED TO UPDATE THIS TO PLANT OBJECT REFFFERENCE
     ):
         self.id = id
         self.first_name = first_name
@@ -22,7 +21,6 @@ class User:
         self.hashed_password = self._hash_password(password)
         self.avatar_url_string = avatar_url_string
         self.address = address
-        self.plants = plants
 
     # ensure two object with identical attrs will be found equal
     def __eq__(self, other):
@@ -36,13 +34,12 @@ class User:
                 self.email == other.email,
                 self.avatar_url_string == other.avatar_url_string,
                 self.address == other.address,
-                self.plants == other.plants,
             ]
         )
 
     # return nicely formatted string version of User object
     def __repr__(self):
-        return f"User: {self.id}, {self.first_name}, {self.last_name}, {self.username}, {self.email}, {self.avatar_url_string}, {self.address}, {self.plants}"
+        return f"User: {self.id}, {self.first_name}, {self.last_name}, {self.username}, {self.email}, {self.avatar_url_string}, {self.address}"
 
     # When called with a plain text password, a hashed password is returned
     def _hash_password(self, password):

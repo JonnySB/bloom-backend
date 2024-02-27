@@ -9,11 +9,56 @@ def test_get_all_users(db_connection):
 
     users = repository.get_all_users()
     assert users == [
-        User(1, "user", "1", "user_1", "user1@email.com", "Password123!"),
-        User(2, "user", "2", "user_2", "user2@email.com", "Password123!"),
-        User(3, "user", "3", "user_3", "user3@email.com", "Password123!"),
-        User(4, "user", "4", "user_4", "user4@email.com", "Password123!"),
-        User(5, "user", "5", "user_5", "user5@email.com", "Password123!"),
+        User(
+            1,
+            "user",
+            "1",
+            "user_1",
+            "user1@email.com",
+            "Password123!",
+            "test_image1.png",
+            "test_address1",
+        ),
+        User(
+            2,
+            "user",
+            "2",
+            "user_2",
+            "user2@email.com",
+            "Password123!",
+            "test_image2.png",
+            "test_address2",
+        ),
+        User(
+            3,
+            "user",
+            "3",
+            "user_3",
+            "user3@email.com",
+            "Password123!",
+            "test_image3.png",
+            "test_address3",
+        ),
+        User(
+            4,
+            "user",
+            "4",
+            "user_4",
+            "user4@email.com",
+            "Password123!",
+            "test_image4.png",
+            "test_address4",
+        ),
+        User(
+            5,
+            "user",
+            "5",
+            "user_5",
+            "user5@email.com",
+            "Password123!",
+            "test_image5.png",
+            "test_address5",
+        ),
     ]
 
 
@@ -29,11 +74,56 @@ def test_create_user(db_connection):
 
     users = repository.get_all_users()
     assert users == [
-        User(1, "user", "1", "user_1", "user1@email.com", "Password123!"),
-        User(2, "user", "2", "user_2", "user2@email.com", "Password123!"),
-        User(3, "user", "3", "user_3", "user3@email.com", "Password123!"),
-        User(4, "user", "4", "user_4", "user4@email.com", "Password123!"),
-        User(5, "user", "5", "user_5", "user5@email.com", "Password123!"),
+        User(
+            1,
+            "user",
+            "1",
+            "user_1",
+            "user1@email.com",
+            "Password123!",
+            "test_image1.png",
+            "test_address1",
+        ),
+        User(
+            2,
+            "user",
+            "2",
+            "user_2",
+            "user2@email.com",
+            "Password123!",
+            "test_image2.png",
+            "test_address2",
+        ),
+        User(
+            3,
+            "user",
+            "3",
+            "user_3",
+            "user3@email.com",
+            "Password123!",
+            "test_image3.png",
+            "test_address3",
+        ),
+        User(
+            4,
+            "user",
+            "4",
+            "user_4",
+            "user4@email.com",
+            "Password123!",
+            "test_image4.png",
+            "test_address4",
+        ),
+        User(
+            5,
+            "user",
+            "5",
+            "user_5",
+            "user5@email.com",
+            "Password123!",
+            "test_image5.png",
+            "test_address5",
+        ),
         User(6, "user", "6", "user_6", "user6@email.com", "Password123!"),
     ]
 
@@ -99,5 +189,12 @@ def test_get_user_by_id(db_connection):
 
     user_details = repository.get_user_by_id(3)
     assert user_details == User(
-        3, "user", "3", "user_3", "user3@email.com", "Password123!"
+        3,
+        "user",
+        "3",
+        "user_3",
+        "user3@email.com",
+        "Password123!",
+        "test_image3.png",
+        "test_address3",
     )
