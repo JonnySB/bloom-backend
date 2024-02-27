@@ -18,6 +18,14 @@ class HelpOfferRepository():
         row = rows[0]
         return HelpOffer(row["id"], row["user_id"], row["message"], row["bid"], row["status"])
     
+    def find_by_user(self, user_id):
+        rows = self.connection.execute("SELECT * FROM help_offers WHERE user_id = %s", [user_id])
+        offers_by_user = []
+        for row in rows:
+            help_offer = HelpOffer(row['id'], row['user_id'], row['message'], row['bid'], row['status'])
+            offers_by_user.append(help_offer)
+        return offers_by_user
+    
     def create_offer(self, offer):
         self.connection.execute("INSERT INTO help_offers (user_id, message, bid, status) \
                                 VALUES (%s, %s, %s, %s)",
