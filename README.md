@@ -21,6 +21,9 @@
 # Seed the development database (ensure you have run `pipenv shell` first)
 ; python seed_dev_database.py
 
+# create .env file in main directory
+; echo "JWT_SECRET_KEY='super-secret-key'" > .env
+
 # Run the tests (with extra logging)
 ; pytest -sv
 
