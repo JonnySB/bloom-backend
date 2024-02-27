@@ -16,3 +16,7 @@ class HelpOfferRepository():
         self.connection.execute("INSERT INTO help_offers (user_id, message, bid, status) \
                                 VALUES (%s, %s, %s, %s)",
                                 [offer.user_id, offer.message, offer.bid, offer.status])
+        
+    def delete_offer(self, offer_id):
+        self.connection.execute("DELETE FROM help_offers WHERE id = %s", [offer_id])
+        return None
