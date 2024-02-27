@@ -1,12 +1,12 @@
-# drip-backend
+# bloom-backend
 
 # Project Setup
 
 ```shell
 # Clone the repository to your local machine
-; git clone https://github.com/JonnySB/drip-backend
+; git clone https://github.com/JonnySB/bloom-backend
 
-; cd drip-backend
+; cd bloom-backend
 
 # Install dependencies and set up the virtual environment
 ; pipenv install
@@ -15,8 +15,8 @@
 ; pipenv shell
 
 # Create a test and development database (This assumes you have postgres)
-; createdb DRIP
-; createdb DRIP_test
+; createdb BLOOM
+; createdb BLOOM_test
 
 # Seed the development database (ensure you have run `pipenv shell` first)
 ; python seed_dev_database.py
