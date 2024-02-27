@@ -25,13 +25,14 @@ class PlantsRepository:
             plant_list.append(item)
         return plant_list
     
-    def delete_by_name(self, plant_name):
+
+    def delete(self, plant_id):
             self._connection.execute(
-                'DELETE FROM plants WHERE commum_name = %s', [plant_name])
+                'DELETE FROM plants WHERE id = %s', [plant_id])
             return None
     
-    def find_by_name(self, plant_name):
+    def find(self, plant_id):
         rows = self._connection.execute(
-            'SELECT * from plants WHERE commum_name = %s', [plant_name])
+            'SELECT * from plants WHERE id = %s', [plant_id])
         row = rows[0]
         return Plants (row["id"], row["commum_name"], row["latin_name"], row["photo"], row["watering_frequency"])
