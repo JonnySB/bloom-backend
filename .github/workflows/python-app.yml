@@ -19,6 +19,8 @@ jobs:
         image: postgres:16
         env:
           POSTGRES_DB: BLOOM_test
+          POSTGRES_USER: NULL
+          POSTGRES_PASSWORD: NULL
         ports:
           - 5432:5432
         options: >-
