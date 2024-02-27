@@ -15,7 +15,7 @@ permissions:
 jobs:
   integration:
     services:
-      postgres16:
+      postgres:
         image: postgres:16
         env:
           POSTGRES_DB: BLOOM_test
