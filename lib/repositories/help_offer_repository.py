@@ -12,8 +12,8 @@ class HelpOfferRepository():
             help_offers.append(help_offer)
         return help_offers
     
-    def find(self, offer_id):
-        rows = self._connection.execute(
+    def find_offer(self, offer_id):
+        rows = self.connection.execute(
             'SELECT * from help_offers WHERE id = %s', [offer_id])
         row = rows[0]
         return HelpOffer(row["id"], row["user_id"], row["message"], row["bid"], row["status"])
