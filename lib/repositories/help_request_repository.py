@@ -65,8 +65,8 @@ class HelpRequestRepository:
 
     def create_request(self, help_request):
         self.db_connection.execute(
-            "INSERT INTO help_requests (user_id, date, title, message, plant, date_range) VALUES (%s, %s, %s, %s, %s, %s);",
-            [help_request.user_id, help_request.date, help_request.title, help_request.message, help_request.plant, help_request.date_range]
+            "INSERT INTO help_requests (user_id, date, title, message, date_range) VALUES (%s, %s, %s, %s, %s, %s);",
+            [help_request.user_id, help_request.date, help_request.title, help_request.message, help_request.date_range]
         )
         return None
     
