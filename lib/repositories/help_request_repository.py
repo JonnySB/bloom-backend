@@ -35,7 +35,7 @@ class HelpRequestRepository:
     
     # As an endpoint that when a user enters a substring of a title, they can find all the requests that have this substring
     # For example, if a user enters the word "water", then all the requests that has this substring will be returned
-    def find_requests_by_title(self, title):
+    def find_requests_by_title_substring(self, title):
         query = "SELECT * FROM help_requests WHERE title LIKE %s"
         title_lookup = f"%{title}%"
         rows = self.db_connection.execute(query, (title_lookup))
