@@ -13,7 +13,7 @@ def test_get_all_users(db_connection):
             1,
             "user",
             "1",
-            "user_1",
+            "user1",
             "user1@email.com",
             "Password123!",
             "test_image1.png",
@@ -23,7 +23,7 @@ def test_get_all_users(db_connection):
             2,
             "user",
             "2",
-            "user_2",
+            "user2",
             "user2@email.com",
             "Password123!",
             "test_image2.png",
@@ -33,7 +33,7 @@ def test_get_all_users(db_connection):
             3,
             "user",
             "3",
-            "user_3",
+            "user3",
             "user3@email.com",
             "Password123!",
             "test_image3.png",
@@ -43,7 +43,7 @@ def test_get_all_users(db_connection):
             4,
             "user",
             "4",
-            "user_4",
+            "user4",
             "user4@email.com",
             "Password123!",
             "test_image4.png",
@@ -53,7 +53,7 @@ def test_get_all_users(db_connection):
             5,
             "user",
             "5",
-            "user_5",
+            "user5",
             "user5@email.com",
             "Password123!",
             "test_image5.png",
@@ -69,7 +69,7 @@ def test_create_user(db_connection):
     repository = UserRepository(db_connection)
 
     # id updated to correct (6) when reconstructed from db
-    user = User(None, "user", "6", "user_6", "user6@email.com", "Password123!")
+    user = User(None, "user", "6", "user6", "user6@email.com", "Password123!")
     repository.add_user_to_db(user)
 
     users = repository.get_all_users()
@@ -78,7 +78,7 @@ def test_create_user(db_connection):
             1,
             "user",
             "1",
-            "user_1",
+            "user1",
             "user1@email.com",
             "Password123!",
             "test_image1.png",
@@ -88,7 +88,7 @@ def test_create_user(db_connection):
             2,
             "user",
             "2",
-            "user_2",
+            "user2",
             "user2@email.com",
             "Password123!",
             "test_image2.png",
@@ -98,7 +98,7 @@ def test_create_user(db_connection):
             3,
             "user",
             "3",
-            "user_3",
+            "user3",
             "user3@email.com",
             "Password123!",
             "test_image3.png",
@@ -108,7 +108,7 @@ def test_create_user(db_connection):
             4,
             "user",
             "4",
-            "user_4",
+            "user4",
             "user4@email.com",
             "Password123!",
             "test_image4.png",
@@ -118,13 +118,13 @@ def test_create_user(db_connection):
             5,
             "user",
             "5",
-            "user_5",
+            "user5",
             "user5@email.com",
             "Password123!",
             "test_image5.png",
             "test_address5",
         ),
-        User(6, "user", "6", "user_6", "user6@email.com", "Password123!"),
+        User(6, "user", "6", "user6", "user6@email.com", "Password123!"),
     ]
 
 
@@ -152,7 +152,7 @@ def test_find_user_by_email(db_connection):
     db_connection.seed("seeds/bloom.sql")
     repository = UserRepository(db_connection)
 
-    user_id = repository.get_user_id_from_username_or_email("user5@user.com")
+    user_id = repository.get_user_id_from_username_or_email("user5@email.com")
     assert user_id == 5
 
 
@@ -164,7 +164,7 @@ def test_correct_password_returns_user_id(db_connection):
     user = User(None, "user", "6", "user6", "user6@email.com", "Password123!")
 
     repository.add_user_to_db(user)
-    user_id = repository.check_username_or_email_and_password("user6", "Password")
+    user_id = repository.check_username_or_email_and_password("user6", "Password123!")
     assert user_id == 6
 
 
@@ -192,7 +192,7 @@ def test_get_user_by_id(db_connection):
         3,
         "user",
         "3",
-        "user_3",
+        "user3",
         "user3@email.com",
         "Password123!",
         "test_image3.png",
