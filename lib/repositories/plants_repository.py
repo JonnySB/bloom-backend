@@ -16,7 +16,7 @@ class PlantsRepository:
     
 
     def all(self):
-        rows = self._connection.execute('SELECT * from plants')
+        rows = self.connection.execute('SELECT * from plants')
         plant_list = []
         for row in rows:
             item = Plants(row["id"], row["commum_name"], row["latin_name"], row["photo"], row["watering_frequency"])
@@ -25,12 +25,12 @@ class PlantsRepository:
     
 
     def delete(self, plant_id):
-            self._connection.execute(
+            self.connection.execute(
                 'DELETE FROM plants WHERE id = %s', [plant_id])
             return None
     
     def find(self, plant_id):
-        rows = self._connection.execute(
+        rows = self.connection.execute(
             'SELECT * from plants WHERE id = %s', [plant_id])
         row = rows[0]
         return Plants (row["id"], row["commum_name"], row["latin_name"], row["photo"], row["watering_frequency"])
