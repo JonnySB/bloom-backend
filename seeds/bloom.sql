@@ -75,7 +75,7 @@ CREATE TABLE help_request (
     message VARCHAR(255), -- depending on requirements, could be TEXT type for longer messages
     daterange DATERANGE, -- assuming you want a range of dates
     user_id INT,
-    maxprice MONEY,
+    maxprice REAL,
     CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (id)
 );
 
