@@ -1,19 +1,6 @@
 from lib.models.user import User
 import bcrypt
 
-"""
-        self.id = id
-        self.first_name = first_name
-        self.last_name = last_name
-        self.username = username
-        self.email = email
-        self.hashed_password = self._hash_password(password)
-        self.avatar_url_string = ""
-        self.address = ""
-        self.plants = []
-
-"""
-
 
 class UserRepository:
     def __init__(self, connection):
@@ -45,10 +32,19 @@ class UserRepository:
         self.connection.execute(
             """
             INSERT INTO users
-            (username, email, hashed_password)
-            VALUES (%s, %s, %s);
+            (first_name, last_name, username, email, hashed_password, avatar_url_string, address, plants)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
             """,
-            [user.username, user.email, user.hashed_password],
+            [
+                user.first_name,
+                user.last_name,
+                user.username,
+                user.email,
+                user.hashed_password,
+                user.avatar_url_string,
+                user.address,
+                user.plants,
+            ],
         )
 
     # When called with either a username or email, the corresponding user id
@@ -91,11 +87,21 @@ class UserRepository:
     # When called with user id, get corresponding data from db and return as
     # User object
     def get_user_by_id(self, user_id: int) -> User:
-        rows = self.connection.execute(
+        row = self.connection.execute(
             """
             SELECT * FROM users
             WHERE id = %s
             """,
             [user_id],
         )[0]
-        return User(rows["id"], rows["username"], rows["email"], "None")
+        return User(
+            row["id"],
+            row["first_name"],
+            row["last_name"],
+            row["username"],
+            row["email"],
+            "None",
+            row["avatar_url_string"],
+            row["address"],
+            row["plants"],
+        )
