@@ -10,6 +10,9 @@ class User:
         username: str,
         email: str,
         password: str,
+        avatar_url_string: str = "default_image",
+        address: str = "",
+        plants: list = [],  # WILL NEED TO UPDATE THIS TO PLANT OBJECT REFFFERENCE
     ):
         self.id = id
         self.first_name = first_name
@@ -17,9 +20,9 @@ class User:
         self.username = username
         self.email = email
         self.hashed_password = self._hash_password(password)
-        self.avatar_url_string = ""
-        self.address = ""
-        self.plants = []
+        self.avatar_url_string = avatar_url_string
+        self.address = address
+        self.plants = plants
 
     # ensure two object with identical attrs will be found equal
     def __eq__(self, other):
