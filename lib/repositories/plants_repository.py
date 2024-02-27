@@ -34,3 +34,20 @@ class PlantsRepository:
             'SELECT * from plants WHERE id = %s', [plant_id])
         row = rows[0]
         return Plants (row["id"], row["common_name"], row["latin_name"], row["photo"], row["watering_frequency"])
+    
+    
+    def update(self, plant_id, new_value):
+        plant = self.find(plant_id)
+        if plant is None:
+            return None
+        
+        for key, value in new_value.items():
+            setattr(plant, key, value)
+        
+        change = ', '.join([f'{key} = %s' for key in new_value.keys()])
+
+        query = f"UPDATE plants SET {change} WHERE id = %s"
+        values = list(new_value.values()) + [plant_id]
+        self.connection.execute(query, values)
+        
+        return None
