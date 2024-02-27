@@ -19,7 +19,8 @@ jobs:
         image: postgres:16
         env:
           POSTGRES_DB: BLOOM_test
-          POSTGRES_HOST_AUTH_METHOD: trust
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
         ports:
           - 5432:5432
         options: >-
