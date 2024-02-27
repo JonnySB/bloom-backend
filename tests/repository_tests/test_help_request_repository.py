@@ -253,4 +253,26 @@ def test_can_find_title_substring_from_requests(db_connection):
             60.0
         )
     ]
-    
+
+def test_can_find_no_requests_from_given_substring(db_connection):
+    db_connection.seed("seeds/bloom.sql")
+    repository = HelpRequestRepository(db_connection)
+
+    assert repository.find_requests_by_title_substring("water") == []
+
+def test_can_find_one_request_from_given_substring(db_connection):
+    db_connection.seed("seeds/bloom.sql")
+    repository = HelpRequestRepository(db_connection)
+
+    assert repository.find_requests_by_title_substring("02") == [
+        HelpRequest(
+            2, 
+            datetime.datetime(2023, 10, 20, 10, 23, 54), 
+            "title_02", 
+            "message requesting help 2", 
+            datetime.date(2023, 2, 3), 
+            datetime.date(2023, 3, 3), 
+            2, 
+            60.0
+        )
+    ]

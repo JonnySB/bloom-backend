@@ -48,7 +48,7 @@ class HelpRequestRepository:
     def find_requests_by_title_substring(self, title):
         query = "SELECT * FROM help_requests WHERE title LIKE %s"
         title_lookup = f"%{title}%"
-        rows = self.db_connection.execute(query, (title_lookup))
+        rows = self.db_connection.execute(query, (title_lookup,))
 
         help_requests = []
         for row in rows:
