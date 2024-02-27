@@ -71,8 +71,9 @@ CREATE SEQUENCE help_offers_id_seq;
 CREATE TABLE help_offers (
     id SERIAL PRIMARY KEY,
     message VARCHAR(255),
-    status BOOLEAN,
+    status VARCHAR(255),
     user_id INT,
+    bid MONEY,
     CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (id)
 );
 
@@ -86,7 +87,7 @@ CREATE TABLE plants (
     common_name VARCHAR(255),
     latin_name VARCHAR(255),
     photo VARCHAR(255), -- it will come as a string, in the future we will add the images to cloudinary 
-    watering_frequency VARCHAR(255) -- NOT SURE WHAT KIND OF DATE TYPE WE WILL BE USING HERE, MAYBE REQUIRED CHANGES IN THE FUTURE
+    watering_frequency INT -- CHANGED THE WATER FREQUENCY TO INT
 );
 
 
@@ -99,14 +100,11 @@ INSERT INTO users (first_name, last_name, username, email, hashed_password, avat
 
 
 INSERT INTO chats (received_from, sent_to, message, date, user_id) VALUES ('user_01', 'user_02', 'hello user 01', '2023-10-19 10:23:54', 1);
-
-INSERT INTO help_request (date, title, message, daterange, user_id, maxprice) VALUES ('2023-10-19 10:23:54', 'title_01', 'help request sent', '[2023-02-01, 2023-03-01]', 1, 50);
-INSERT INTO help_offers (message, status, user_id) VALUES ('Offering help', TRUE, 1);
-
+INSERT INTO help_request (date, title, message, daterange, user_id, maxprice) VALUES ('2023-10-19 10:23:54', 'title_01', 'message requesting help', '[2023-02-01, 2023-03-01]', 1, 50);
+INSERT INTO help_offers (message, status, user_id) VALUES ('Offering help', 'pending', '50', 1);
 INSERT INTO user_plants (user_id, plant_id, quantity) VALUES (1, 1, 3);
 INSERT INTO user_plants (user_id, plant_id, quantity) VALUES (1, 2, 2);
-
-INSERT INTO plants (common_name, latin_name, photo, watering_frequency) VALUES ('African sheepbush', 'Pentzia incana', 'plant_01.png', 'two times a week');
-INSERT INTO plants (common_name, latin_name, photo, watering_frequency) VALUES ('Alder', 'Alnus. Black alder', 'plant_02.png', 'one a week');
-INSERT INTO plants (common_name, latin_name, photo, watering_frequency) VALUES ('Almond', 'Prunus dulcis', 'plant_03.png', 'once a month');
+INSERT INTO plants (common_name, latin_name, photo, watering_frequency) VALUES ('African sheepbush', 'Pentzia incana', 'plant_01.png', 2);
+INSERT INTO plants (common_name, latin_name, photo, watering_frequency) VALUES ('Alder', 'Alnus. Black alder', 'plant_02.png', 1);
+INSERT INTO plants (common_name, latin_name, photo, watering_frequency) VALUES ('Almond', 'Prunus dulcis', 'plant_03.png', 1);
 

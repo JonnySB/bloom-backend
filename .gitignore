@@ -2,3 +2,5 @@
 **/*.JSON
 .pytest_cache
 __pycache__
+**/*.orig
+
