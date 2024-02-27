@@ -1,12 +1,12 @@
 from lib.models.plants import Plants
 
-# id, commum_name, latin_name, photo, watering_frequency)
+# id, common_name, latin_name, photo, watering_frequency)
 
 
 def test_construction():
     plant  = Plants(1, 'Plant Name', 'Latin Plant Name', 'photo title', 1)
     assert plant.id == 1
-    assert plant.commum_name == 'Plant Name'
+    assert plant.common_name == 'Plant Name'
     assert plant.latin_name == 'Latin Plant Name'
     assert plant.photo == 'photo title'
     assert plant.watering_frequency == 1

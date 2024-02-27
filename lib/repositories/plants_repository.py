@@ -6,8 +6,8 @@ class PlantsRepository:
         self.connection = connection
 
     def create(self, plant):
-        self.connection.execute('INSERT INTO plants (commum_name, latin_name, photo, watering_frequency) VALUES (%s, %s, %s, %s)', [
-            plant.commun_name,
+        self.connection.execute('INSERT INTO plants (common_name, latin_name, photo, watering_frequency) VALUES (%s, %s, %s, %s)', [
+            plant.common_name,
             plant.latin_name,
             plant. photo,
             plant.watering_frequency
@@ -19,7 +19,7 @@ class PlantsRepository:
         rows = self.connection.execute('SELECT * from plants')
         plant_list = []
         for row in rows:
-            item = Plants(row["id"], row["commum_name"], row["latin_name"], row["photo"], row["watering_frequency"])
+            item = Plants(row["id"], row["common_name"], row["latin_name"], row["photo"], row["watering_frequency"])
             plant_list.append(item)
         return plant_list
     
@@ -33,4 +33,4 @@ class PlantsRepository:
         rows = self.connection.execute(
             'SELECT * from plants WHERE id = %s', [plant_id])
         row = rows[0]
-        return Plants (row["id"], row["commum_name"], row["latin_name"], row["photo"], row["watering_frequency"])
+        return Plants (row["id"], row["common_name"], row["latin_name"], row["photo"], row["watering_frequency"])
