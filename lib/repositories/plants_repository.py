@@ -18,11 +18,12 @@ class PlantsRepository:
     
 
     def all(self):
-        rows = self._connection.execute("SELECT * FROM plants")
-        return [
-            Plants (row["id"], row["commum_name"], row["latin_name"], row["photo"], row["watering_frequency"])
-            for row in rows
-        ]
+        rows = self._connection.execute('SELECT * from plants')
+        plant_list = []
+        for row in rows:
+            item = Plants(row["id"], row["commum_name"], row["latin_name"], row["photo"], row["watering_frequency"])
+            plant_list.append(item)
+        return plant_list
     
     def delete_by_name(self, plant_name):
             self._connection.execute(
