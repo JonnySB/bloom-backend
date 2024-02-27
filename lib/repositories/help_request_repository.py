@@ -4,7 +4,7 @@ class HelpRequestRepository:
         self.db_connection = db_connection
     
     def all_requests(self):
-        rows = self.db_connection.execute("SELECT * FROM help_requests ORDER BY id")
+        rows = self.db_connection.execute("SELECT * FROM help_requests ORDER BY id;")
         help_requests = []
         for row in rows:
             obj = HelpRequest(
@@ -20,47 +20,76 @@ class HelpRequestRepository:
             help_requests.append(obj)
         return help_requests
     
-
-    def find_request_by_id(self, help_request_id):
+    # To find one existing request by id
+    def find_request_by_id(self, request_id):
         try:
-            help_request_id = int(help_request_id)
+            request_id = int(request_id)
         except ValueError:
             return None
+        
         rows = self.db_connection.execute(
             "SELECT * FROM help_requests WHERE id = %s", 
-            [help_request_id])
+            [request_id])
         row = rows[0]
         return HelpRequest(row["id"], row["user_id"], row["timestamp"], row["title"], row["message"], row["plant"], row["date_range"], row["max_price"])
     
-    def find_request_by_plant():
-        pass
+    # As an endpoint that when a user enters a substring of a title, they can find all the requests that have this substring
+    # For example, if a user enters the word "water", then all the requests that has this substring will be returned
+    def find_requests_by_title(self, title):
+        query = "SELECT * FROM help_requests WHERE title LIKE %s"
+        title_lookup = f"%{title}%"
+        rows = self.db_connection.execute(query, (title_lookup))
+
+        help_requests = []
+        for row in rows:
+            obj = HelpRequest(
+                row["id"], 
+                row["user_id"], 
+                row["timestamp"], 
+                row["title"], 
+                row["message"], 
+                row["plant"], 
+                row["date_range"], 
+                row["max_price"]
+            )
+            help_requests.append(obj)
+
+        return help_requests
 
     def create_request(self, help_request):
         self.db_connection.execute(
-            "INSERT INTO help_requests (user_id, timestamp, title, message, plant, date_range) VALUES (%s, %s, %s, %s, %s, %s)",
+            "INSERT INTO help_requests (user_id, timestamp, title, message, plant, date_range) VALUES (%s, %s, %s, %s, %s, %s);",
             [help_request.user_id, help_request.timestamp, help_request.title, help_request.message, help_request.plant, help_request.date_range]
         )
         return None
     
+    # To update an exisiting help request by any field whether it be title, timestamp, message or daterange
+    def update_help_request_by_id(self, request_id, new_values):
+        existing_request = self.find_request_by_id(request_id)
 
-    def update_help_request_by_id(self, help_request_id, new_values):
-        existing_help_request = self.find_request_by_id(help_request_id)
-
-        if existing_help_request is None:
-            return "Help request id does not exist"
-    
-        if isinstance(new_values, str):
-            new_values = {"", new_values}
-
+        if existing_request is None:
+            return None  
+        
         for field, value in new_values.items():
-            setattr(existing_help_request, field, value)
+            setattr(existing_request, field, value)
 
         set_clause = ', '.join([f'{field} = %s' for field in new_values.keys()])
 
         query = f"UPDATE help_requests SET {set_clause} WHERE id = %s"
-
-        self.db_connection.execute(query, list(new_values.values()) + [help_request_id])
+        values = list(new_values.values()) + [request_id]
+        self.db_connection.execute(query, values)
 
         return None
+
+    # To delete an existing request from the database
+    def delete_request(self, request_id):
+        existing_request = self.find_request_by_id(request_id)
+
+        if existing_request is None:
+            return None
     
-    
+        self.db_connection.execute(
+            "DELETE FROM help_requests WHERE id = %s",
+            [request_id]
+        )
+        return None
