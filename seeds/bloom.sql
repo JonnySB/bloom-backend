@@ -92,7 +92,7 @@ CREATE TABLE plants (
 
 
 
- -- some date for testing purposes 
+-- some date for testing purposes 
 INSERT INTO users (firstname, lastname, username, email, hashed_password, avatar, address) VALUES ('user_firstname', 'user_lastname', 'user_01', 'user_01@gmail.com', 'userpassword', 'avatar.png', 'User House, Duke of Wellington Avenue, London, V6X0 7PG ');
 INSERT INTO users (firstname, lastname, username, email, hashed_password, avatar, address) VALUES ('user_firstname', 'user_lastname', 'user_02', 'user_02@gmail.com', 'userpassword', 'avatar.png', 'User House, Duke of Wellington Avenue, London, V6X0 7PG ');
 INSERT INTO chats (received_from, sent_to, message, date, user_id) VALUES ('user_01', 'user_02', 'hello user 01', '2023-10-19 10:23:54', 1);
