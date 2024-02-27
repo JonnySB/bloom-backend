@@ -2,15 +2,6 @@ from datetime import datetime
 from lib.models.help_request import HelpRequest
 
 
-'''
-        id, 
-        date, 
-        title, 
-        message, 
-        daterange, 
-pc->    user_id, 
-        maxprice
-'''
 # test help request object constructs - passes
 def  test_constructs_help_request_with_fields():
     help_request = HelpRequest(1, datetime(2024, 2, 1, 10, 30, 45), "Need help with gardening", "Looking for someone to help with planting flowers.", "[2024-01-01, 2024-01-31]", 1, 100)

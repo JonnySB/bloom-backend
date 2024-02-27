@@ -1,14 +1,5 @@
 class HelpRequest:
-    
-    '''
-        id, 
-        date, 
-        title, 
-        message, 
-        daterange, 
-pc->    user_id, 
-        maxprice
-    '''
+
     def __init__(self, id, date, title, messsage, date_range, user_id, max_price):
         self.id = id
         self.date = date

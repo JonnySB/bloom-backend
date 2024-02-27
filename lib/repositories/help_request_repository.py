@@ -1,4 +1,5 @@
 from lib.models.help_request import HelpRequest
+
 class HelpRequestRepository:
     def __init__(self, db_connection):
         self.db_connection = db_connection
@@ -9,12 +10,11 @@ class HelpRequestRepository:
         for row in rows:
             obj = HelpRequest(
                 row["id"], 
-                row["user_id"], 
-                row["timestamp"], 
+                row["date"], 
                 row["title"], 
                 row["message"], 
-                row["plant"], 
                 row["date_range"], 
+                row["user_id"], 
                 row["max_price"]
             )
             help_requests.append(obj)
@@ -31,7 +31,15 @@ class HelpRequestRepository:
             "SELECT * FROM help_requests WHERE id = %s", 
             [request_id])
         row = rows[0]
-        return HelpRequest(row["id"], row["user_id"], row["timestamp"], row["title"], row["message"], row["plant"], row["date_range"], row["max_price"])
+        return HelpRequest(
+                row["id"], 
+                row["date"], 
+                row["title"], 
+                row["message"], 
+                row["date_range"], 
+                row["user_id"], 
+                row["max_price"]
+            )
     
     # As an endpoint that when a user enters a substring of a title, they can find all the requests that have this substring
     # For example, if a user enters the word "water", then all the requests that has this substring will be returned
@@ -44,12 +52,11 @@ class HelpRequestRepository:
         for row in rows:
             obj = HelpRequest(
                 row["id"], 
-                row["user_id"], 
-                row["timestamp"], 
+                row["date"], 
                 row["title"], 
                 row["message"], 
-                row["plant"], 
                 row["date_range"], 
+                row["user_id"], 
                 row["max_price"]
             )
             help_requests.append(obj)
@@ -58,12 +65,12 @@ class HelpRequestRepository:
 
     def create_request(self, help_request):
         self.db_connection.execute(
-            "INSERT INTO help_requests (user_id, timestamp, title, message, plant, date_range) VALUES (%s, %s, %s, %s, %s, %s);",
-            [help_request.user_id, help_request.timestamp, help_request.title, help_request.message, help_request.plant, help_request.date_range]
+            "INSERT INTO help_requests (user_id, date, title, message, plant, date_range) VALUES (%s, %s, %s, %s, %s, %s);",
+            [help_request.user_id, help_request.date, help_request.title, help_request.message, help_request.plant, help_request.date_range]
         )
         return None
     
-    # To update an exisiting help request by any field whether it be title, timestamp, message or daterange
+    # To update an exisiting help request by any field whether it be title, date, message or daterange
     def update_help_request_by_id(self, request_id, new_values):
         existing_request = self.find_request_by_id(request_id)
 
