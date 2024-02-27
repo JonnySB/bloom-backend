@@ -1,7 +1,5 @@
 from lib.models.plants import Plants
 
-# self, id, commum_name, latin_name, photo, watering_frequency
-
 class PlantsRepository:
 
     def __init__(self, connection):
