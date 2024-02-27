@@ -13,9 +13,10 @@ class HelpRequestRepository:
                 row["date"], 
                 row["title"], 
                 row["message"], 
-                row["date_range"], 
+                row["start_date"], 
+                row["end_date"],
                 row["user_id"], 
-                row["max_price"]
+                row["maxprice"]
             )
             help_requests.append(obj)
         return help_requests
@@ -36,9 +37,10 @@ class HelpRequestRepository:
                 row["date"], 
                 row["title"], 
                 row["message"], 
-                row["date_range"], 
+                row["start_date"], 
+                row["end_date"],
                 row["user_id"], 
-                row["max_price"]
+                row["maxprice"]
             )
     
     # As an endpoint that when a user enters a substring of a title, they can find all the requests that have this substring
@@ -55,9 +57,10 @@ class HelpRequestRepository:
                 row["date"], 
                 row["title"], 
                 row["message"], 
-                row["date_range"], 
+                row["start_date"], 
+                row["end_date"],
                 row["user_id"], 
-                row["max_price"]
+                row["maxprice"]
             )
             help_requests.append(obj)
 
@@ -65,12 +68,12 @@ class HelpRequestRepository:
 
     def create_request(self, help_request):
         self.db_connection.execute(
-            "INSERT INTO help_requests (user_id, date, title, message, date_range) VALUES (%s, %s, %s, %s, %s, %s);",
-            [help_request.user_id, help_request.date, help_request.title, help_request.message, help_request.date_range]
+            "INSERT INTO help_requests (date, title, message, start_date, end_date, user_id, maxprice) VALUES (%s, %s, %s, %s, %s, %s, %s);",
+            [help_request.date, help_request.title, help_request.message, help_request.start_date, help_request.end_date, help_request.user_id, help_request.maxprice]
         )
         return None
     
-    # To update an exisiting help request by any field whether it be title, date, message or daterange
+    # To update an exisiting help request by any field whether it be title, date, message, start_date or end_date
     def update_help_request_by_id(self, request_id, new_values):
         existing_request = self.find_request_by_id(request_id)
 
