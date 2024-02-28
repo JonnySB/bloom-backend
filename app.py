@@ -5,6 +5,7 @@ from flask_jwt_extended import JWTManager, create_access_token
 from dotenv import load_dotenv
 
 from lib.repositories.user_repository import UserRepository
+from lib.repositories.help_request_repository import HelpRequestRepository
 
 # load .env file variables see readme details
 load_dotenv()
@@ -41,6 +42,28 @@ def create_token():
 
 
 ##### MORE ROUTES GO HERE #####
+
+# Help Request Routes
+@app.route('/help_requests', methods=['GET'])
+def get_all_help_requests():
+    connection = get_flask_database_connection(app)
+    request_repository = HelpRequestRepository(connection)
+
+    all_requests = request_repository.all_requests()
+    request_data = [
+        {
+            "id": request.id,
+            "date": request.date.strftime("%Y-%m-%d %H:%M:%S"),
+            "title": request.title,
+            "message": request.message,
+            "start_date": request.start_date.strftime("%Y-%m-%d"),
+            "end_date": request.end_date.strftime("%Y-%m-%d"),
+            "user_id": request.user_id,
+            "maxprice": request.maxprice
+        }
+        for request in all_requests
+    ]
+    return jsonify(request_data)
 
 
 if __name__ == "__main__":
