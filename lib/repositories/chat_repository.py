@@ -34,7 +34,7 @@ class ChatRepository:
             return self._connection.execute(insert_query, [receiver.id, receiver.message, datetime.datetime.now(), sender.id])
         else:
             # If there is an existing chat, append the new message to the existing 'message' field.
-            # it is broken down by a comma so we can split this in the future 
+            # it is splited down by a comma so we can uset the split method in the future 
             update_query = '''UPDATE chats SET message = array_append(message, %s) WHERE recipient_id = %s AND sender_id = %s AND date >= %s RETURNING *;'''
             return self._connection.execute(update_query, [receiver.message, receiver.id, sender.id, start_date_str])
 
