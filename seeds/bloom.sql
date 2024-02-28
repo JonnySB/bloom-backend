@@ -57,12 +57,13 @@ CREATE TABLE user_plants (
 CREATE SEQUENCE chats_id_seq;
 -- Create chats table
 CREATE TABLE chats (
-    received_from VARCHAR(255),
-    sent_to VARCHAR(255), 
-    message VARCHAR(255),
-    date TIMESTAMP WITHOUT TIME ZONE, -- date without the timezone..
-    user_id INT,
-    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (id)
+    id SERIAL PRIMARY KEY,
+    recipient_id INT NOT NULL, 
+    message TEXT[],
+    date TIMESTAMP WITHOUT TIME ZONE,
+    sender_id INT NOT NULL, 
+    CONSTRAINT fk_user_sender FOREIGN KEY (sender_id) REFERENCES users (id),
+    CONSTRAINT fk_user_recipient FOREIGN KEY (recipient_id) REFERENCES users (id)
 );
 
 -- Create sequence for chats
@@ -108,9 +109,9 @@ INSERT INTO plants (common_name, latin_name, photo, watering_frequency) VALUES (
 
 -- CREATE USER PLANTS SEED --
 INSERT INTO user_plants (user_id, plant_id, quantity) VALUES (1, 1, 3);
-INSERT INTO user_plants (user_id, plant_id, quantity) VALUES (1, 2, 2);
+-- INSERT INTO user_plants (user_id, plant_id, quantity) VALUES (1, 2, 2);
 
-INSERT INTO chats (received_from, sent_to, message, date, user_id) VALUES ('user_01', 'user_02', 'hello user 01', '2023-10-19 10:23:54', 1);
+INSERT INTO chats (recipient_id, message, date, sender_id) VALUES (2, '{"Hello user 02"}', NOW(), 1);
 INSERT INTO help_requests (date, title, message, start_date, end_date, user_id, maxprice) VALUES ('2023-10-19 10:23:54', 'title_01', 'message requesting help', '2023-02-01', '2023-03-01', 1, 50);
 INSERT INTO help_requests (date, title, message, start_date, end_date, user_id, maxprice) VALUES ('2023-10-20 10:23:54', 'title_02', 'message requesting help 2', '2023-02-03', '2023-03-03', 2, 60);
 INSERT INTO help_offers (message, status, user_id, bid) VALUES ('Offering help', 'pending', 1, '50');
