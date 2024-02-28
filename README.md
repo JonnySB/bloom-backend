@@ -17,6 +17,7 @@
 # Create a test and development database (This assumes you have postgres)
 ; createdb BLOOM
 ; createdb BLOOM_test
+; In the BLOOM_test database, run the following SQL query: "CREATE USER postgres WITH SUPERUSER PASSWORD 'postgres';"
 
 # Seed the development database (ensure you have run `pipenv shell` first)
 ; python seed_dev_database.py
