@@ -1,6 +1,10 @@
 from app import *
 import requests
 
+#########################
+###### test /token ######
+#########################
+
 
 def test_user_authentication_successful_via_username(db_connection, test_web_address):
     db_connection.seed("seeds/bloom.sql")
@@ -48,3 +52,132 @@ def test_user_authentication_unsucessful_with_no_corresponding_username(
     response = requests.post(f"http://{test_web_address}/token", json=user_data)
     assert response.status_code == 401
     assert response.json() == {"msg": "Bad username or password"}
+
+
+###############################
+###### test /user/signup ######
+###############################
+
+
+def test_user_created_with_correct_details_with_address(
+    db_connection, test_web_address
+):
+    db_connection.seed("seeds/bloom.sql")
+    user_data = {
+        "first_name": "Tom",
+        "last_name": "Jones",
+        "username": "TJ",
+        "email": "tjones@email.com",
+        "password": "Password123!",
+        "password_confirm": "Password123!",
+        "address": "An address!",
+    }
+
+    response = requests.post(f"http://{test_web_address}/user/signup", json=user_data)
+
+    assert response.status_code == 200
+    assert response.json() == {"msg": "User created"}
+
+
+def test_user_created_with_correct_details_with_blank_address(
+    db_connection, test_web_address
+):
+    db_connection.seed("seeds/bloom.sql")
+    user_data = {
+        "first_name": "Tom",
+        "last_name": "Jones",
+        "username": "TJ",
+        "email": "tjones@email.com",
+        "password": "Password123!",
+        "password_confirm": "Password123!",
+        "address": "",
+    }
+
+    response = requests.post(f"http://{test_web_address}/user/signup", json=user_data)
+
+    assert response.status_code == 200
+    assert response.json() == {"msg": "User created"}
+
+
+def test_user_not_created_when_duplicate_username(db_connection, test_web_address):
+    db_connection.seed("seeds/bloom.sql")
+    user_data1 = {
+        "first_name": "Tom",
+        "last_name": "Jones",
+        "username": "TJ",
+        "email": "tjones@email.com",
+        "password": "Password123!",
+        "password_confirm": "Password123!",
+        "address": "",
+    }
+
+    response = requests.post(f"http://{test_web_address}/user/signup", json=user_data1)
+
+    user_data2 = {
+        "first_name": "Tony",
+        "last_name": "Jonesy",
+        "username": "TJ",
+        "email": "tjonesy@email.com",
+        "password": "Password123!",
+        "password_confirm": "Password123!",
+        "address": "",
+    }
+    response = requests.post(f"http://{test_web_address}/user/signup", json=user_data2)
+
+    assert response.status_code == 401
+    assert response.json() == {
+        "msg": "Bad request - user not created. This username or email could be taken."
+    }
+
+
+def test_user_not_created_when_duplicate_email(db_connection, test_web_address):
+    db_connection.seed("seeds/bloom.sql")
+    user_data1 = {
+        "first_name": "Tom",
+        "last_name": "Jones",
+        "username": "TJ",
+        "email": "tjones@email.com",
+        "password": "Password123!",
+        "password_confirm": "Password123!",
+        "address": "",
+    }
+
+    response = requests.post(f"http://{test_web_address}/user/signup", json=user_data1)
+
+    user_data2 = {
+        "first_name": "Tony",
+        "last_name": "Jonesy",
+        "username": "JT",
+        "email": "tjones@email.com",
+        "password": "Password123!",
+        "password_confirm": "Password123!",
+        "address": "",
+    }
+    response = requests.post(f"http://{test_web_address}/user/signup", json=user_data2)
+
+    assert response.status_code == 401
+    assert response.json() == {
+        "msg": "Bad request - user not created. This username or email could be taken."
+    }
+
+
+def test_user_not_created_when_information_passwords_do_not_match(
+    db_connection, test_web_address
+):
+    db_connection.seed("seeds/bloom.sql")
+    user_data1 = {
+        "first_name": "Tom",
+        "last_name": "Jones",
+        "username": "TJ",
+        "email": "tjones@email.com",
+        "password": "Password123!",
+        "password_confirm": "Password456!",
+        "address": "",
+    }
+
+    response = requests.post(f"http://{test_web_address}/user/signup", json=user_data1)
+
+    assert response.status_code == 401
+    assert response.json() == {
+        "msg": "Bad request - user not created. Passwords does not match."
+    }
