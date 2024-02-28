@@ -110,6 +110,9 @@ INSERT INTO user_plants (user_id, plant_id, quantity) VALUES (1, 1, 3);
 INSERT INTO user_plants (user_id, plant_id, quantity) VALUES (1, 2, 2);
 
 INSERT INTO chats (recipient_id, message, date, sender_id) VALUES (2, '{"Hello user 02"}', NOW(), 1);
+INSERT INTO chats (recipient_id, message, date, sender_id) VALUES (1, '{"Hello user 01"}', NOW(), 2);
+
+
 INSERT INTO help_request (date, title, message, daterange, user_id, maxprice) VALUES ('2023-10-19 10:23:54', 'title_01', 'message requesting help', '[2023-02-01, 2023-03-01]', 1, 50);
 INSERT INTO help_offers (message, status, user_id, bid) VALUES ('Offering help', 'pending', 1, '50');
 
