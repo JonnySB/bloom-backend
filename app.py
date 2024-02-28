@@ -105,8 +105,12 @@ def get_all_requests_made_by_one_user(user_id):
             "maxprice": request.maxprice
         }
         formatted_requests.append(formatted_request)
-        return jsonify(formatted_request), 200
-    return jsonify({"message" : "Help requests for current user not found"}), 400
+        
+    if formatted_requests:  # Check if any requests were found
+        return jsonify(formatted_requests), 200
+    else:
+        return jsonify({"message": "Help requests for current user not found"}), 400
+
 
 @app.route("/help_requests/create", methods=['POST'])
 def create_help_request():
