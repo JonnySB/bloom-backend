@@ -1,4 +1,4 @@
-from lib.repository.chat_repository import ChatRepository
+from lib.repositories.chat_repository import ChatRepository
 from lib.models.chat import Chat
 from datetime import datetime
 
