@@ -101,3 +101,22 @@ def test_get_one_help_request_from_db(test_web_address, db_connection):
             "maxprice": 60.0
         }
     assert response.json() == expected_data
+
+def test_get_all_requests_by_one_user(test_web_address, db_connection):
+    db_connection.seed("seeds/bloom.sql")
+    HelpRequestRepository(db_connection)
+
+    response = requests.get(f"http://{test_web_address}/help_requests/user/1")
+    assert response.status_code == 200
+    expected_data = {
+            "id" : 1, 
+            "date" : "2023-10-19 10:23:54", 
+            "title" : "title_01", 
+            "message" : "message requesting help", 
+            "start_date" : "2023-02-01", 
+            "end_date" : "2023-03-01", 
+            "user_id" : 1, 
+            "maxprice" : 50.0
+        }
+    
+    assert response.json() == expected_data

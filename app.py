@@ -50,8 +50,50 @@ def get_all_help_requests():
     request_repository = HelpRequestRepository(connection)
 
     all_requests = request_repository.all_requests()
-    request_data = [
-        {
+    if all_requests:
+        request_data = [
+            {
+                "id": request.id,
+                "date": request.date.strftime("%Y-%m-%d %H:%M:%S"),
+                "title": request.title,
+                "message": request.message,
+                "start_date": request.start_date.strftime("%Y-%m-%d"),
+                "end_date": request.end_date.strftime("%Y-%m-%d"),
+                "user_id": request.user_id,
+                "maxprice": request.maxprice
+            }
+            for request in all_requests
+        ]
+        return jsonify(request_data), 200
+    return jsonify({"message" : "Unable to find all requests"}), 400
+
+@app.route('/help_requests/<id>', methods=['GET'])
+def get_one_help_request_by_id(id):
+    connection = get_flask_database_connection(app)
+    request_repository = HelpRequestRepository(connection)
+    request = request_repository.find_request_by_id(id)
+    if request:
+        return jsonify({
+            "id": request.id,
+            "date": request.date.strftime("%Y-%m-%d %H:%M:%S"),
+            "title": request.title,
+            "message": request.message,
+            "start_date": request.start_date.strftime("%Y-%m-%d"),
+            "end_date": request.end_date.strftime("%Y-%m-%d"),
+            "user_id": request.user_id,
+            "maxprice": request.maxprice
+        }), 200
+    return jsonify({"message" : "Help Request not found"}), 400
+
+@app.route('/help_requests/user/<user_id>')
+def get_all_requests_made_by_one_user(user_id):
+    connection = get_flask_database_connection(app)
+    request_repository = HelpRequestRepository(connection)
+    requests_by_user = request_repository.find_requests_by_user(user_id)
+
+    formatted_requests = []
+    for request in requests_by_user:
+        formatted_request = {
             "id": request.id,
             "date": request.date.strftime("%Y-%m-%d %H:%M:%S"),
             "title": request.title,
@@ -61,25 +103,10 @@ def get_all_help_requests():
             "user_id": request.user_id,
             "maxprice": request.maxprice
         }
-        for request in all_requests
-    ]
-    return jsonify(request_data)
+        formatted_requests.append(formatted_request)
+        return jsonify(formatted_request), 200
+    return jsonify({"message" : "Help requests for current user not found"}), 400
 
-@app.route('/help_requests/<id>', methods=['GET'])
-def get_one_help_request_by_id(id):
-    connection = get_flask_database_connection(app)
-    request_repository = HelpRequestRepository(connection)
-    request = request_repository.find_request_by_id(id)
-    return jsonify({
-        "id": request.id,
-        "date": request.date.strftime("%Y-%m-%d %H:%M:%S"),
-        "title": request.title,
-        "message": request.message,
-        "start_date": request.start_date.strftime("%Y-%m-%d"),
-        "end_date": request.end_date.strftime("%Y-%m-%d"),
-        "user_id": request.user_id,
-        "maxprice": request.maxprice
-    })
 
 
 if __name__ == "__main__":
