@@ -5,6 +5,7 @@ from flask_jwt_extended import JWTManager, create_access_token
 from dotenv import load_dotenv
 
 from lib.repositories.user_repository import UserRepository
+from lib.models.help_request import HelpRequest
 from lib.repositories.help_request_repository import HelpRequestRepository
 
 # load .env file variables see readme details
@@ -85,7 +86,7 @@ def get_one_help_request_by_id(id):
         }), 200
     return jsonify({"message" : "Help Request not found"}), 400
 
-@app.route('/help_requests/user/<user_id>')
+@app.route('/help_requests/user/<user_id>', methods=['GET'])
 def get_all_requests_made_by_one_user(user_id):
     connection = get_flask_database_connection(app)
     request_repository = HelpRequestRepository(connection)
@@ -107,7 +108,22 @@ def get_all_requests_made_by_one_user(user_id):
         return jsonify(formatted_request), 200
     return jsonify({"message" : "Help requests for current user not found"}), 400
 
-
+@app.route("/help_requests/create", methods=['POST'])
+def create_help_request():
+    try:
+        connection = get_flask_database_connection(app)
+        request_repository = HelpRequestRepository(connection)
+        date = request.json.get('date')
+        title = request.json.get('title')
+        message = request.json.get('message')
+        start_date = request.json.get('start_date')
+        end_date = request.json.get("end_date")
+        user_id = request.json.get("user_id") # ??
+        maxprice = request.json.get("maxprice")
+        request_repository.create_request(HelpRequest(None, date, title, message, start_date, end_date, user_id, maxprice))
+        return jsonify({"message" : "Help request created successfully"}), 200
+    except:
+        return jsonify({"message" : "Help request creation unsuccessful"}), 400
 
 if __name__ == "__main__":
     app.run(debug=True, port=int(os.environ.get("PORT", 5001)))

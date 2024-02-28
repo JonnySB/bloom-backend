@@ -1,5 +1,6 @@
 from app import *
 import requests
+import datetime
 
 
 def test_user_authentication_successful_via_username(db_connection, test_web_address):
@@ -120,3 +121,21 @@ def test_get_all_requests_by_one_user(test_web_address, db_connection):
         }
     
     assert response.json() == expected_data
+
+def test_create_hhelp_request(test_web_address, db_connection):
+    db_connection.seed("seeds/bloom.sql")
+    HelpRequestRepository(db_connection)
+
+    new_request = {
+        "id" : None,
+        "date": "2024-03-12 13:14:15", 
+        "title" : "title_03",
+        "message" : "message requesting help 3",
+        "start_date" : "2024-03-15",
+        "end_date" : "2024-03-18",
+        "user_id" : 1,
+        "maxprice": 40.0
+    }
+    response = requests.post(f"http://{test_web_address}/help_requests/create", json=new_request)
+    assert response.status_code == 200
+    assert response.json() == {"message" : "Help request created successfully"}
