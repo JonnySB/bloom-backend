@@ -21,6 +21,7 @@ jobs:
           POSTGRES_DB: BLOOM_test
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
         ports:
           - 5432:5432
         options: >-
