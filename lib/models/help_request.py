@@ -1,8 +1,10 @@
+from datetime import datetime
+
 class HelpRequest:
 
     def __init__(self, id, date, title, messsage, start_date, end_date, user_id, maxprice):
         self.id = id
-        self.date = date
+        self.date = date if date else datetime.now()
         self.title = title
         self.message = messsage
         self.start_date = start_date
