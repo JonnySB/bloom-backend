@@ -120,6 +120,8 @@ def create_help_request():
         end_date = request.json.get("end_date")
         user_id = request.json.get("user_id") # ??
         maxprice = request.json.get("maxprice")
+        if None in (date, title, message, start_date, end_date, maxprice):
+            raise ValueError("All required fields must be filled")
         request_repository.create_request(HelpRequest(None, date, title, message, start_date, end_date, user_id, maxprice))
         return jsonify({"message" : "Help request created successfully"}), 200
     except:
