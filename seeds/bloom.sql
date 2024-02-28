@@ -49,8 +49,8 @@ CREATE TABLE user_plants (
     plant_id INT,
     quantity INT, 
     PRIMARY KEY (user_id, plant_id),
-    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (id),
-    CONSTRAINT fk_plant FOREIGN KEY (plant_id) REFERENCES plants (id)
+    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+    CONSTRAINT fk_plant FOREIGN KEY (plant_id) REFERENCES plants (id) ON DELETE CASCADE
 );
 
 -- Create sequence for chats
@@ -95,6 +95,7 @@ CREATE TABLE help_offers (
 
 
 -- CREATE USER SEED --
+-- NOTE - Password hash is generated from the password "Password123!" for all seed users
 INSERT INTO users (first_name, last_name, username, email, hashed_password, avatar_url_string, address) VALUES ('user', '1', 'user1', 'user1@email.com', '$2b$12$6Og77D1E.ObtWMOX9dw//.AJpsNFAR6/6E1OHputlDCUFRytgEQGq', 'test_image1.png', 'test_address1');
 INSERT INTO users (first_name, last_name, username, email, hashed_password, avatar_url_string, address) VALUES ('user', '2', 'user2', 'user2@email.com', '$2b$12$6Og77D1E.ObtWMOX9dw//.AJpsNFAR6/6E1OHputlDCUFRytgEQGq', 'test_image2.png', 'test_address2');
 INSERT INTO users (first_name, last_name, username, email, hashed_password, avatar_url_string, address) VALUES ('user', '3', 'user3', 'user3@email.com', '$2b$12$6Og77D1E.ObtWMOX9dw//.AJpsNFAR6/6E1OHputlDCUFRytgEQGq', 'test_image3.png', 'test_address3');
@@ -111,8 +112,7 @@ INSERT INTO user_plants (user_id, plant_id, quantity) VALUES (1, 1, 3);
 -- INSERT INTO user_plants (user_id, plant_id, quantity) VALUES (1, 2, 2);
 
 INSERT INTO chats (recipient_id, message, date, sender_id) VALUES (2, '{"Hello user 02"}', NOW(), 1);
-
-
 INSERT INTO help_requests (date, title, message, start_date, end_date, user_id, maxprice) VALUES ('2023-10-19 10:23:54', 'title_01', 'message requesting help', '2023-02-01', '2023-03-01', 1, 50);
 INSERT INTO help_requests (date, title, message, start_date, end_date, user_id, maxprice) VALUES ('2023-10-20 10:23:54', 'title_02', 'message requesting help 2', '2023-02-03', '2023-03-03', 2, 60);
 INSERT INTO help_offers (message, status, user_id, bid) VALUES ('Offering help', 'pending', 1, '50');
+
