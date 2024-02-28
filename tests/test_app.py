@@ -82,3 +82,22 @@ def test_get_all_help_requests_from_database(test_web_address, db_connection):
     ]
 
     assert response.json() == expected_data
+
+def test_get_one_help_request_from_db(test_web_address, db_connection):
+    db_connection.seed("seeds/bloom.sql")
+    HelpRequestRepository(db_connection)
+
+    response = requests.get(f"http://{test_web_address}/help_requests/2")
+    
+    assert response.status_code == 200
+    expected_data = {
+            "id": 2,
+            "date": "2023-10-20 10:23:54",
+            "title": "title_02",
+            "message": "message requesting help 2",
+            "start_date": "2023-02-03",
+            "end_date": "2023-03-03",
+            "user_id": 2,
+            "maxprice": 60.0
+        }
+    assert response.json() == expected_data

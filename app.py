@@ -65,6 +65,22 @@ def get_all_help_requests():
     ]
     return jsonify(request_data)
 
+@app.route('/help_requests/<id>', methods=['GET'])
+def get_one_help_request_by_id(id):
+    connection = get_flask_database_connection(app)
+    request_repository = HelpRequestRepository(connection)
+    request = request_repository.find_request_by_id(id)
+    return jsonify({
+        "id": request.id,
+        "date": request.date.strftime("%Y-%m-%d %H:%M:%S"),
+        "title": request.title,
+        "message": request.message,
+        "start_date": request.start_date.strftime("%Y-%m-%d"),
+        "end_date": request.end_date.strftime("%Y-%m-%d"),
+        "user_id": request.user_id,
+        "maxprice": request.maxprice
+    })
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=int(os.environ.get("PORT", 5001)))
