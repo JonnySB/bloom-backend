@@ -276,3 +276,63 @@ def test_can_find_one_request_from_given_substring(db_connection):
             60.0
         )
     ]
+
+def test_can_find_all_help_requests_by_user_id(db_connection):
+    db_connection.seed("seeds/bloom.sql")
+    repository = HelpRequestRepository(db_connection)
+
+    help_request_3 = HelpRequest(
+        None, 
+        datetime.datetime(2023, 10, 19, 10, 23, 54), 
+        "title_03", 
+        "message requesting help 3", 
+        datetime.date(2023, 2, 1), 
+        datetime.date(2023, 3, 1), 
+        1, 
+        60.0
+    )
+    help_request_4 = HelpRequest(
+        None, 
+        datetime.datetime(2023, 10, 19, 10, 23, 54), 
+        "title_04", 
+        "message requesting help 4", 
+        datetime.date(2023, 2, 1), 
+        datetime.date(2023, 3, 1), 
+        1, 
+        70.0
+    )
+    repository.create_request(help_request_3)
+    repository.create_request(help_request_4)
+    requests_by_user = repository.find_requests_by_user(1)
+    assert requests_by_user == [
+        HelpRequest(
+            1, 
+            datetime.datetime(2023, 10, 19, 10, 23, 54), 
+            "title_01", 
+            "message requesting help", 
+            datetime.date(2023, 2, 1), 
+            datetime.date(2023, 3, 1), 
+            1, 
+            50.0
+        ),
+        HelpRequest(
+            3, 
+            datetime.datetime(2023, 10, 19, 10, 23, 54), 
+            "title_03", 
+            "message requesting help 3", 
+            datetime.date(2023, 2, 1), 
+            datetime.date(2023, 3, 1), 
+            1, 
+            60.0
+        ),
+        HelpRequest(
+            4, 
+            datetime.datetime(2023, 10, 19, 10, 23, 54), 
+            "title_04", 
+            "message requesting help 4", 
+            datetime.date(2023, 2, 1), 
+            datetime.date(2023, 3, 1), 
+            1, 
+            70.0
+        )
+    ]

@@ -43,6 +43,23 @@ class HelpRequestRepository:
                 row["maxprice"]
             )
     
+    def find_requests_by_user(self, user_id):
+        rows = self.db_connection.execute("SELECT * FROM help_requests WHERE user_id = %s", [user_id])
+        requests_by_user = []
+        for row in rows:
+            obj = HelpRequest(
+                row["id"], 
+                row["date"], 
+                row["title"], 
+                row["message"], 
+                row["start_date"], 
+                row["end_date"],
+                row["user_id"], 
+                row["maxprice"]
+            )
+            requests_by_user.append(obj)
+        return requests_by_user
+
     # As an endpoint that when a user enters a substring of a title, they can find all the requests that have this substring
     # For example, if a user enters the word "water", then all the requests that has this substring will be returned
     def find_requests_by_title_substring(self, title):
