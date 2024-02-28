@@ -1,7 +1,7 @@
 -- Drop tables if they exist
 DROP TABLE IF EXISTS user_plants CASCADE;
 DROP TABLE IF EXISTS chats CASCADE;
-DROP TABLE IF EXISTS help_request CASCADE;
+DROP TABLE IF EXISTS help_requests CASCADE;
 DROP TABLE IF EXISTS help_offers CASCADE;
 DROP TABLE IF EXISTS plants CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
@@ -9,7 +9,7 @@ DROP TABLE IF EXISTS users CASCADE;
 -- Drop sequences if they exist
 DROP SEQUENCE IF EXISTS chats_id_seq;
 DROP SEQUENCE IF EXISTS users_id_seq;
-DROP SEQUENCE IF EXISTS help_request_id_seq;
+DROP SEQUENCE IF EXISTS help_requests_id_seq;
 DROP SEQUENCE IF EXISTS help_offers_id_seq;
 DROP SEQUENCE IF EXISTS plants_id_seq;
 DROP SEQUENCE IF EXISTS user_plants_id_seq;
@@ -49,8 +49,8 @@ CREATE TABLE user_plants (
     plant_id INT,
     quantity INT, 
     PRIMARY KEY (user_id, plant_id),
-    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (id),
-    CONSTRAINT fk_plant FOREIGN KEY (plant_id) REFERENCES plants (id)
+    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+    CONSTRAINT fk_plant FOREIGN KEY (plant_id) REFERENCES plants (id) ON DELETE CASCADE
 );
 
 -- Create sequence for chats
@@ -66,14 +66,15 @@ CREATE TABLE chats (
 );
 
 -- Create sequence for chats
-CREATE SEQUENCE help_request_id_seq;
--- Create help_request table
-CREATE TABLE help_request (
+CREATE SEQUENCE help_requests_id_seq;
+-- Create help_requests table
+CREATE TABLE help_requests (
     id SERIAL PRIMARY KEY,
     date TIMESTAMP WITHOUT TIME ZONE,
     title VARCHAR(255), 
     message VARCHAR(255), -- depending on requirements, could be TEXT type for longer messages
-    daterange DATERANGE, -- assuming you want a range of dates
+    start_date DATE, 
+    end_date DATE,
     user_id INT,
     maxprice REAL,
     CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (id)
@@ -110,6 +111,7 @@ INSERT INTO user_plants (user_id, plant_id, quantity) VALUES (1, 1, 3);
 INSERT INTO user_plants (user_id, plant_id, quantity) VALUES (1, 2, 2);
 
 INSERT INTO chats (received_from, sent_to, message, date, user_id) VALUES ('user_01', 'user_02', 'hello user 01', '2023-10-19 10:23:54', 1);
-INSERT INTO help_request (date, title, message, daterange, user_id, maxprice) VALUES ('2023-10-19 10:23:54', 'title_01', 'message requesting help', '[2023-02-01, 2023-03-01]', 1, 50);
+INSERT INTO help_requests (date, title, message, start_date, end_date, user_id, maxprice) VALUES ('2023-10-19 10:23:54', 'title_01', 'message requesting help', '2023-02-01', '2023-03-01', 1, 50);
+INSERT INTO help_requests (date, title, message, start_date, end_date, user_id, maxprice) VALUES ('2023-10-20 10:23:54', 'title_02', 'message requesting help 2', '2023-02-03', '2023-03-03', 2, 60);
 INSERT INTO help_offers (message, status, user_id, bid) VALUES ('Offering help', 'pending', 1, '50');
 
