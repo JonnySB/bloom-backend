@@ -20,8 +20,7 @@ jobs:
         env:
           POSTGRES_DB: BLOOM_test
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          POSTGRES_PASSWORD: postgres          
         ports:
           - 5432:5432
         options: >-
@@ -52,6 +51,8 @@ jobs:
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
       - name: Test with pytest (pipenv)
+        env:
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
         run: |
           pipenv run pytest
 
