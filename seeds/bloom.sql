@@ -108,7 +108,7 @@ INSERT INTO plants (common_name, latin_name, photo, watering_frequency) VALUES (
 
 -- CREATE USER PLANTS SEED --
 INSERT INTO user_plants (user_id, plant_id, quantity) VALUES (1, 1, 3);
-INSERT INTO user_plants (user_id, plant_id, quantity) VALUES (1, 2, 2);
+-- INSERT INTO user_plants (user_id, plant_id, quantity) VALUES (1, 2, 2);
 
 INSERT INTO chats (recipient_id, message, date, sender_id) VALUES (2, '{"Hello user 02"}', NOW(), 1);
 
