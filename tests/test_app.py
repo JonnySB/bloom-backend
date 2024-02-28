@@ -181,3 +181,31 @@ def test_user_not_created_when_information_passwords_do_not_match(
     assert response.json() == {
         "msg": "Bad request - user not created. Passwords does not match."
     }
+
+
+#####################################
+###### test /user_details/<id> ######
+#####################################
+
+
+def test_get_user_details_for_valid_user_id(db_connection, test_web_address):
+    db_connection.seed("seeds/bloom.sql")
+    response = requests.get(f"http://{test_web_address}/user_details/1")
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "first_name": "user",
+        "last_name": "1",
+        "username": "user1",
+        "email": "user1@email.com",
+        "avatar_url_string": "test_image1.png",
+        "address": "test_address1",
+    }
+
+
+def test_return_user_not_found_for_invalid_user_id(db_connection, test_web_address):
+    db_connection.seed("seeds/bloom.sql")
+    response = requests.get(f"http://{test_web_address}/user_details/7")
+
+    assert response.status_code == 400
+    assert response.json() == {"msg": "User not found"}

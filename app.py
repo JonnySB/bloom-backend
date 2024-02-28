@@ -83,7 +83,29 @@ def create_user():
     )
 
 
-# Takes user id
+# Takes user_id and returns user_details
+@app.route("/user_details/<id>")
+def get_user_details(id):
+    connection = get_flask_database_connection(app)
+    user_repository = UserRepository(connection)
+    user = user_repository.get_user_by_id(id)
+
+    print(user)
+
+    if user:
+        return (
+            jsonify(
+                {
+                    "first_name": user.first_name,
+                    "last_name": user.last_name,
+                    "username": user.username,
+                    "email": user.email,
+                    "avatar_url_string": user.avatar_url_string,
+                    "address": user.address,
+                }
+            )
+        ), 200
+    return jsonify({"msg": "User not found"}), 400
 
 
 ##### MORE ROUTES GO HERE #####

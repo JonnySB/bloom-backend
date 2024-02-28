@@ -84,21 +84,24 @@ class UserRepository:
 
     # When called with user id, get corresponding data from db and return as
     # User object
-    def get_user_by_id(self, user_id: int) -> User:
-        row = self.connection.execute(
-            """
-            SELECT * FROM users
-            WHERE id = %s
-            """,
-            [user_id],
-        )[0]
-        return User(
-            row["id"],
-            row["first_name"],
-            row["last_name"],
-            row["username"],
-            row["email"],
-            "None",
-            row["avatar_url_string"],
-            row["address"],
-        )
+    def get_user_by_id(self, user_id: int) -> User | bool:
+        try:
+            row = self.connection.execute(
+                """
+                SELECT * FROM users
+                WHERE id = %s
+                """,
+                [user_id],
+            )[0]
+            return User(
+                row["id"],
+                row["first_name"],
+                row["last_name"],
+                row["username"],
+                row["email"],
+                "None",
+                row["avatar_url_string"],
+                row["address"],
+            )
+        except:
+            return False
