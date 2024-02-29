@@ -63,8 +63,8 @@ def get_plants():
     return jsonify(data_json), 200
 
 
-# #Show all plants by user
-@app.route('/plants/<user_id>', methods=['GET'])
+#Show all plants by user
+@app.route('/plants/user/<user_id>', methods=['GET'])
 @jwt_required()
 def get_plants_by_user(user_id):
     connection = get_flask_database_connection(app)
