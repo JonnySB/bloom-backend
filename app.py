@@ -104,7 +104,7 @@ def get_user_details(id):
                     "address": user.address,
                 }
             )
-        ), 201
+        ), 200
     return jsonify({"msg": "User not found"}), 400
 
 

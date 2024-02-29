@@ -192,7 +192,7 @@ def test_get_user_details_for_valid_user_id(db_connection, test_web_address):
     db_connection.seed("seeds/bloom.sql")
     response = requests.get(f"http://{test_web_address}/user_details/1")
 
-    assert response.status_code == 201
+    assert response.status_code == 200
     assert response.json() == {
         "first_name": "user",
         "last_name": "1",
