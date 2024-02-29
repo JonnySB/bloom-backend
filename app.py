@@ -1,7 +1,7 @@
 import os
 from flask import Flask, jsonify, request
 from lib.database_connection import get_flask_database_connection
-from flask_jwt_extended import JWTManager, create_access_token
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from dotenv import load_dotenv
 
 from lib.repositories.user_repository import UserRepository
@@ -87,6 +87,7 @@ def get_one_help_request_by_id(id):
     return jsonify({"message" : "Help Request not found"}), 400
 
 @app.route('/help_requests/user/<user_id>', methods=['GET'])
+@jwt_required()
 def get_all_requests_made_by_one_user(user_id):
     connection = get_flask_database_connection(app)
     request_repository = HelpRequestRepository(connection)
@@ -106,7 +107,7 @@ def get_all_requests_made_by_one_user(user_id):
         }
         formatted_requests.append(formatted_request)
         
-    if formatted_requests:  # Check if any requests were found
+    if formatted_requests: 
         return jsonify(formatted_requests), 200
     else:
         return jsonify({"message": "Help requests for current user not found"}), 400

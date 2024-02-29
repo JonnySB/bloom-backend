@@ -54,7 +54,6 @@ def test_user_authentication_unsucessful_with_no_corresponding_username(
 
 def test_get_all_help_requests_from_database(test_web_address, db_connection):
     db_connection.seed("seeds/bloom.sql")
-    HelpRequestRepository(db_connection)
 
     response = requests.get(f"http://{test_web_address}/help_requests")
     assert response.status_code == 200
@@ -96,7 +95,6 @@ def test_get_all_help_requests_from_database(test_web_address, db_connection):
 
 def test_get_one_help_request_from_db(test_web_address, db_connection):
     db_connection.seed("seeds/bloom.sql")
-    HelpRequestRepository(db_connection)
 
     response = requests.get(f"http://{test_web_address}/help_requests/2")
     
@@ -113,12 +111,22 @@ def test_get_one_help_request_from_db(test_web_address, db_connection):
         }
     assert response.json() == expected_data
 
-# THIS TEST BELLOW SHOULD BE PASSING
+
 def test_get_all_requests_by_one_user(test_web_address, db_connection):
     db_connection.seed("seeds/bloom.sql")
     HelpRequestRepository(db_connection)
 
-    response = requests.get(f"http://{test_web_address}/help_requests/user/1")
+    # Login to obtain JWT token
+    login_data = {"username_email": "user1", "password": "Password123!"}
+    login_response = requests.post(f"http://{test_web_address}/token", json=login_data)
+    assert login_response.status_code == 200
+    access_token = login_response.json()["token"]
+
+    # Include JWT token in the request headers
+    headers = {"Authorization": f"Bearer {access_token}"}
+    response = requests.get(f"http://{test_web_address}/help_requests/user/1", headers=headers)
+    # response = requests.get(f"http://{test_web_address}/help_requests/user/1")
+
     assert response.status_code == 200
     expected_data = [
         {
@@ -145,9 +153,9 @@ def test_get_all_requests_by_one_user(test_web_address, db_connection):
     
     assert response.json() == expected_data
 
+
 def test_create_help_request(test_web_address, db_connection):
     db_connection.seed("seeds/bloom.sql")
-    HelpRequestRepository(db_connection)
 
     new_request = {
         "id" : None,
@@ -165,7 +173,6 @@ def test_create_help_request(test_web_address, db_connection):
 
 def test_unsuccessful_create_help_request_without_maxprice(test_web_address, db_connection):
     db_connection.seed("seeds/bloom.sql")
-    HelpRequestRepository(db_connection)
 
     new_request = {
         "id" : None,
