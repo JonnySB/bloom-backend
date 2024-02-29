@@ -13,6 +13,7 @@ bcrypt = "*"
 flask-jwt-extended = "*"
 python-dotenv = "*"
 requests = "*"
+flask-cors = "*"
 
 [dev-packages]
 autopep8 = "*"

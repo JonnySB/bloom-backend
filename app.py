@@ -4,6 +4,7 @@ from flask.helpers import get_flashed_messages
 from lib.database_connection import get_flask_database_connection
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required
 from dotenv import load_dotenv
+from flask_cors import CORS
 
 from lib.models.user import User
 from lib.repositories.user_repository import UserRepository
@@ -16,6 +17,7 @@ from lib.repositories.help_request_repository import HelpRequestRepository
 load_dotenv()
 
 app = Flask(__name__)
+CORS(app)
 
 # Token Setup
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
