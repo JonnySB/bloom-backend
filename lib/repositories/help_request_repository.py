@@ -82,6 +82,27 @@ class HelpRequestRepository:
             help_requests.append(obj)
 
         return help_requests
+    
+    #to find all requests made by a specific user
+    def find_requests_by_user_id(self, user_id):
+        query = "SELECT * FROM help_requests WHERE user_id = %s"
+        rows = self.db_connection.execute(query, [user_id])
+
+        help_requests_by_user = []
+        for row in rows:
+            obj = HelpRequest(
+                row["id"], 
+                row["date"], 
+                row["title"], 
+                row["message"], 
+                row["start_date"], 
+                row["end_date"],
+                row["user_id"], 
+                row["maxprice"]
+            )
+            help_requests_by_user.append(obj)
+
+        return help_requests_by_user
 
     def create_request(self, help_request):
         self.db_connection.execute(
