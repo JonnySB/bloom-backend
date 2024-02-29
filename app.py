@@ -84,7 +84,7 @@ def create_help_offer(help_request_id):
 
     new_offer = HelpOffer(None, user_id, request_id, message, bid, status)
     offer_repository.create_offer(new_offer)
-    return 201
+    return jsonify({"msg": "Help Offer Created"}), 201
 
 #return array of offer IDs for requests made by user
 @app.route("/help_offers/help_requests/<user_id>", methods=["GET"])
