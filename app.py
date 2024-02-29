@@ -53,11 +53,19 @@ def find_offers_by_user_id(user_id):
 
     #returns array of HelpOffer object IDs made by user matching user_id
     offers_by_user = offer_repository.find_by_user(user_id)
-    user_offer_ids = []
+    user_offers = []
     for offer in offers_by_user:
-        user_offer_ids.append(offer.id)
+        offer_obj = {
+            "id": offer.id,
+            "user_id": offer.user_id,
+            "request_id": offer.request_id,
+            "message": offer.message,
+            "bid": offer.bid,
+            "status": offer.status
+        }
+        user_offers.append(offer_obj)
 
-    return jsonify({"user_offer_ids": user_offer_ids})
+    return jsonify(user_offers), 200
 
 #create a new help offer for a help request
 @app.route("/help_offers/<help_request_id>", methods=["POST"])
@@ -90,14 +98,21 @@ def help_offered_to_user(user_id):
     #get IDs of help requests made by user
     requests_by_user = request_repository.find_requests_by_user_id(user_id)
     
-    
     #get IDs of offers matching user help requests
-    help_offered_to_user = []
+    help_offered = []
     for request in requests_by_user:
         offers_for_request = offer_repository.find_by_request_id(request.id)
         for offer in offers_for_request:
-            help_offered_to_user.append(offer.id)
-    return jsonify({"help_offered_to_user": help_offered_to_user})
+            offer_obj = {
+            "id": offer.id,
+            "user_id": offer.user_id,
+            "request_id": offer.request_id,
+            "message": offer.message,
+            "bid": offer.bid,
+            "status": offer.status
+        }
+            help_offered.append(offer_obj)
+    return jsonify(help_offered)
     
 
 if __name__ == "__main__":
