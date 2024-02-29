@@ -1,7 +1,7 @@
 import os
 from flask import Flask, jsonify, request
 from lib.database_connection import get_flask_database_connection
-from flask_jwt_extended import JWTManager, create_access_token
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required
 from dotenv import load_dotenv
 
 from lib.repositories.user_repository import UserRepository
@@ -69,6 +69,7 @@ def find_offers_by_user_id(user_id):
 
 #create a new help offer for a help request
 @app.route("/help_offers/<help_request_id>", methods=["POST"])
+@jwt_required()
 def create_help_offer(help_request_id):
     try:
         #connect to db and set up offer repository
@@ -94,6 +95,7 @@ def create_help_offer(help_request_id):
 
 #return array of offer IDs for requests made by user
 @app.route("/help_offers/help_requests/<user_id>", methods=["GET"])
+@jwt_required()
 def help_offered_to_user(user_id):
 
     #connect to db and set up offer repository
