@@ -70,21 +70,27 @@ def find_offers_by_user_id(user_id):
 #create a new help offer for a help request
 @app.route("/help_offers/<help_request_id>", methods=["POST"])
 def create_help_offer(help_request_id):
+    try:
+        #connect to db and set up offer repository
+        connection = get_flask_database_connection(app)
+        offer_repository = HelpOfferRepository(connection)
 
-    #connect to db and set up offer repository
-    connection = get_flask_database_connection(app)
-    offer_repository = HelpOfferRepository(connection)
+        #get data from request body and create help_offer in DB
+        user_id = request.json.get("user_id")
+        request_id = help_request_id
+        message = request.json.get("message")
+        bid = request.json.get("bid")
+        status = request.json.get("status")
 
-    #get data from request body and create help_offer in DB
-    user_id = request.json.get("user_id", None)
-    request_id = help_request_id
-    message = request.json.get("message", None)
-    bid = request.json.get("bid", None)
-    status = request.json.get("status", None)
+        new_offer = HelpOffer(None, user_id, request_id, message, bid, status)
 
-    new_offer = HelpOffer(None, user_id, request_id, message, bid, status)
-    offer_repository.create_offer(new_offer)
-    return jsonify({"msg": "Help Offer Created"}), 201
+        if None in (user_id, request_id, message, bid, status):
+            raise ValueError("All required fields must be filled")    
+        offer_repository.create_offer(new_offer)
+        return jsonify({"msg": "Help Offer Created"}), 201
+    except:
+        return jsonify({"msg" : "Help offer creation unsuccessful"}), 400
+
 
 #return array of offer IDs for requests made by user
 @app.route("/help_offers/help_requests/<user_id>", methods=["GET"])
