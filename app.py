@@ -161,7 +161,7 @@ def create_help_offer(help_request_id):
         return jsonify({"msg" : "Help offer creation unsuccessful"}), 400
 
 
-#return array of offer IDs for requests made by user
+#return array of offers for requests made by user
 @app.route("/help_offers/help_requests/<user_id>", methods=["GET"])
 @jwt_required()
 def help_offered_to_user(user_id):
