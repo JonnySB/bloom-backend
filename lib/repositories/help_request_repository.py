@@ -43,7 +43,7 @@ class HelpRequestRepository:
                 row["maxprice"]
             )
     
-    def find_requests_by_user(self, user_id):
+    def find_requests_by_user_id(self, user_id):
         rows = self.db_connection.execute("SELECT * FROM help_requests WHERE user_id = %s", [user_id])
         requests_by_user = []
         for row in rows:
@@ -88,6 +88,24 @@ class HelpRequestRepository:
             "INSERT INTO help_requests (date, title, message, start_date, end_date, user_id, maxprice) VALUES (%s, %s, %s, %s, %s, %s, %s);",
             [help_request.date, help_request.title, help_request.message, help_request.start_date, help_request.end_date, help_request.user_id, help_request.maxprice]
         )
+        return None
+    
+    # To update an exisiting help request by any field whether it be title, date, message, start_date or end_date
+    def update_help_request_by_id(self, request_id, new_values):
+        existing_request = self.find_request_by_id(request_id)
+
+        if existing_request is None:
+            return None  
+        
+        for field, value in new_values.items():
+            setattr(existing_request, field, value)
+
+        set_clause = ', '.join([f'{field} = %s' for field in new_values.keys()])
+
+        query = f"UPDATE help_requests SET {set_clause} WHERE id = %s"
+        values = list(new_values.values()) + [request_id]
+        self.db_connection.execute(query, values)
+
         return None
 
     # To delete an existing request from the database
