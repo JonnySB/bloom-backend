@@ -1,6 +1,4 @@
 class PlantsUser:
-
-
     def __init__(self, id, user_id, plant_id, quantity):
         self.id = id
         self.user_id = user_id

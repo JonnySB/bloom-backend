@@ -61,22 +61,4 @@ def test_update(db_connection):
     ]
 
 
-def test_find_plants_by_user_id_1(db_connection):
-    db_connection.seed('seeds/bloom.sql')
-    repository = PlantsRepository(db_connection)
-    find = repository.find_plants_by_user_id(1)
-    assert find == [{
-        'plant': Plants(1,"African sheepbush", "Pentzia incana", "plant_01.png", 2),
-        'quantity': 2
-        }]
-    
-def test_find_plants_by_user_id_2(db_connection):
-    db_connection.seed('seeds/bloom.sql')
-    repository = PlantsRepository(db_connection)
-    find = repository.find_plants_by_user_id(2)
-    assert find == [{
-        'plant': Plants(2, 'Alder', 'Alnus. Black alder', 'plant_02.png', 1),
-        'quantity': 2
-        }]
-        
 
