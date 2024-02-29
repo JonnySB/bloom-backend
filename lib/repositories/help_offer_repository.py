@@ -29,6 +29,16 @@ class HelpOfferRepository():
             offers_by_user.append(help_offer)
         return offers_by_user
     
+    # returns help offers matching request_id from DB.
+    def find_by_request_id(self, request_id):
+        rows = self.connection.execute("SELECT * FROM help_offers WHERE request_id = %s", [request_id])
+        offers_for_request = []
+        for row in rows:
+            help_offer = HelpOffer(row['id'], row['user_id'], row["request_id"], row['message'], row['bid'], row['status'])
+            offers_for_request.append(help_offer)
+        return offers_for_request
+
+    
     # inserts offer into help_offers table in DB.
     def create_offer(self, offer):
         self.connection.execute("INSERT INTO help_offers (user_id, request_id, message, bid, status) \

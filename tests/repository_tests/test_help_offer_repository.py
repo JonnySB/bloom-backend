@@ -39,6 +39,18 @@ def test_find_by_user(db_connection):
         HelpOffer(2, 1, 1, 'willing to help', 3.75, 'pending'),
     ]
 
+def test_find_by_request_id(db_connection):
+    db_connection.seed('seeds/bloom.sql')
+    repo = HelpOfferRepository(db_connection)
+    offer_1 = HelpOffer(None, 1, 1, 'willing to help', 3.75, 'pending')
+    offer_2 = HelpOffer(None, 2, 2, 'willing to help for cheaper', 3.25, 'pending')
+    repo.create_offer(offer_1)
+    repo.create_offer(offer_2)
+    offers_for_request = repo.find_by_request_id(2)
+    assert offers_for_request == [
+        HelpOffer(3, 2, 2, 'willing to help for cheaper', 3.25, 'pending'),
+    ]
+
 def test_delete_offer(db_connection):
     db_connection.seed('seeds/bloom.sql')
     repo = HelpOfferRepository(db_connection)
