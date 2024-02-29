@@ -24,6 +24,5 @@ class PlantsUserRepository:
             plants_by_user.append(plant_with_quantity)
         return plants_by_user
     
-    def add_plants_to_user_by_user_id_and_plants_id(self, user_id, plants_id):
-        query = ''
-        pass
+    def update_plants_quantity(self, user_id, plant_id, new_quantity):
+        self.connection.execute('UPDATE user_plants SET quantity = %s WHERE user_id = %s AND plant_id = %s', [new_quantity, user_id, plant_id])

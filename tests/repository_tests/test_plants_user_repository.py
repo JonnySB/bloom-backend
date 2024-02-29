@@ -16,9 +16,9 @@ def test_find_plants_by_user_id_one(db_connection):
 def test_find_plants_by_user_id_two(db_connection):
     db_connection.seed('seeds/bloom.sql')
     repository = PlantsUserRepository(db_connection)
-    repository.assign_plan_to_user(4, 1, 5) ## assigning 5 plants id 1 to user id 3.
-    repository.assign_plan_to_user(4, 2, 1) ## assigning 1 plant id 2 to user id 3.
-    repository.assign_plan_to_user(4, 3, 3) ## assigning 3 plants id 3 to user id 3.
+    repository.assign_plan_to_user(4, 1, 5) ## assigning 5 plants id 1 to user id 4.
+    repository.assign_plan_to_user(4, 2, 1) ## assigning 1 plant id 2 to user id 4.
+    repository.assign_plan_to_user(4, 3, 3) ## assigning 3 plants id 3 to user id 4.
     find = repository.find_plants_by_user_id(4)
     assert find == [
                 {
@@ -34,3 +34,12 @@ def test_find_plants_by_user_id_two(db_connection):
                     'quantity': 3
                 }]
     
+def test_update_plant_quantity(db_connection):
+    repository = PlantsUserRepository(db_connection)
+    repository.assign_plan_to_user(5, 1, 5) ## assigning 5 plants id 1 to user id 5.
+    repository.update_plants_quantity(5, 1, 3) #updating the new quantity to 3
+    find = repository.find_plants_by_user_id(5)
+    assert find == [{
+                    'plant': Plants(1,"African sheepbush", "Pentzia incana", "plant_01.png", 2),
+                    'quantity': 3
+                }]
