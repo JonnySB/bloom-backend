@@ -101,6 +101,7 @@ INSERT INTO users (first_name, last_name, username, email, hashed_password, avat
 INSERT INTO users (first_name, last_name, username, email, hashed_password, avatar_url_string, address) VALUES ('user', '3', 'user3', 'user3@email.com', '$2b$12$6Og77D1E.ObtWMOX9dw//.AJpsNFAR6/6E1OHputlDCUFRytgEQGq', 'test_image3.png', 'test_address3');
 INSERT INTO users (first_name, last_name, username, email, hashed_password, avatar_url_string, address) VALUES ('user', '4', 'user4', 'user4@email.com', '$2b$12$6Og77D1E.ObtWMOX9dw//.AJpsNFAR6/6E1OHputlDCUFRytgEQGq', 'test_image4.png', 'test_address4');
 INSERT INTO users (first_name, last_name, username, email, hashed_password, avatar_url_string, address) VALUES ('user', '5', 'user5', 'user5@email.com', '$2b$12$6Og77D1E.ObtWMOX9dw//.AJpsNFAR6/6E1OHputlDCUFRytgEQGq', 'test_image5.png', 'test_address5');
+INSERT INTO users (first_name, last_name, username, email, hashed_password, avatar_url_string, address) VALUES ('user', '6', 'user6', 'user6@email.com', '$2b$12$6Og77D1E.ObtWMOX9dw//.AJpsNFAR6/6E1OHputlDCUFRytgEQGq', 'test_image6.png', 'test_address5');
 
 -- CREATE PLANTS SEED --
 INSERT INTO plants (common_name, latin_name, photo, watering_frequency) VALUES ('African sheepbush', 'Pentzia incana', 'plant_01.png', 2);

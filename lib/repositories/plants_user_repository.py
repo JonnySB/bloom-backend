@@ -26,3 +26,6 @@ class PlantsUserRepository:
     
     def update_plants_quantity(self, user_id, plant_id, new_quantity):
         self.connection.execute('UPDATE user_plants SET quantity = %s WHERE user_id = %s AND plant_id = %s', [new_quantity, user_id, plant_id])
+        
+    def delete_plants_from_user(self, user_id, plant_id):
+        self.connection.execute('DELETE FROM user_plants WHERE user_id = %s AND plant_id = %s', [user_id, plant_id])

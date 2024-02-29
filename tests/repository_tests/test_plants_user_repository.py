@@ -43,3 +43,14 @@ def test_update_plant_quantity(db_connection):
                     'plant': Plants(1,"African sheepbush", "Pentzia incana", "plant_01.png", 2),
                     'quantity': 3
                 }]
+    
+def test_delete_plant_from_user(db_connection):
+    repository = PlantsUserRepository(db_connection)
+    repository.assign_plan_to_user(6, 1, 1) ## assigning 1 plant id 1 to user id 6.
+    repository.assign_plan_to_user(6, 2, 1) ## assigning a second plant. 1 plant id 2 to user id 6.
+    repository.delete_plants_from_user(6, 1) ## delete plant 1
+    find = repository.find_plants_by_user_id(6) ## return a single plant instead 2 after deleting 
+    assert find == [{
+                    'plant': Plants(2,"Alder", "Alnus. Black alder", "plant_02.png", 1),
+                    'quantity': 1
+                }]
