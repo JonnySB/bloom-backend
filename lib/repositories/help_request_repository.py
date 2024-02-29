@@ -43,6 +43,7 @@ class HelpRequestRepository:
                 row["maxprice"]
             )
     
+
     # As an endpoint that when a user enters a substring of a title, they can find all the requests that have this substring
     # For example, if a user enters the word "water", then all the requests that has this substring will be returned
     def find_requests_by_title_substring(self, title):

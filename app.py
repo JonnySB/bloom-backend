@@ -9,6 +9,7 @@ from lib.models.user import User
 from lib.repositories.user_repository import UserRepository
 from lib.repositories.help_offer_repository import HelpOfferRepository
 from lib.models.help_offer import HelpOffer
+from lib.models.help_request import HelpRequest
 from lib.repositories.help_request_repository import HelpRequestRepository
 
 # load .env file variables see readme details
@@ -190,6 +191,93 @@ def help_offered_to_user(user_id):
             help_offered.append(offer_obj)
     return jsonify(help_offered)
     
+# Help Request Routes
+@app.route('/help_requests', methods=['GET'])
+def get_all_help_requests():
+    connection = get_flask_database_connection(app)
+    request_repository = HelpRequestRepository(connection)
+
+    all_requests = request_repository.all_requests()
+    if all_requests:
+        request_data = [
+            {
+                "id": request.id,
+                "date": request.date.strftime("%Y-%m-%d %H:%M:%S"),
+                "title": request.title,
+                "message": request.message,
+                "start_date": request.start_date.strftime("%Y-%m-%d"),
+                "end_date": request.end_date.strftime("%Y-%m-%d"),
+                "user_id": request.user_id,
+                "maxprice": request.maxprice
+            }
+            for request in all_requests
+        ]
+        return jsonify(request_data), 200
+    return jsonify({"message" : "Unable to find all requests"}), 400
+
+@app.route('/help_requests/<id>', methods=['GET'])
+def get_one_help_request_by_id(id):
+    connection = get_flask_database_connection(app)
+    request_repository = HelpRequestRepository(connection)
+    request = request_repository.find_request_by_id(id)
+    if request:
+        return jsonify({
+            "id": request.id,
+            "date": request.date.strftime("%Y-%m-%d %H:%M:%S"),
+            "title": request.title,
+            "message": request.message,
+            "start_date": request.start_date.strftime("%Y-%m-%d"),
+            "end_date": request.end_date.strftime("%Y-%m-%d"),
+            "user_id": request.user_id,
+            "maxprice": request.maxprice
+        }), 200
+    return jsonify({"message" : "Help Request not found"}), 400
+
+@app.route('/help_requests/user/<user_id>', methods=['GET'])
+@jwt_required()
+def get_all_requests_made_by_one_user(user_id):
+    connection = get_flask_database_connection(app)
+    request_repository = HelpRequestRepository(connection)
+    requests_by_user = request_repository.find_requests_by_user_id(user_id)
+
+    formatted_requests = []
+    for request in requests_by_user:
+        formatted_request = {
+            "id": request.id,
+            "date": request.date.strftime("%Y-%m-%d %H:%M:%S"),
+            "title": request.title,
+            "message": request.message,
+            "start_date": request.start_date.strftime("%Y-%m-%d"),
+            "end_date": request.end_date.strftime("%Y-%m-%d"),
+            "user_id": request.user_id,
+            "maxprice": request.maxprice
+        }
+        formatted_requests.append(formatted_request)
+        
+    if formatted_requests: 
+        return jsonify(formatted_requests), 200
+    else:
+        return jsonify({"message": "Help requests for current user not found"}), 400
+
+
+@app.route("/help_requests/create/<user_id>", methods=['POST'])
+@jwt_required()
+def create_help_request(user_id):
+    try:
+        connection = get_flask_database_connection(app)
+        request_repository = HelpRequestRepository(connection)
+        date = request.json.get('date')
+        title = request.json.get('title')
+        message = request.json.get('message')
+        start_date = request.json.get('start_date')
+        end_date = request.json.get("end_date")
+        maxprice = request.json.get("maxprice")
+        if None in (date, title, message, start_date, end_date, maxprice):
+            raise ValueError("All required fields must be filled")
+        request_repository.create_request(HelpRequest(None, date, title, message, start_date, end_date, user_id, maxprice))
+        return jsonify({"message" : "Help request created successfully"}), 200
+    except:
+        return jsonify({"message" : "Help request creation unsuccessful"}), 400
 
 if __name__ == "__main__":
     app.run(debug=True, port=int(os.environ.get("PORT", 5001)))
