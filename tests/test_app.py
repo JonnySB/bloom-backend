@@ -11,7 +11,7 @@ def test_user_authentication_successful_via_username(db_connection, test_web_add
     user_data = {"username_email": "user1", "password": "Password123!"}
     response = requests.post(f"http://{test_web_address}/token", json=user_data)
     response.json()
-    assert response.status_code == 200
+    assert response.status_code == 201
     assert response != {"msg": "Bad username or password"}
 
 
@@ -20,7 +20,7 @@ def test_user_authentication_successful_via_email(db_connection, test_web_addres
     user_data = {"username_email": "user1@email.com", "password": "Password123!"}
     response = requests.post(f"http://{test_web_address}/token", json=user_data)
     response.json()
-    assert response.status_code == 200
+    assert response.status_code == 201
     assert response != {"msg": "Bad username or password"}
 
 
@@ -75,7 +75,7 @@ def test_user_created_with_correct_details_with_address(
 
     response = requests.post(f"http://{test_web_address}/user/signup", json=user_data)
 
-    assert response.status_code == 200
+    assert response.status_code == 201
     assert response.json() == {"msg": "User created"}
 
 
@@ -95,7 +95,7 @@ def test_user_created_with_correct_details_with_blank_address(
 
     response = requests.post(f"http://{test_web_address}/user/signup", json=user_data)
 
-    assert response.status_code == 200
+    assert response.status_code == 201
     assert response.json() == {"msg": "User created"}
 
 
@@ -192,7 +192,7 @@ def test_get_user_details_for_valid_user_id(db_connection, test_web_address):
     db_connection.seed("seeds/bloom.sql")
     response = requests.get(f"http://{test_web_address}/user_details/1")
 
-    assert response.status_code == 200
+    assert response.status_code == 201
     assert response.json() == {
         "first_name": "user",
         "last_name": "1",
