@@ -46,6 +46,8 @@ def create_token():
 
 ### PLANTS ROUT ###
 
+
+#Show all plants in DB
 @app.route('/plants', methods=['GET'])
 def get_plants():
     connection = get_flask_database_connection(app)
@@ -60,34 +62,37 @@ def get_plants():
         }
     for plant in plants
     ]
-    return jsonify(data_json)
+    return jsonify(data_json), 200
 
 
-@app.route('/add_plant', methods=['POST'])
-def create_new_plant(user_id):
+#Show all plants by user
+@app.route('/plants/<user_id>', methods=['GET'])
+def get_plants_by_user(user_id):
     connection = get_flask_database_connection(app)
     repository = PlantsRepository(connection)
-    plant = Plants(None, request.form["common_name"], request.form["latin_name"], request.form["photo"], int(request.form["watering_frequency"]))
-    repository.create(plant)
-    return redirect(f'/plants')
+    plants_with_quantity = repository.find_plants_by_user_id(user_id)
+    user_plants = []
+    for plant_info in plants_with_quantity:
+        plant = plant_info["plant"]
+        quantity = plant_info["quantity"]
+        plant_obj = {
+            "id": plant.id,
+            "common_name": plant.common_name,
+            "latin_name": plant.latin_name,
+            "photo": plant.photo,
+            "watering_frequency": plant.watering_frequency,
+            "quantity": quantity
+        }
+        user_plants.append(plant_obj)
+
+    return jsonify(user_plants), 200
 
 
-# @app.route('/plants/<user_id>', methods=['GET'])
-# def get_plants():
-#     connection = get_flask_database_connection(app)
-#     repository = PlantsRepository(connection)
-#     plants = repository.all(user_id)
-#     data_json = [{
-#         "id" : plant.id,
-#         "common_name" : plant.common_name,
-#         "latin_name": plant.latin_name,
-#         "photo": plant.photo,
-#         "watering_frequency": plant.watering_frequency
-#         }
-#     for plant in plants
-#     ]
-#     return jsonify(data_json)
-
+#?
+@app.route('/add_plant', methods=['POST'])
+def  add_new_plant(user_id):
+    connection = get_flask_database_connection(app)
+    repository = PlantsRepository(connection)
 
 
 

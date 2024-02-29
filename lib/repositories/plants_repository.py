@@ -51,3 +51,22 @@ class PlantsRepository:
         self.connection.execute(query, values)
         
         return None
+    
+
+
+    def find_plants_by_user_id(self, user_id):
+        query = """
+        SELECT p.*, up.quantity
+        FROM plants p
+        JOIN user_plants up ON p.id = up.plant_id
+        WHERE up.user_id = %s
+        """
+        rows = self.connection.execute(query, [user_id])
+        plants_by_user = []
+        for row in rows:
+            plant_with_quantity = {
+                "plant": Plants(row["id"], row["common_name"], row["latin_name"], row["photo"], row["watering_frequency"]),
+                "quantity": row["quantity"]
+            }
+            plants_by_user.append(plant_with_quantity)
+        return plants_by_user
