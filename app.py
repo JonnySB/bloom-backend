@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 
 from lib.repositories.user_repository import UserRepository
 from lib.repositories.help_offer_repository import HelpOfferRepository
+from lib.models.help_offer import HelpOffer
 
 # load .env file variables see readme details
 load_dotenv()
@@ -56,6 +57,25 @@ def find_offers_by_user_id(user_id):
         user_offer_ids.append(offer.id)
 
     return jsonify({"user_offer_ids": user_offer_ids})
+
+#create a new help offer for a help request
+@app.route("/help_offers/<help_request_id>", methods=["POST"])
+def create_help_offer(help_request_id):
+
+    #connect to db and set up offer repository
+    connection = get_flask_database_connection(app)
+    offer_repository = HelpOfferRepository(connection)
+
+    #get data from request body and create help_offer in DB
+    user_id = request.json.get("user_id", None)
+    request_id = help_request_id
+    message = request.json.get("message", None)
+    bid = request.json.get("bid", None)
+    status = request.json.get("status", None)
+
+    new_offer = HelpOffer(None, user_id, request_id, message, bid, status)
+    offer_repository.create_offer(new_offer)
+    return 201
 
 if __name__ == "__main__":
     app.run(debug=True, port=int(os.environ.get("PORT", 5001)))
