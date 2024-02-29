@@ -47,6 +47,19 @@ def test_can_find_help_request_by_id(db_connection):
             50.0
         )
     
+def test_can_find_help_requests_by_user(db_connection):
+    db_connection.seed("seeds/bloom.sql")
+    repository = HelpRequestRepository(db_connection)
+    assert repository.find_requests_by_user_id(1) == [
+        HelpRequest(1, datetime.datetime(2023, 10, 19, 10, 23, 54),
+                    'title_01',
+                    'message requesting help',
+                    datetime.date(2023, 2, 1),
+                    datetime.date(2023, 3, 1),
+                    1,
+                    50.0)
+    ]
+    
 def test_create_new_help_request_with_fields(db_connection):
     db_connection.seed("seeds/bloom.sql")
     repository = HelpRequestRepository(db_connection)
