@@ -41,7 +41,6 @@ def create_token():
     return jsonify({"token": access_token, "user_id": user_id})
 
 
-##### MORE ROUTES GO HERE #####
 
 ### PLANTS ROUT ###
 
@@ -87,7 +86,45 @@ def get_plants_by_user(user_id):
     return jsonify(user_plants), 200
 
 
+@app.route('/plants/user/assign', methods=['POST'])
+@jwt_required()
+def assign_plant_to_user():
+    user_id = request.json.get("user_id")
+    plant_id = request.json.get("plant_id")
+    quantity = request.json.get("quantity", 1)  # Default quantity to 1 if not specified
 
+    connection = get_flask_database_connection(app)
+    repository = PlantsUserRepository(connection)
+    repository.assign_plant_to_user(user_id, plant_id, quantity)
+
+    return jsonify({"message": "Plant assigned successfully"}), 200
+
+
+@app.route('/plants/user/update', methods=['POST'])
+@jwt_required()
+def update_plants_quantity():
+    user_id = request.json.get("user_id")
+    plant_id = request.json.get("plant_id")
+    new_quantity = request.json.get("new_quantity")
+
+    connection = get_flask_database_connection(app)
+    repository = PlantsUserRepository(connection)
+    repository.update_plants_quantity(user_id, plant_id, new_quantity)
+
+    return jsonify({"message": "Plant quantity updated successfully"}), 200
+
+
+@app.route('/plants/user/delete', methods=['DELETE'])
+@jwt_required()
+def delete_plants_from_user():
+    user_id = request.json.get("user_id")
+    plant_id = request.json.get("plant_id")
+
+    connection = get_flask_database_connection(app)
+    repository = PlantsUserRepository(connection)
+    repository.delete_plants_from_user(user_id, plant_id)
+
+    return jsonify({"message": "Plant deleted successfully"}), 200
 
 
 if __name__ == "__main__":

@@ -5,7 +5,7 @@ class PlantsUserRepository:
         self.connection = connection
 
     # we will be using this function to assign which user has each plants. 
-    def assign_plan_to_user(self, user_id, plant_id, quantity):
+    def assign_plant_to_user(self, user_id, plant_id, quantity):
         self.connection.execute('INSERT INTO user_plants (user_id, plant_id, quantity) VALUES (%s, %s, %s)', [
             user_id, plant_id , quantity
         ])
