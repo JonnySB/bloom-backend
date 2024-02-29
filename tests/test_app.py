@@ -50,3 +50,15 @@ def test_user_authentication_unsucessful_with_no_corresponding_username(
     assert response.json() == {"msg": "Bad username or password"}
 
 
+
+def test_get_all_plants_by_username(
+    db_connection, test_web_address
+):
+    db_connection.seed("seeds/bloom.sql")
+    user_data = {"username_email": "user7", "password": "Password123!"}
+    response = requests.post(f"http://{test_web_address}/token", json=user_data)
+    assert response.status_code == 401
+    assert response.json() == {"msg": "Bad username or password"}
+
+
+

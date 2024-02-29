@@ -1,4 +1,3 @@
-from lib.models.plants_user import PlantsUser
 from lib.models.plants import Plants
 
 class PlantsUserRepository:
@@ -29,3 +28,6 @@ class PlantsUserRepository:
         
     def delete_plants_from_user(self, user_id, plant_id):
         self.connection.execute('DELETE FROM user_plants WHERE user_id = %s AND plant_id = %s', [user_id, plant_id])
+        
+        
+        

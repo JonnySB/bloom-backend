@@ -1,11 +1,10 @@
 import os
 from flask import Flask, jsonify, request
 from lib.database_connection import get_flask_database_connection
-from flask_jwt_extended import JWTManager, create_access_token
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required
 from dotenv import load_dotenv
 from lib.repositories.plants_repository import PlantsRepository
-from lib.models.plants import Plants
-
+from lib.repositories.plants_user_repository import PlantsUserRepository
 from lib.repositories.user_repository import UserRepository
 
 # load .env file variables see readme details
@@ -46,8 +45,7 @@ def create_token():
 
 ### PLANTS ROUT ###
 
-
-#Show all plants in DB
+# Show all plants in DB
 @app.route('/plants', methods=['GET'])
 def get_plants():
     connection = get_flask_database_connection(app)
@@ -65,11 +63,12 @@ def get_plants():
     return jsonify(data_json), 200
 
 
-#Show all plants by user
+# #Show all plants by user
 @app.route('/plants/<user_id>', methods=['GET'])
+@jwt_required()
 def get_plants_by_user(user_id):
     connection = get_flask_database_connection(app)
-    repository = PlantsRepository(connection)
+    repository = PlantsUserRepository(connection)
     plants_with_quantity = repository.find_plants_by_user_id(user_id)
     user_plants = []
     for plant_info in plants_with_quantity:
@@ -86,14 +85,6 @@ def get_plants_by_user(user_id):
         user_plants.append(plant_obj)
 
     return jsonify(user_plants), 200
-
-
-#?
-@app.route('/add_plant', methods=['POST'])
-def  add_new_plant(user_id):
-    connection = get_flask_database_connection(app)
-    repository = PlantsRepository(connection)
-
 
 
 
