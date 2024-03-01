@@ -548,3 +548,27 @@ def test_get_help_offered_to_user_no_auth(db_connection, test_web_address):
 
     response = requests.get(f"http://{test_web_address}/help_offers/help_requests/1")
     assert response.status_code == 401
+    
+    
+# TEST FOR MESSAGES 
+
+def test_get_all_messages(db_connection, test_web_address):
+    ChatRepository(db_connection)
+    login_data = {"username_email": "user1", "password": "Password123!"}
+    login_response = requests.post(f"http://{test_web_address}/token", json=login_data)
+    assert login_response.status_code == 201
+    access_token = login_response.json()["token"]
+
+    headers = {"Authorization": f"Bearer {access_token}"}
+    response = requests.get(f"http://{test_web_address}/messages/user/1", headers=headers)
+
+    assert response.status_code == 200
+    
+    # chats = {
+    #         "id": 1,
+    #         "recipient_id": 2,
+    #         "message": {"Hello user 02",},
+    #         "date": "2024-02-29",
+    #         "sender_id": 1,
+    #     }
+    # assert response.json() == chats

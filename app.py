@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from flask_cors import CORS
 from lib.repositories.plants_repository import PlantsRepository
 from lib.repositories.plants_user_repository import PlantsUserRepository
-
+from lib.repositories.chat_repository import ChatRepository
 from lib.models.user import User
 from lib.repositories.user_repository import UserRepository
 from lib.repositories.help_offer_repository import HelpOfferRepository
@@ -366,6 +366,32 @@ def delete_plants_from_user():
     repository.delete_plants_from_user(user_id, plant_id)
 
     return jsonify({"message": "Plant deleted successfully"}), 200
+
+
+
+
+#Show all chats by user
+@app.route('/messages/user/<user_id>', methods=['GET'])
+@jwt_required()
+def get_chats_by_user_id(user_id):
+    connection = get_flask_database_connection(app)
+    repository = ChatRepository(connection)
+    messages = repository.find_messages_by_userid(user_id)
+    all_messages = []
+    for message in messages:
+        message_obj = {
+            "id": message.id,
+            "recipient_id": message.recipient_id,
+            "message": {message.message},
+            "date": message.date,
+            "sender_id": message.sender_id,
+        }
+        all_messages.append(message_obj)
+
+    return jsonify(all_messages), 200
+
+
+
 
 
 if __name__ == "__main__":

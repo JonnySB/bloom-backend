@@ -8,7 +8,7 @@ class ChatRepository:
     
     
     def find_messages_by_userid(self, user_id):
-        rows = self._connection.execute('SELECT * from chats WHERE recipient_id=%s', [user_id])
+        rows = self._connection.execute('SELECT * from chats WHERE sender_id=%s', [user_id])
         messages = []
         for row in rows:
             message_text = row['message']
@@ -20,9 +20,12 @@ class ChatRepository:
         # the logic is we will only show messages that are 30 days old to avoid creating multiple messages in the database. if there is a chat between the users within the last 30 days, then we will append the new message to an array,
         #otherwise we will create a new message
 
-    def create(self, sender, receiver):
+    def create(self,receiver, sender):
         start_date = datetime.datetime.now() - datetime.timedelta(days=30)  # Calculate date 30 days ago from now
         start_date_str = start_date.strftime('%Y-%m-%d')
+        end_date = start_date + datetime.timedelta(days=30)  # Calculate date 30 days ago from now
+        end_date_str = end_date.strftime('%Y-%m-%d')
+        
         
         # Check for existing chat between the recipient and sender in the last 30 days
         query = '''SELECT * FROM chats WHERE recipient_id = %s AND sender_id = %s AND date >= %s'''
