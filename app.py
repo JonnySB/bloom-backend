@@ -382,8 +382,9 @@ def get_chats_by_user_id(user_id):
         message_obj = {
             "id": message.id,
             "recipient_id": message.recipient_id,
-            "message": {message.message},
-            "date": message.date,
+            "message": message.message,
+            "start_date": message.start_date,
+            "end_date" : message.end_date,
             "sender_id": message.sender_id,
         }
         all_messages.append(message_obj)

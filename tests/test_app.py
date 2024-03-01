@@ -552,7 +552,11 @@ def test_get_help_offered_to_user_no_auth(db_connection, test_web_address):
     
 # TEST FOR MESSAGES 
 
-def test_get_all_messages(db_connection, test_web_address):
+    
+
+
+def test_get_messages_by_user_id(db_connection, test_web_address):
+    db_connection.seed("seeds/bloom.sql")
     ChatRepository(db_connection)
     login_data = {"username_email": "user1", "password": "Password123!"}
     login_response = requests.post(f"http://{test_web_address}/token", json=login_data)
@@ -564,11 +568,12 @@ def test_get_all_messages(db_connection, test_web_address):
 
     assert response.status_code == 200
     
-    # chats = {
-    #         "id": 1,
-    #         "recipient_id": 2,
-    #         "message": {"Hello user 02",},
-    #         "date": "2024-02-29",
-    #         "sender_id": 1,
-    #     }
-    # assert response.json() == chats
+    chats = [{
+            "id": 1,
+            "recipient_id": 2,
+            "message": ["Hello user 02"],
+            "start_date": "Wed, 31 Jan 2024 00:00:00 GMT",
+            "end_date": "Fri, 01 Mar 2024 00:00:00 GMT",
+            "sender_id": 1,
+        }]
+    assert response.json() == chats
