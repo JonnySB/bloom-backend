@@ -45,12 +45,12 @@ def create_token():
         return jsonify({"msg": "Bad username or password"}), 401
 
     access_token = create_access_token(identity=user_id)
-    return jsonify({"token": access_token, "user_id": user_id})
+    return jsonify({"token": access_token, "user_id": user_id}), 201
 
 
 # Takes user details from POST request
 # creates user in database
-# return 200 if okay, otherwise 401
+# return 201 if okay, otherwise 401
 @app.route("/user/signup", methods=["POST"])
 def create_user():
     # NOTE - form validation must be handled on the front end to ensure that
@@ -71,7 +71,7 @@ def create_user():
             user_repository = UserRepository(connection)
             user_repository.add_user_to_db(user)
 
-            return jsonify({"msg": "User created"}), 200
+            return jsonify({"msg": "User created"}), 201
         except:
             return (
                 jsonify(

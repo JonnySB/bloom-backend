@@ -12,7 +12,7 @@ def test_user_authentication_successful_via_username(db_connection, test_web_add
     user_data = {"username_email": "user1", "password": "Password123!"}
     response = requests.post(f"http://{test_web_address}/token", json=user_data)
     response.json()
-    assert response.status_code == 200
+    assert response.status_code == 201
     assert response != {"msg": "Bad username or password"}
 
 
@@ -21,7 +21,7 @@ def test_user_authentication_successful_via_email(db_connection, test_web_addres
     user_data = {"username_email": "user1@email.com", "password": "Password123!"}
     response = requests.post(f"http://{test_web_address}/token", json=user_data)
     response.json()
-    assert response.status_code == 200
+    assert response.status_code == 201
     assert response != {"msg": "Bad username or password"}
 
 
@@ -73,7 +73,7 @@ def test_get_plants_by_user_id(db_connection, test_web_address):
     
     login_data = {"username_email": "user1", "password": "Password123!"}
     login_response = requests.post(f"http://{test_web_address}/token", json=login_data)
-    assert login_response.status_code == 200
+    assert login_response.status_code == 201
     access_token = login_response.json()["token"]
 
     headers = {"Authorization": f"Bearer {access_token}"}
@@ -98,7 +98,7 @@ def test_assign_plant_to_user(db_connection, test_web_address):
     db_connection.seed("seeds/bloom.sql")
     login_data = {"username_email": "user1", "password": "Password123!"}
     login_response = requests.post(f"http://{test_web_address}/token", json=login_data)
-    assert login_response.status_code == 200
+    assert login_response.status_code == 201
     access_token = login_response.json()["token"]
 
     headers = {"Authorization": f"Bearer {access_token}"}
@@ -113,7 +113,7 @@ def test_update_plant_quantity_for_user(db_connection, test_web_address):
     db_connection.seed("seeds/bloom.sql")
     login_data = {"username_email": "user1", "password": "Password123!"}
     login_response = requests.post(f"http://{test_web_address}/token", json=login_data)
-    assert login_response.status_code == 200
+    assert login_response.status_code == 201
     access_token = login_response.json()["token"]
 
     headers = {"Authorization": f"Bearer {access_token}"}
@@ -128,7 +128,7 @@ def test_delete_plant_from_user(db_connection, test_web_address):
     db_connection.seed("seeds/bloom.sql")
     login_data = {"username_email": "user1", "password": "Password123!"}
     login_response = requests.post(f"http://{test_web_address}/token", json=login_data)
-    assert login_response.status_code == 200
+    assert login_response.status_code == 201
     access_token = login_response.json()["token"]
 
     headers = {"Authorization": f"Bearer {access_token}"}
@@ -137,7 +137,9 @@ def test_delete_plant_from_user(db_connection, test_web_address):
 
     assert response.status_code == 200
     assert response.json() == {"message": "Plant deleted successfully"}
+
 # Help Request route tests:
+
 
 def test_get_all_help_requests_from_database(test_web_address, db_connection):
     db_connection.seed("seeds/bloom.sql")
@@ -154,7 +156,7 @@ def test_get_all_help_requests_from_database(test_web_address, db_connection):
             "start_date": "2023-02-01",
             "end_date": "2023-03-01",
             "user_id": 1,
-            "maxprice": 50.0
+            "maxprice": 50.0,
         },
         {
             "id": 2,
@@ -164,77 +166,79 @@ def test_get_all_help_requests_from_database(test_web_address, db_connection):
             "start_date": "2023-02-03",
             "end_date": "2023-03-03",
             "user_id": 2,
-            "maxprice": 60.0
+            "maxprice": 60.0,
         },
         {
-            "id" : 3, 
+            "id": 3,
             "date": "2023-10-19 10:23:54",
-            "title" : "t_03", 
-            "message" : "message requesting help 3", 
+            "title": "t_03",
+            "message": "message requesting help 3",
             "start_date": "2023-02-01",
-            "end_date": "2023-03-01", 
-            "user_id" : 1, 
-            "maxprice" :80.0
-        }
+            "end_date": "2023-03-01",
+            "user_id": 1,
+            "maxprice": 80.0,
+        },
     ]
 
     assert response.json() == expected_data
+
 
 def test_get_one_help_request_from_db(test_web_address, db_connection):
     db_connection.seed("seeds/bloom.sql")
 
     response = requests.get(f"http://{test_web_address}/help_requests/2")
-    
+
     assert response.status_code == 200
     expected_data = {
-            "id": 2,
-            "date": "2023-10-20 10:23:54",
-            "title": "title_02",
-            "message": "message requesting help 2",
-            "start_date": "2023-02-03",
-            "end_date": "2023-03-03",
-            "user_id": 2,
-            "maxprice": 60.0
-        }
+        "id": 2,
+        "date": "2023-10-20 10:23:54",
+        "title": "title_02",
+        "message": "message requesting help 2",
+        "start_date": "2023-02-03",
+        "end_date": "2023-03-03",
+        "user_id": 2,
+        "maxprice": 60.0,
+    }
     assert response.json() == expected_data
 
 
 def test_get_all_requests_by_one_user(test_web_address, db_connection):
     db_connection.seed("seeds/bloom.sql")
-    HelpRequestRepository(db_connection)
 
     login_data = {"username_email": "user1", "password": "Password123!"}
     login_response = requests.post(f"http://{test_web_address}/token", json=login_data)
-    assert login_response.status_code == 200
+    assert login_response.status_code == 201
     access_token = login_response.json()["token"]
 
     headers = {"Authorization": f"Bearer {access_token}"}
-    response = requests.get(f"http://{test_web_address}/help_requests/user/1", headers=headers)
+    response = requests.get(
+        f"http://{test_web_address}/help_requests/user/1", headers=headers
+    )
 
     assert response.status_code == 200
     expected_data = [
         {
-            "id" : 1, 
-            "date" : "2023-10-19 10:23:54", 
-            "title" : "title_01", 
-            "message" : "message requesting help", 
-            "start_date" : "2023-02-01", 
-            "end_date" : "2023-03-01", 
-            "user_id" : 1, 
-            "maxprice" : 50.0
+            "id": 1,
+            "date": "2023-10-19 10:23:54",
+            "title": "title_01",
+            "message": "message requesting help",
+            "start_date": "2023-02-01",
+            "end_date": "2023-03-01",
+            "user_id": 1,
+            "maxprice": 50.0,
         },
         {
-            "id" : 3, 
+            "id": 3,
             "date": "2023-10-19 10:23:54",
-            "title" : "t_03", 
-            "message" : "message requesting help 3", 
+            "title": "t_03",
+            "message": "message requesting help 3",
             "start_date": "2023-02-01",
-            "end_date": "2023-03-01", 
-            "user_id" : 1, 
-            "maxprice" :80.0
-        }
+            "end_date": "2023-03-01",
+            "user_id": 1,
+            "maxprice": 80.0,
+        },
     ]
-    
+
     assert response.json() == expected_data
 
 
@@ -243,44 +247,55 @@ def test_create_help_request(test_web_address, db_connection):
 
     login_data = {"username_email": "user1", "password": "Password123!"}
     login_response = requests.post(f"http://{test_web_address}/token", json=login_data)
-    assert login_response.status_code == 200
+    assert login_response.status_code == 201
     access_token = login_response.json()["token"]
 
     headers = {"Authorization": f"Bearer {access_token}"}
     new_request = {
-        "date": "2024-03-12 13:14:15", 
-        "title" : "title_03",
-        "message" : "message requesting help 3",
-        "start_date" : "2024-03-15",
-        "end_date" : "2024-03-18",
-        "maxprice": 40.0
+        "date": "2024-03-12 13:14:15",
+        "title": "title_03",
+        "message": "message requesting help 3",
+        "start_date": "2024-03-15",
+        "end_date": "2024-03-18",
+        "maxprice": 40.0,
     }
     # response = requests.post(f"http://{test_web_address}/help_requests/create/1", json=new_request)
-    response = requests.post(f"http://{test_web_address}/help_requests/create/1", json=new_request, headers=headers)
+    response = requests.post(
+        f"http://{test_web_address}/help_requests/create/1",
+        json=new_request,
+        headers=headers,
+    )
     assert response.status_code == 200
-    assert response.json() == {"message" : "Help request created successfully"}
+    assert response.json() == {"message": "Help request created successfully"}
 
-def test_unsuccessful_create_help_request_without_maxprice(test_web_address, db_connection):
+
+def test_unsuccessful_create_help_request_without_maxprice(
+    test_web_address, db_connection
+):
     db_connection.seed("seeds/bloom.sql")
 
     login_data = {"username_email": "user1", "password": "Password123!"}
     login_response = requests.post(f"http://{test_web_address}/token", json=login_data)
-    assert login_response.status_code == 200
+    assert login_response.status_code == 201
     access_token = login_response.json()["token"]
 
     headers = {"Authorization": f"Bearer {access_token}"}
     new_request = {
-        "date": "2024-03-12 13:14:15", 
-        "title" : "title_03",
-        "message" : "message requesting help 3",
-        "start_date" : "2024-03-15",
-        "end_date" : "2024-03-18",
-
+        "date": "2024-03-12 13:14:15",
+        "title": "title_03",
+        "message": "message requesting help 3",
+        "start_date": "2024-03-15",
+        "end_date": "2024-03-18",
     }
     # response = requests.post(f"http://{test_web_address}/help_requests/create/1", json=new_request)
-    response = requests.post(f"http://{test_web_address}/help_requests/create/1", json=new_request, headers=headers)
+    response = requests.post(
+        f"http://{test_web_address}/help_requests/create/1",
+        json=new_request,
+        headers=headers,
+    )
     assert response.status_code == 400
-    assert response.json() == {"message" : "Help request creation unsuccessful"}
+    assert response.json() == {"message": "Help request creation unsuccessful"}
+
 
 ###############################
 ###### test /user/signup ######
@@ -303,7 +318,7 @@ def test_user_created_with_correct_details_with_address(
 
     response = requests.post(f"http://{test_web_address}/user/signup", json=user_data)
 
-    assert response.status_code == 200
+    assert response.status_code == 201
     assert response.json() == {"msg": "User created"}
 
 
@@ -323,7 +338,7 @@ def test_user_created_with_correct_details_with_blank_address(
 
     response = requests.post(f"http://{test_web_address}/user/signup", json=user_data)
 
-    assert response.status_code == 200
+    assert response.status_code == 201
     assert response.json() == {"msg": "User created"}
 
 
@@ -439,85 +454,16 @@ def test_return_user_not_found_for_invalid_user_id(db_connection, test_web_addre
     assert response.json() == {"msg": "User not found"}
 
 
-'''
+"""
 ============================
 help_offer route tests
 ============================
-'''
+"""
 
-def test_find_offers_by_user_id(
-        db_connection, test_web_address
-):
+
+def test_find_offers_by_user_id(db_connection, test_web_address):
     db_connection.seed("seeds/bloom.sql")
     response = requests.get(f"http://{test_web_address}/help_offers/1")
-    assert response.status_code == 200
-    assert response.json() == [
-    {
-        "bid": 50.0,
-        "id": 1,
-        "message": "Offering help",
-        "request_id": 1,
-        "status": "pending",
-        "user_id": 1
-    }
-    ]
-
-
-def test_create_offer(
-        db_connection, test_web_address
-):
-    db_connection.seed("seeds/bloom.sql")
-    user_data = {"username_email": "user1", "password": "Password123!"}
-    login_response = requests.post(f"http://{test_web_address}/token", json=user_data)
-    token = login_response.json()["token"]
-    offer_details = {
-        "user_id": 1,
-        "message": 'I can help',
-        "bid": 10.0,
-        "status": "pending"
-    }
-    response = requests.post(f"http://{test_web_address}/help_offers/1", json=offer_details, headers={"Authorization":f"Bearer {token}"})
-    assert response.status_code == 201
-    assert response.json() == {"msg":"Help Offer Created"}
-
-def test_create_offer_missing_info(
-        db_connection, test_web_address
-):
-    db_connection.seed("seeds/bloom.sql")
-    user_data = {"username_email": "user1", "password": "Password123!"}
-    login_response = requests.post(f"http://{test_web_address}/token", json=user_data)
-    token = login_response.json()["token"]
-    offer_details = {
-        "user_id": 1,
-        "message": None,
-        "bid": 10.0,
-        "status": "pending"
-    }
-    response = requests.post(f"http://{test_web_address}/help_offers/1", json=offer_details, headers={"Authorization":f"Bearer {token}"})
-    assert response.status_code == 400
-    assert response.json() == {"msg":"Help offer creation unsuccessful"}
-
-def test_create_offer_no_auth(
-        db_connection, test_web_address
-):
-    db_connection.seed("seeds/bloom.sql")
-    offer_details = {
-        "user_id": 1,
-        "message": None,
-        "bid": 10.0,
-        "status": "pending"
-    }
-    response = requests.post(f"http://{test_web_address}/help_offers/1", json=offer_details)
-    assert response.status_code == 401
-
-def test_get_help_offered_to_user(
-        db_connection, test_web_address
-):
-    db_connection.seed("seeds/bloom.sql")
-    user_data = {"username_email": "user1", "password": "Password123!"}
-    login_response = requests.post(f"http://{test_web_address}/token", json=user_data)
-    token = login_response.json()["token"]
-    response = requests.get(f"http://{test_web_address}/help_offers/help_requests/1", headers={"Authorization":f"Bearer {token}"})
     assert response.status_code == 200
     assert response.json() == [
         {
@@ -526,14 +472,79 @@ def test_get_help_offered_to_user(
             "message": "Offering help",
             "request_id": 1,
             "status": "pending",
-            "user_id": 1
+            "user_id": 1,
         }
     ]
 
-def test_get_help_offered_to_user_no_auth(
-        db_connection, test_web_address
-):
+
+def test_create_offer(db_connection, test_web_address):
     db_connection.seed("seeds/bloom.sql")
-    
+    user_data = {"username_email": "user1", "password": "Password123!"}
+    login_response = requests.post(f"http://{test_web_address}/token", json=user_data)
+    token = login_response.json()["token"]
+    offer_details = {
+        "user_id": 1,
+        "message": "I can help",
+        "bid": 10.0,
+        "status": "pending",
+    }
+    response = requests.post(
+        f"http://{test_web_address}/help_offers/1",
+        json=offer_details,
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert response.status_code == 201
+    assert response.json() == {"msg": "Help Offer Created"}
+
+
+def test_create_offer_missing_info(db_connection, test_web_address):
+    db_connection.seed("seeds/bloom.sql")
+    user_data = {"username_email": "user1", "password": "Password123!"}
+    login_response = requests.post(f"http://{test_web_address}/token", json=user_data)
+    token = login_response.json()["token"]
+    offer_details = {"user_id": 1, "message": None, "bid": 10.0, "status": "pending"}
+    response = requests.post(
+        f"http://{test_web_address}/help_offers/1",
+        json=offer_details,
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert response.status_code == 400
+    assert response.json() == {"msg": "Help offer creation unsuccessful"}
+
+
+def test_create_offer_no_auth(db_connection, test_web_address):
+    db_connection.seed("seeds/bloom.sql")
+    offer_details = {"user_id": 1, "message": None, "bid": 10.0, "status": "pending"}
+    response = requests.post(
+        f"http://{test_web_address}/help_offers/1", json=offer_details
+    )
+    assert response.status_code == 401
+
+
+def test_get_help_offered_to_user(db_connection, test_web_address):
+    db_connection.seed("seeds/bloom.sql")
+    user_data = {"username_email": "user1", "password": "Password123!"}
+    login_response = requests.post(f"http://{test_web_address}/token", json=user_data)
+    token = login_response.json()["token"]
+    response = requests.get(
+        f"http://{test_web_address}/help_offers/help_requests/1",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert response.status_code == 200
+    assert response.json() == [
+        {
+            "bid": 50.0,
+            "id": 1,
+            "message": "Offering help",
+            "request_id": 1,
+            "status": "pending",
+            "user_id": 1,
+        }
+    ]
+
+
+def test_get_help_offered_to_user_no_auth(db_connection, test_web_address):
+    db_connection.seed("seeds/bloom.sql")
+
     response = requests.get(f"http://{test_web_address}/help_offers/help_requests/1")
     assert response.status_code == 401
