@@ -4,7 +4,8 @@ from flask.helpers import get_flashed_messages
 from lib.database_connection import get_flask_database_connection
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required
 from dotenv import load_dotenv
-
+from lib.repositories.plants_repository import PlantsRepository
+from lib.repositories.plants_user_repository import PlantsUserRepository
 from lib.models.user import User
 from lib.repositories.user_repository import UserRepository
 from lib.repositories.help_offer_repository import HelpOfferRepository
@@ -278,6 +279,91 @@ def create_help_request(user_id):
         return jsonify({"message" : "Help request created successfully"}), 200
     except:
         return jsonify({"message" : "Help request creation unsuccessful"}), 400
+
+### PLANTS ROUT ###
+
+# Show all plants in DB
+@app.route('/plants', methods=['GET'])
+def get_plants():
+    connection = get_flask_database_connection(app)
+    repository = PlantsRepository(connection)
+    plants = repository.all()
+    data_json = [{
+        "id" : plant.id,
+        "common_name" : plant.common_name,
+        "latin_name": plant.latin_name,
+        "photo": plant.photo,
+        "watering_frequency": plant.watering_frequency
+        }
+    for plant in plants
+    ]
+    return jsonify(data_json), 200
+
+
+#Show all plants by user
+@app.route('/plants/user/<user_id>', methods=['GET'])
+@jwt_required()
+def get_plants_by_user(user_id):
+    connection = get_flask_database_connection(app)
+    repository = PlantsUserRepository(connection)
+    plants_with_quantity = repository.find_plants_by_user_id(user_id)
+    user_plants = []
+    for plant_info in plants_with_quantity:
+        plant = plant_info["plant"]
+        quantity = plant_info["quantity"]
+        plant_obj = {
+            "id": plant.id,
+            "common_name": plant.common_name,
+            "latin_name": plant.latin_name,
+            "photo": plant.photo,
+            "watering_frequency": plant.watering_frequency,
+            "quantity": quantity
+        }
+        user_plants.append(plant_obj)
+
+    return jsonify(user_plants), 200
+
+
+@app.route('/plants/user/assign', methods=['POST'])
+@jwt_required()
+def assign_plant_to_user():
+    user_id = request.json.get("user_id")
+    plant_id = request.json.get("plant_id")
+    quantity = request.json.get("quantity", 1)  # Default quantity to 1 if not specified
+
+    connection = get_flask_database_connection(app)
+    repository = PlantsUserRepository(connection)
+    repository.assign_plant_to_user(user_id, plant_id, quantity)
+
+    return jsonify({"message": "Plant assigned successfully"}), 200
+
+
+@app.route('/plants/user/update', methods=['POST'])
+@jwt_required()
+def update_plants_quantity():
+    user_id = request.json.get("user_id")
+    plant_id = request.json.get("plant_id")
+    new_quantity = request.json.get("new_quantity")
+
+    connection = get_flask_database_connection(app)
+    repository = PlantsUserRepository(connection)
+    repository.update_plants_quantity(user_id, plant_id, new_quantity)
+
+    return jsonify({"message": "Plant quantity updated successfully"}), 200
+
+
+@app.route('/plants/user/delete', methods=['DELETE'])
+@jwt_required()
+def delete_plants_from_user():
+    user_id = request.json.get("user_id")
+    plant_id = request.json.get("plant_id")
+
+    connection = get_flask_database_connection(app)
+    repository = PlantsUserRepository(connection)
+    repository.delete_plants_from_user(user_id, plant_id)
+
+    return jsonify({"message": "Plant deleted successfully"}), 200
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=int(os.environ.get("PORT", 5001)))
