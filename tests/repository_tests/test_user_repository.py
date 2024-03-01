@@ -59,6 +59,16 @@ def test_get_all_users(db_connection):
             "test_image5.png",
             "test_address5",
         ),
+         User(
+            6,
+            "user",
+            "6",
+            "user6",
+            "user6@email.com",
+            "Password123!",
+            "test_image6.png",
+            "test_address5",
+        ),
     ]
 
 
@@ -68,8 +78,8 @@ def test_create_user(db_connection):
     db_connection.seed("seeds/bloom.sql")
     repository = UserRepository(db_connection)
 
-    # id updated to correct (6) when reconstructed from db
-    user = User(None, "user", "6", "user6", "user6@email.com", "Password123!")
+    # id updated to correct (7) when reconstructed from db
+    user = User(None, "user", "7", "user7", "user7@email.com", "Password123!")
     repository.add_user_to_db(user)
 
     users = repository.get_all_users()
@@ -124,7 +134,17 @@ def test_create_user(db_connection):
             "test_image5.png",
             "test_address5",
         ),
-        User(6, "user", "6", "user6", "user6@email.com", "Password123!"),
+        User(
+            6,
+            "user",
+            "6",
+            "user6",
+            "user6@email.com",
+            "Password123!",
+            "test_image6.png",
+            "test_address5",
+        ),
+        User(7, "user", "7", "user7", "user7@email.com", "Password123!"),
     ]
 
 
@@ -161,22 +181,22 @@ def test_find_user_by_email(db_connection):
 def test_correct_password_returns_user_id(db_connection):
     db_connection.seed("seeds/bloom.sql")
     repository = UserRepository(db_connection)
-    user = User(None, "user", "6", "user6", "user6@email.com", "Password123!")
+    user = User(None, "user", "7", "user7", "user7@email.com", "Password123!")
 
     repository.add_user_to_db(user)
-    user_id = repository.check_username_or_email_and_password("user6", "Password123!")
-    assert user_id == 6
+    user_id = repository.check_username_or_email_and_password("user7", "Password123!")
+    assert user_id == 7
 
 
 # tests that when called with an incorrect password, returns false
 def test_incorrect_password_returns_false(db_connection):
     db_connection.seed("seeds/bloom.sql")
     repository = UserRepository(db_connection)
-    user = User(None, "user", "6", "user6", "user6@email.com", "Password123!")
+    user = User(None, "user", "7", "user7", "user7@email.com", "Password123!")
 
     repository.add_user_to_db(user)
     is_valid_password = repository.check_username_or_email_and_password(
-        "user6", "dawdawd"
+        "user7", "dawdawd"
     )
     assert is_valid_password == False
 

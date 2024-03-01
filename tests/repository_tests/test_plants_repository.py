@@ -59,4 +59,6 @@ def test_update(db_connection):
         Plants(3, 'Almond', 'Prunus dulcis', 'plant_03.png', 1),
         Plants(1, 'New Name', 'Pentzia incana', 'plant_01.png', 2)
     ]
-        
+
+
+
