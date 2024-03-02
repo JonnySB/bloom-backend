@@ -19,6 +19,10 @@ class ChatRepository:
     
         # the logic is we will only show messages that are 30 days old to avoid creating multiple messages in the database. if there is a chat between the users within the last 30 days, then we will append the new message to an array,
         #otherwise we will create a new message
+    
+    def find_message_by_chat_id(self, chat_id):
+           message = self._connection.execute('SELECT * from chats WHERE id=%s', [chat_id])
+           return message
 
 
 

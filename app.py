@@ -14,16 +14,25 @@ from lib.repositories.help_offer_repository import HelpOfferRepository
 from lib.models.help_offer import HelpOffer
 from lib.models.help_request import HelpRequest
 from lib.repositories.help_request_repository import HelpRequestRepository
-
+from datetime import timedelta
 # load .env file variables see readme details
+
+#dependecies for livechat
+from flask_socketio import SocketIO, emit, join_room , leave_room
+
+
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)
+
 
 # Token Setup
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(days=1)  # I JUST ADD THIS FOR NOW SO THE TOKEN DON"T KEEP EXIRING PLEASE REMOVE LATER.
+CORS(app, resources={r"/messages/*": {"origins": "http://localhost:5173"}}, supports_credentials=True)
+socketio = SocketIO(app, cors_allowed_origins="*", logger=True, engineio_logger=True) # we are allowing all origings just for development 
 jwt = JWTManager(app)
+
 
 
 # Takes username / email and password from POST request
@@ -388,12 +397,40 @@ def get_chats_by_user_id(user_id):
             "sender_id": message.sender_id,
         }
         all_messages.append(message_obj)
-
+    socketio.emit('new_messages', {'messages': all_messages}, room=user_id)
     return jsonify(all_messages), 200
 
 
+@socketio.on('join')
+def on_join(data):
+    user_id = data['user_id']
+    join_room(user_id)
+    emit('joined_room', {'message': 'You have joined the room.'}, room=user_id)
+
+@socketio.on('leave')
+def on_leave(data):
+    user_id = data['user_id']
+    leave_room(user_id)
+    emit('left_room', {'message': 'You have left the room.'}, room=user_id)
+
+@socketio.on('data')
+def handle_message(data):
+    print("data from the front end", str(data))
+    emit("data", {
+        'data': data, 'id': request.sid
+    }, broadcast=True)
+
+
+
+@app.route('/messages/<chat_id>', methods=['GET'])
+@jwt_required()
+def get_chats_by_chat_id(chat_id):
+    connection = get_flask_database_connection(app)
+    repository = ChatRepository(connection)
+    messages = repository.find_message_by_chat_id(chat_id)
+    return jsonify(messages), 200
 
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=int(os.environ.get("PORT", 5001)))
+    socketio.run(app, debug=True, port=int(os.environ.get("PORT", 5001)))
