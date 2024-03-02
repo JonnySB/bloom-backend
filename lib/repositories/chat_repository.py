@@ -26,15 +26,15 @@ class ChatRepository:
 
 
 
-    def create(self, receiver, sender):
+    def create(self, receiver, sender, message):
         # Today's date for comparison
-        today_str = datetime.now().strftime('%Y-%m-%d')
+        today_str = datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
 
         # Calculate dates 30 days before and after today
         start_date = datetime.now() - timedelta(days=30)
-        start_date_str = start_date.strftime('%Y-%m-%d')
+        start_date_str = start_date.strftime('%Y-%m-%dT%H:%M:%S')
         end_date = datetime.now() + timedelta(days=30)  # If you're setting a future end_date based on today
-        end_date_str = end_date.strftime('%Y-%m-%d')
+        end_date_str = end_date.strftime('%Y-%m-%dT%H:%M:%S')
 
         # Check for existing chat between the recipient and sender where today is within the start and end dates
         query = '''SELECT * FROM chats WHERE recipient_id = %s AND sender_id = %s AND %s BETWEEN start_date AND end_date'''
@@ -43,11 +43,11 @@ class ChatRepository:
         if not existing_chat:
             # If no messages in the last 30 days, insert the new message
             insert_query = '''INSERT INTO chats (recipient_id, message, start_date, end_date, sender_id) VALUES (%s, ARRAY[%s], %s, %s, %s) RETURNING *;'''
-            return self._connection.execute(insert_query, [receiver.id, receiver.message, start_date_str, end_date_str, sender.id])
+            return self._connection.execute(insert_query, [receiver.id, message, start_date_str, end_date_str, sender.id])
         else:
             # If there is an existing chat, append the new message to the existing 'message' field
             update_query = '''UPDATE chats SET message = array_append(message, %s) WHERE recipient_id = %s AND sender_id = %s AND %s BETWEEN start_date AND end_date RETURNING *;'''
-            return self._connection.execute(update_query, [receiver.message, receiver.id, sender.id, today_str])
+            return self._connection.execute(update_query, [message, receiver.id, sender.id, today_str])
 
 
 

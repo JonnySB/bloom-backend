@@ -19,9 +19,9 @@ from datetime import timedelta
 
 #dependecies for livechat
 from flask_socketio import SocketIO, emit, join_room , leave_room
-
-
 load_dotenv()
+
+
 
 app = Flask(__name__)
 
@@ -397,19 +397,22 @@ def get_chats_by_user_id(user_id):
             "sender_id": message.sender_id,
         }
         all_messages.append(message_obj)
-    socketio.emit('new_messages', {'messages': all_messages}, room=user_id)
+    
     return jsonify(all_messages), 200
 
 
-@app.route('/messages/create/<user_id>', methods=['POST'])
+@app.route('/messages', methods=['POST'])
 @jwt_required()
-def post_messages_methond(user_id):
+def post_messages_methond():
     connection = get_flask_database_connection(app)
     repository = ChatRepository(connection)
-    message = request.json.get('message')
-    receiver_id = request.json.get('receiver_id')
-    messages = repository.create(user_id, message)
-
+    get_message = request.json.get('content')
+    receiver_id = request.json.get('receiverId')
+    user_id = request.json.get('userId')
+    print(get_message, receiver_id, user_id)
+    send_message = repository.create(user_id, receiver_id, get_message)
+    socketio.emit('new_messages', {'messages': send_message}, room=user_id)
+    return jsonify({"message": "Message sent sucefully"}), 200
 
 
 @socketio.on('join')
@@ -424,12 +427,6 @@ def on_leave(data):
     leave_room(user_id)
     emit('left_room', {'message': 'You have left the room.'}, room=user_id)
 
-@socketio.on('data')
-def handle_message(data):
-    print("data from the front end", str(data))
-    emit("data", {
-        'data': data, 'id': request.sid
-    }, broadcast=True)
 
 
 
