@@ -409,8 +409,8 @@ def post_messages_methond():
     get_message = request.json.get('content')
     receiver_id = request.json.get('receiverId')
     user_id = request.json.get('userId')
-    print(get_message, receiver_id, user_id)
     send_message = repository.create(user_id, receiver_id, get_message)
+
     socketio.emit('new_messages', {'messages': send_message}, room=user_id)
     return jsonify({"message": "Message sent sucefully"}), 200
 
