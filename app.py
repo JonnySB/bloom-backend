@@ -387,7 +387,9 @@ def get_chats_by_user_id(user_id):
     repository = ChatRepository(connection)
     messages = repository.find_messages_by_userid(user_id)
     all_messages = []
-    for message in messages:
+    for message_info in messages:
+        receiver_username = message_info['receiver_username']
+        message = message_info['message']
         message_obj = {
             "id": message.id,
             "recipient_id": message.recipient_id,
@@ -395,6 +397,7 @@ def get_chats_by_user_id(user_id):
             "start_date": message.start_date,
             "end_date" : message.end_date,
             "sender_id": message.sender_id,
+            "receiver_username" : receiver_username
         }
         all_messages.append(message_obj)
     
@@ -408,8 +411,10 @@ def post_messages_methond():
     repository = ChatRepository(connection)
     get_message = request.json.get('content')
     receiver_id = request.json.get('receiverId')
+    receiver_username = request.json.get('receiver_username')
+    print(receiver_username,receiver_id)
     user_id = request.json.get('userId')
-    send_message = repository.create(user_id, receiver_id, get_message)
+    send_message = repository.create(user_id, receiver_id, get_message, receiver_username)
 
     socketio.emit('new_messages', {'messages': send_message}, room=user_id)
     return jsonify({"message": "Message sent sucefully"}), 200

@@ -6,6 +6,7 @@ class Chat:
         self.start_date = start_date
         self.end_date = end_date
         self.sender_id = sender_id
+     
     
     # Below I am compar9jgn chat with itself if not then I compare with another object type. 
     # ensuring that that two Chat objects are considered equal if and only if all their corresponding attributes are equal. 
