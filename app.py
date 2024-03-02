@@ -401,6 +401,17 @@ def get_chats_by_user_id(user_id):
     return jsonify(all_messages), 200
 
 
+@app.route('/messages/create/<user_id>', methods=['POST'])
+@jwt_required()
+def post_messages_methond(user_id):
+    connection = get_flask_database_connection(app)
+    repository = ChatRepository(connection)
+    message = request.json.get('message')
+    receiver_id = request.json.get('receiver_id')
+    messages = repository.create(user_id, message)
+
+
+
 @socketio.on('join')
 def on_join(data):
     user_id = data['user_id']
