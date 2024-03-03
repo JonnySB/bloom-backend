@@ -15,6 +15,7 @@ from lib.models.help_offer import HelpOffer
 from lib.models.help_request import HelpRequest
 from lib.repositories.help_request_repository import HelpRequestRepository
 from datetime import timedelta
+from flask_cors import cross_origin
 # load .env file variables see readme details
 
 #dependecies for livechat
@@ -102,6 +103,7 @@ def create_user():
 
 # Takes user_id and returns user_details
 @app.route("/user_details/<id>")
+@cross_origin() # WE NEED TO PASS THE CORS ORIGIN IN ORDER TO ENABLE THE BROWSER TO MAKE REQUESTS FROM THE ORIGIN DOMAIN
 def get_user_details(id):
     connection = get_flask_database_connection(app)
     user_repository = UserRepository(connection)

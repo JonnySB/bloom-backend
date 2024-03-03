@@ -18,9 +18,9 @@ class ChatRepository:
                 JOIN users ru ON c.recipient_id = ru.id 
                 JOIN users su ON c.sender_id = su.id 
             WHERE 
-                c.sender_id = %s
+                c.sender_id = %s OR c.recipient_id = %s
         '''
-        rows = self._connection.execute(query, [user_id])
+        rows = self._connection.execute(query, [user_id, user_id])
         messages = []
         for row in rows:
             message_text = row['message']
