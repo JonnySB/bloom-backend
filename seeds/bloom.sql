@@ -63,6 +63,7 @@ CREATE TABLE chats (
     start_date TIMESTAMP WITHOUT TIME ZONE,
     end_date TIMESTAMP WITHOUT TIME ZONE,
     receiver_username VARCHAR(255),
+    sender_username VARCHAR(255),
     sender_id INT NOT NULL, 
     CONSTRAINT fk_user_sender FOREIGN KEY (sender_id) REFERENCES users (id),
     CONSTRAINT fk_user_recipient FOREIGN KEY (recipient_id) REFERENCES users (id)
@@ -117,8 +118,8 @@ INSERT INTO user_plants (user_id, plant_id, quantity) VALUES (1, 1, 2);
 INSERT INTO user_plants (user_id, plant_id, quantity) VALUES (2, 2, 2);
 -- INSERT INTO user_plants (user_id, plant_id, quantity) VALUES (1, 2, 2);
 
-INSERT INTO chats (recipient_id, message, start_date, end_date, receiver_username, sender_id) VALUES (2, '{"Hello user 02"}', '2024-01-31','2024-03-01', 'user02', 1);
-INSERT INTO chats (recipient_id, message, start_date, end_date, receiver_username, sender_id) VALUES (1, '{"Hello user 01"}', '2024-01-31','2024-03-01', 'user01',  2);
+INSERT INTO chats (recipient_id, message, start_date, end_date, receiver_username, sender_username, sender_id) VALUES (2, '{"Hello user 02"}', '2024-01-31','2024-03-01', 'user02', 'user01', 1);
+INSERT INTO chats (recipient_id, message, start_date, end_date, receiver_username,sender_username, sender_id) VALUES (1, '{"Hello user 01"}', '2024-01-31','2024-03-01', 'user01', 'user02', 2);
 -- INSERT INTO chats (recipient_id, message, date, sender_id) VALUES (2, '{"Hello user 02 one more time"}', NOW(), 1);
 
 

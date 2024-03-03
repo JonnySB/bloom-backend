@@ -388,6 +388,7 @@ def get_chats_by_user_id(user_id):
     all_messages = []
     for message_info in messages:
         receiver_username = message_info['receiver_username']
+        sender_username = message_info['sender_username']
         message = message_info['message']
         message_obj = {
             "id": message.id,
@@ -396,7 +397,8 @@ def get_chats_by_user_id(user_id):
             "start_date": message.start_date,
             "end_date" : message.end_date,
             "sender_id": message.sender_id,
-            "receiver_username" : receiver_username
+            "receiver_username" : receiver_username,
+            "sender_username" : sender_username
         }
         all_messages.append(message_obj)
     
@@ -405,14 +407,15 @@ def get_chats_by_user_id(user_id):
 
 @app.route('/messages', methods=['POST'])
 @jwt_required()
-def post_messages_methond():
+def post_messages():
     connection = get_flask_database_connection(app)
     repository = ChatRepository(connection)
     get_message = request.json.get('content')
     receiver_id = request.json.get('receiverId')
     receiver_username = request.json.get('receiver_username')
+    sender_username = request.json.get('receiver_username')
     user_id = request.json.get('userId')
-    send_message = repository.create(user_id, receiver_id, get_message, receiver_username)
+    send_message = repository.create(user_id, receiver_id, get_message, receiver_username, sender_username)
 
     socketio.emit('new_messages', {'messages': send_message}, room=user_id)
     return jsonify({"message": "Message sent sucefully"}), 200

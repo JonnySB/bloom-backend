@@ -8,15 +8,30 @@ class ChatRepository:
      
     
     def find_messages_by_userid(self, user_id):
-        rows = self._connection.execute('SELECT up.*, p.username AS receiver_username FROM chats up JOIN users p ON up.recipient_id = p.id WHERE up.sender_id = %s', [user_id])
+        query = '''
+            SELECT 
+                c.*, 
+                ru.username AS receiver_username, 
+                su.username AS sender_username 
+            FROM 
+                chats c
+                JOIN users ru ON c.recipient_id = ru.id 
+                JOIN users su ON c.sender_id = su.id 
+            WHERE 
+                c.sender_id = %s
+        '''
+        rows = self._connection.execute(query, [user_id])
         messages = []
         for row in rows:
             message_text = row['message']
-            message = { 'message': Chat(row['id'], row['recipient_id'], message_text, row['start_date'], row['end_date'], row['sender_id']),
-                        'receiver_username': row['receiver_username']
-                       }
+            message = {
+                'message': Chat(row['id'], row['recipient_id'], message_text, row['start_date'], row['end_date'], row['sender_id']),
+                'receiver_username': row['receiver_username'],
+                'sender_username': row['sender_username']
+            }
             messages.append(message)
         return messages
+
         
     
         # the logic is we will only show messages that are 30 days old to avoid creating multiple messages in the database. if there is a chat between the users within the last 30 days, then we will append the new message to an array,
@@ -27,7 +42,7 @@ class ChatRepository:
            return message
 
 
-    def create(self, sender, receiver, message, receiver_username):
+    def create(self, sender, receiver, message, receiver_username, sender_username):
         today_str = datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
         start_date = datetime.now() - timedelta(days=30)
         start_date_str = start_date.strftime('%Y-%m-%dT%H:%M:%S')
@@ -43,8 +58,8 @@ class ChatRepository:
             result = self._connection.execute(update_query, [message, existing_chat[0]['id']])
         else:
             # No existing chat found, so insert a new chat record
-            insert_query = '''INSERT INTO chats (recipient_id, message, start_date, end_date, sender_id, receiver_username) VALUES (%s, %s, %s, %s, %s, %s) RETURNING *;'''
-            result = self._connection.execute(insert_query, [receiver, [message], start_date_str, end_date_str, sender, receiver_username])
+            insert_query = '''INSERT INTO chats (recipient_id, message, start_date, end_date, sender_id, receiver_username, sender_username) VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING *;'''
+            result = self._connection.execute(insert_query, [receiver, [message], start_date_str, end_date_str, sender, receiver_username, sender_username])
 
      
         for row in result:
