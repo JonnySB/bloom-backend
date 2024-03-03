@@ -413,7 +413,7 @@ def post_messages():
     get_message = request.json.get('content')
     receiver_id = request.json.get('receiverId')
     receiver_username = request.json.get('receiver_username')
-    sender_username = request.json.get('receiver_username')
+    sender_username = request.json.get('sender_username')
     user_id = request.json.get('userId')
     send_message = repository.create(user_id, receiver_id, get_message, receiver_username, sender_username)
 

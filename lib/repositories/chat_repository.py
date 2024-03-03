@@ -51,15 +51,17 @@ class ChatRepository:
 
         query = '''SELECT * FROM chats WHERE ((recipient_id = %s AND sender_id = %s) OR (recipient_id = %s AND sender_id = %s)) AND %s BETWEEN start_date AND end_date'''
         existing_chat = self._connection.execute(query, [receiver, sender, sender, receiver, today_str])
-        print(sender)
+       
+        message_with_username = f'{{"sender": "{sender_username}", "message": "{message}"}}'
+        print(message_with_username)
         if existing_chat:
             # Existing chat found, so append message to it
             update_query = '''UPDATE chats SET message = array_append(message, %s) WHERE id = %s RETURNING *;'''
-            result = self._connection.execute(update_query, [message, existing_chat[0]['id']])
+            result = self._connection.execute(update_query, [message_with_username, existing_chat[0]['id']])
         else:
             # No existing chat found, so insert a new chat record
             insert_query = '''INSERT INTO chats (recipient_id, message, start_date, end_date, sender_id, receiver_username, sender_username) VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING *;'''
-            result = self._connection.execute(insert_query, [receiver, [message], start_date_str, end_date_str, sender, receiver_username, sender_username])
+            result = self._connection.execute(insert_query, [receiver, [message_with_username], start_date_str, end_date_str, sender, receiver_username, sender_username])
 
      
         for row in result:
