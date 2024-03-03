@@ -107,7 +107,6 @@ def get_user_details(id):
     user_repository = UserRepository(connection)
     user = user_repository.get_user_by_id(id)
 
-    print(user)
 
     if user:
         return (
@@ -423,13 +422,13 @@ def post_messages_methond():
 def on_join(data):
     user_id = data['user_id']
     join_room(user_id)
-    emit('joined_room', {'message': 'You have joined the room.'}, room=user_id)
+    socketio.emit('joined_room', {'message': 'You have joined the room.'}, room=user_id)
 
 @socketio.on('leave')
 def on_leave(data):
     user_id = data['user_id']
     leave_room(user_id)
-    emit('left_room', {'message': 'You have left the room.'}, room=user_id)
+    socketio.emit('left_room', {'message': 'You have left the room.'}, room=user_id)
 
 
 
