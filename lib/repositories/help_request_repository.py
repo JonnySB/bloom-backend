@@ -125,3 +125,27 @@ class HelpRequestRepository:
             [request_id]
         )
         return None
+    
+    def get_all_help_requests_with_user_first_name_and_last_name(self):
+        rows = self.db_connection.execute("SELECT help_requests.*, users.first_name, users.last_name, users.username, users.avatar_url_string FROM help_requests JOIN users ON help_requests.user_id = users.id;")
+
+        help_requests_with_user_details = []
+        for row in rows:
+            help_request = HelpRequest(
+                row["id"],
+                row["date"],
+                row["title"],
+                row["message"],
+                row["start_date"],
+                row["end_date"],
+                row["user_id"],
+                row["maxprice"]
+            )
+            user_details = {
+                "first_name": row["first_name"],
+                "last_name": row["last_name"],
+                "username": row["username"],
+                "avatar_url_string": row["avatar_url_string"]
+            }
+            help_requests_with_user_details.append((help_request, user_details))
+        return help_requests_with_user_details
