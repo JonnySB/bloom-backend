@@ -417,6 +417,7 @@ def post_messages():
     receiver_username = request.json.get('receiver_username')
     sender_username = request.json.get('sender_username')
     user_id = request.json.get('userId')
+  
     send_message = repository.create(user_id, receiver_id, get_message, receiver_username, sender_username)
 
     socketio.emit('new_messages', {'messages': send_message}, room=user_id)
