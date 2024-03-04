@@ -456,4 +456,4 @@ def get_chats_by_chat_id(chat_id):
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5001))
     print(f"Starting server on port {port}...")
-    socketio.run(app, debug=True, port=port)
+    socketio.run(app, debug=True, allow_unsafe_werkzeug=True, port=port)
