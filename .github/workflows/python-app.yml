@@ -51,4 +51,4 @@ jobs:
         env:
           JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
         run: |
-          pipenv run pytest --vv -x
+          pipenv run pytest --v -x
