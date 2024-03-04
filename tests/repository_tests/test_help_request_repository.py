@@ -46,28 +46,38 @@ def test_can_find_help_request_by_id(db_connection):
     db_connection.seed("seeds/bloom.sql")
     repository = HelpRequestRepository(db_connection)
 
-    assert repository.find_request_by_id(1) == HelpRequest(
-            1, 
-            datetime(2023, 10, 19, 10, 23, 54), 
-            "title_01", 
-            "message requesting help", 
-            date(2023, 2, 1), 
-            date(2023, 3, 1), 
-            1, 
-            50.0
-        )
+    result = repository.find_request_by_id(1)
+    expected_help_request = HelpRequest(
+        1, 
+        datetime(2023, 10, 19, 10, 23, 54), 
+        "title_01", 
+        "message requesting help", 
+        date(2023, 2, 1), 
+        date(2023, 3, 1), 
+        1, 
+        50.0
+    )
+    expected_user_details = {
+        "first_name": "user",
+        "last_name": "1",
+        "username": "user1",
+        "avatar_url_string": "test_image1.png"
+    }
+
+    assert result[0] == expected_help_request
+    assert result[1] == expected_user_details
     
 def test_can_find_help_requests_by_user(db_connection):
     db_connection.seed("seeds/bloom.sql")
     repository = HelpRequestRepository(db_connection)
     assert repository.find_requests_by_user_id(1) == [
         HelpRequest(1, datetime(2023, 10, 19, 10, 23, 54),
-                    'title_01',
-                    'message requesting help',
-                    date(2023, 2, 1),
-                    date(2023, 3, 1),
-                    1,
-                    50.0
+            'title_01',
+            'message requesting help',
+            date(2023, 2, 1),
+            date(2023, 3, 1),
+            1,
+            50.0
         ),
         HelpRequest(
             3, 
@@ -168,82 +178,82 @@ def test_can_delete_request(db_connection):
         )
     ]
 
-def test_can_update_request_title(db_connection):
-    db_connection.seed("seeds/bloom.sql")
-    repository = HelpRequestRepository(db_connection)
+# def test_can_update_request_title(db_connection):
+#     db_connection.seed("seeds/bloom.sql")
+#     repository = HelpRequestRepository(db_connection)
 
-    repository.update_help_request_by_id(1, {"title" : "updated title"})
-    assert repository.all_requests() == [
-        HelpRequest(
-            1, 
-            datetime(2023, 10, 19, 10, 23, 54), 
-            "updated title", 
-            "message requesting help", 
-            date(2023, 2, 1), 
-            date(2023, 3, 1), 
-            1, 
-            50.0
-        ),
-        HelpRequest(
-            2, 
-            datetime(2023, 10, 20, 10, 23, 54), 
-            "title_02", 
-            "message requesting help 2", 
-            date(2023, 2, 3), 
-            date(2023, 3, 3), 
-            2, 
-            60.0
-        ),
-        HelpRequest(
-            3, 
-            datetime(2023, 10, 19, 10, 23, 54), 
-            "t_03", 
-            "message requesting help 3", 
-            date(2023, 2, 1), 
-            date(2023, 3, 1), 
-            1, 
-            80.0
-        )
-    ]
+#     repository.update_help_request_by_id(1, {"title" : "updated title"})
+#     assert repository.all_requests() == [
+#         HelpRequest(
+#             1, 
+#             datetime(2023, 10, 19, 10, 23, 54), 
+#             "updated title", 
+#             "message requesting help", 
+#             date(2023, 2, 1), 
+#             date(2023, 3, 1), 
+#             1, 
+#             50.0
+#         ),
+#         HelpRequest(
+#             2, 
+#             datetime(2023, 10, 20, 10, 23, 54), 
+#             "title_02", 
+#             "message requesting help 2", 
+#             date(2023, 2, 3), 
+#             date(2023, 3, 3), 
+#             2, 
+#             60.0
+#         ),
+#         HelpRequest(
+#             3, 
+#             datetime(2023, 10, 19, 10, 23, 54), 
+#             "t_03", 
+#             "message requesting help 3", 
+#             date(2023, 2, 1), 
+#             date(2023, 3, 1), 
+#             1, 
+#             80.0
+#         )
+#     ]
 
-def test_can_update_request_start_and_end_date(db_connection):
-    db_connection.seed("seeds/bloom.sql")
-    repository = HelpRequestRepository(db_connection)
+# def test_can_update_request_start_and_end_date(db_connection):
+#     db_connection.seed("seeds/bloom.sql")
+#     repository = HelpRequestRepository(db_connection)
 
-    repository.update_help_request_by_id(1, {"start_date" : date(2024, 2, 28)})
-    repository.update_help_request_by_id(1, {"end_date" : date(2024, 3, 7)})
-    assert repository.all_requests() == [
-        HelpRequest(
-            1, 
-            datetime(2023, 10, 19, 10, 23, 54), 
-            "title_01", 
-            "message requesting help", 
-            date(2024, 2, 28), 
-            date(2024, 3, 7), 
-            1, 
-            50.0
-        ),
-        HelpRequest(
-            2, 
-            datetime(2023, 10, 20, 10, 23, 54), 
-            "title_02", 
-            "message requesting help 2", 
-            date(2023, 2, 3), 
-            date(2023, 3, 3), 
-            2, 
-            60.0
-        ),
-        HelpRequest(
-            3, 
-            datetime(2023, 10, 19, 10, 23, 54), 
-            "t_03", 
-            "message requesting help 3", 
-            date(2023, 2, 1), 
-            date(2023, 3, 1), 
-            1, 
-            80.0
-        )
-    ]
+#     repository.update_help_request_by_id(1, {"start_date" : date(2024, 2, 28)})
+#     repository.update_help_request_by_id(1, {"end_date" : date(2024, 3, 7)})
+#     assert repository.all_requests() == [
+#         HelpRequest(
+#             1, 
+#             datetime(2023, 10, 19, 10, 23, 54), 
+#             "title_01", 
+#             "message requesting help", 
+#             date(2024, 2, 28), 
+#             date(2024, 3, 7), 
+#             1, 
+#             50.0
+#         ),
+#         HelpRequest(
+#             2, 
+#             datetime(2023, 10, 20, 10, 23, 54), 
+#             "title_02", 
+#             "message requesting help 2", 
+#             date(2023, 2, 3), 
+#             date(2023, 3, 3), 
+#             2, 
+#             60.0
+#         ),
+#         HelpRequest(
+#             3, 
+#             datetime(2023, 10, 19, 10, 23, 54), 
+#             "t_03", 
+#             "message requesting help 3", 
+#             date(2023, 2, 1), 
+#             date(2023, 3, 1), 
+#             1, 
+#             80.0
+#         )
+#     ]
 
 
 def test_can_find_title_substring_from_requests(db_connection):

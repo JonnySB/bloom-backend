@@ -251,6 +251,12 @@ def test_get_one_help_request_from_db(test_web_address, db_connection):
         "end_date": "2023-03-03",
         "user_id": 2,
         "maxprice": 60.0,
+        "user_details": {
+            "first_name": "user",
+            "last_name": "2",
+            "username": "user2",
+            "avatar_url_string": "test_image2.png"
+        }
     }
     assert response.json() == expected_data
 
