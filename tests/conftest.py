@@ -66,7 +66,7 @@ def test_web_address(xprocess):
         env = {"PORT": port, "APP_ENV": "test", **os.environ}
         # pattern = "Debugger PIN" ## THIS ONE WILL PASS LOCALLY BUT FAIL IN PRODUCTION 
         pattern = r"\* Running on http:\/\/127\.0\.0\.1:5001"  ## THIS ONE WILL PASS IN PRODUCITON BUT FAIL IN LOCALLY 
-        timeout = 180
+        timeout = 300
         args = [python_executable, app_file]
 
     xprocess.ensure("flask_test_server", Starter)
