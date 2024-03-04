@@ -54,7 +54,7 @@ jobs:
         env:
           JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
         run: |
-          pipenv run pytest -vv
+          pipenv run pytest -vv-x
         continue-on-error: true
       - name: Print Postgres logs if tests fail
         if: failure()
