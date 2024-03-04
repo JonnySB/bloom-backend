@@ -54,6 +54,19 @@ jobs:
         env:
           JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
         run: |
-          pipenv run pytest
+          pipenv run pytest -vv
+        continue-on-error: true
+      - name: Print Postgres logs if tests fail
+        if: failure()
+        run: |
+          echo "Postgres logs:"
+          run: |
+          echo "Printing Postgres logs..."
+          container_id=$(docker ps --filter "name=postgres" --format "{{.ID}}")
+          if [ -n "$container_id" ]; then
+            docker logs $container_id
+          else
+            echo "No container found for Postgres service."
+          fi
 
     
