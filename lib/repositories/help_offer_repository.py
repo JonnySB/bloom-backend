@@ -49,3 +49,5 @@ class HelpOfferRepository():
     def delete_offer(self, offer_id):
         self.connection.execute("DELETE FROM help_offers WHERE id = %s", [offer_id])
         return None
+
+

@@ -12,6 +12,8 @@ from lib.repositories.help_offer_repository import HelpOfferRepository
 from lib.models.help_offer import HelpOffer
 from lib.models.help_request import HelpRequest
 from lib.repositories.help_request_repository import HelpRequestRepository
+from lib.models.received_offer import ReceivedOffer
+from lib.repositories.received_offers_repository import ReceivedOffersRepository
 
 # load .env file variables see readme details
 load_dotenv()
@@ -163,34 +165,64 @@ def create_help_offer(help_request_id):
         return jsonify({"msg" : "Help offer creation unsuccessful"}), 400
 
 
-#return array of offers for requests made by user
-@app.route("/help_offers/help_requests/<user_id>", methods=["GET"])
+# #return array of offers for requests made by user
+# @app.route("/help_offers/help_requests/<user_id>", methods=["GET"])
+# @jwt_required()
+# def help_offered_to_user(user_id):
+#
+#     #connect to db and set up offer repository
+#     connection = get_flask_database_connection(app)
+#     request_repository = HelpRequestRepository(connection)
+#     offer_repository = HelpOfferRepository(connection)
+#
+#     #get IDs of help requests made by user
+#     requests_by_user = request_repository.find_requests_by_user_id(user_id)
+#     
+#     #get IDs of offers matching user help requests
+#     help_offered = []
+#     for request in requests_by_user:
+#         offers_for_request = offer_repository.find_by_request_id(request.id)
+#         for offer in offers_for_request:
+#             offer_obj = {
+#             "id": offer.id,
+#             "user_id": offer.user_id,
+#             "request_id": offer.request_id,
+#             "message": offer.message,
+#             "bid": offer.bid,
+#             "status": offer.status
+#         }
+#             help_offered.append(offer_obj)
+#     return jsonify(help_offered)
+
+# return array of offers made to a particular user (user_id)
+@app.route("/help_offers/help_requests/<user_id>")
 @jwt_required()
-def help_offered_to_user(user_id):
-
-    #connect to db and set up offer repository
+def received_help_offers_by_user_id(user_id):
     connection = get_flask_database_connection(app)
-    request_repository = HelpRequestRepository(connection)
-    offer_repository = HelpOfferRepository(connection)
-
-    #get IDs of help requests made by user
-    requests_by_user = request_repository.find_requests_by_user_id(user_id)
+    received_offers_repostitory = ReceivedOffersRepository(connection)
+    received_offers = received_offers_repostitory.get_all_received_offers_for_user(user_id)
     
-    #get IDs of offers matching user help requests
     help_offered = []
-    for request in requests_by_user:
-        offers_for_request = offer_repository.find_by_request_id(request.id)
-        for offer in offers_for_request:
-            offer_obj = {
-            "id": offer.id,
-            "user_id": offer.user_id,
-            "request_id": offer.request_id,
-            "message": offer.message,
-            "bid": offer.bid,
-            "status": offer.status
+    for offer in received_offers:
+        offer_obj = {
+            "help_request_id" : offer.help_request_id,
+            "help_request_start_date " : offer.help_request_start_date,
+            "help_request_end_date" : offer.help_request_end_date,
+            "help_request_name" : offer.help_request_name,
+            "help_request_user_id" : offer.help_request_user_id,
+            "help_offer_id" : offer.help_offer_id,
+            "help_offer_message" : offer.help_offer_message,
+            "help_offer_status" : offer.help_offer_status,
+            "help_offer_user_id" : offer.help_offer_user_id,
+            "help_offer_bid" : offer.help_offer_bid,
+            "help_offer_first_name" : offer.help_offer_first_name,
+            "help_offer_last_name" : offer.help_offer_last_name,
+            "help_offer_avatar_url_string" : offer.help_offer_avatar_url_string,
+            "help_offer_username" : offer.help_offer_username,
         }
-            help_offered.append(offer_obj)
+        help_offered.append(offer_obj)
     return jsonify(help_offered)
+
     
 # Help Request Routes
 @app.route('/help_requests', methods=['GET'])

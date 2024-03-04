@@ -66,8 +66,16 @@ class HelpRequestRepository:
             help_requests.append(obj)
 
         return help_requests
-    
-    #to find all requests made by a specific user
+   
+
+            # "id": offer.id,
+            # "user_id": offer.user_id,
+            # "request_id": offer.request_id,
+            # "message": offer.message,
+            # "bid": offer.bid,
+            # "status": offer.status
+
+    #to find all requests made to a specific user
     def find_requests_by_user_id(self, user_id):
         query = "SELECT * FROM help_requests WHERE user_id = %s"
         rows = self.db_connection.execute(query, [user_id])
