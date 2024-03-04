@@ -15,6 +15,7 @@ python-dotenv = "*"
 requests = "*"
 flask-cors = "*"
 flask-socketio = "*"
+gevent = "*"
 
 [dev-packages]
 autopep8 = "*"

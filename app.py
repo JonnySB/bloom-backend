@@ -16,6 +16,7 @@ from lib.models.help_request import HelpRequest
 from lib.repositories.help_request_repository import HelpRequestRepository
 from datetime import timedelta
 from flask_cors import cross_origin
+
 # load .env file variables see readme details
 
 #dependecies for livechat
@@ -30,7 +31,7 @@ app = Flask(__name__)
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(days=1)  # I JUST ADD THIS FOR NOW SO THE TOKEN DON"T KEEP EXIRING PLEASE REMOVE LATER.
 CORS(app, resources={r"/messages/*": {"origins": "http://localhost:5173"}}, supports_credentials=True)
-socketio = SocketIO(app, cors_allowed_origins="*", logger=True, engineio_logger=True) # we are allowing all origings just for development 
+socketio = SocketIO(app, cors_allowed_origins="*", logger=True, engineio_logger=True, async_mode='gevent') # we are allowing all origings just for development 
 jwt = JWTManager(app)
 
 
