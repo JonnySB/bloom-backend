@@ -26,11 +26,6 @@ load_dotenv()
 app = Flask(__name__)
 
 
-app.config.from_object('lib.flaskcfg.flaskcfg.Config')
-
-app.config['TESTING'] = True
-
-
 # Token Setup
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(days=1)  # I JUST ADD THIS FOR NOW SO THE TOKEN DON"T KEEP EXIRING PLEASE REMOVE LATER.
@@ -442,8 +437,6 @@ def on_leave(data):
     socketio.emit('left_room', {'message': 'You have left the room.'}, room=user_id)
 
 
-
-
 @app.route('/messages/<chat_id>', methods=['GET'])
 @jwt_required()
 def get_chats_by_chat_id(chat_id):
@@ -456,4 +449,4 @@ def get_chats_by_chat_id(chat_id):
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5001))
     print(f"Starting server on port {port}...")
-    socketio.run(app, debug=True, allow_unsafe_werkzeug=True, port=port)
+    socketio.run(app, debug=True, port=port)
