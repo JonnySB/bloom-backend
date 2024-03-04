@@ -437,6 +437,7 @@ def test_get_user_details_for_valid_user_id(db_connection, test_web_address):
 
     assert response.status_code == 200
     assert response.json() == {
+        "id" : 1,
         "first_name": "user",
         "last_name": "1",
         "username": "user1",
@@ -553,8 +554,6 @@ def test_get_help_offered_to_user_no_auth(db_connection, test_web_address):
 # TEST FOR MESSAGES 
 
     
-
-
 def test_get_messages_by_user_id(db_connection, test_web_address):
     db_connection.seed("seeds/bloom.sql")
     ChatRepository(db_connection)
@@ -571,7 +570,11 @@ def test_get_messages_by_user_id(db_connection, test_web_address):
     chats = [{
             "id": 1,
             "recipient_id": 2,
-            "message": ["Hello user 02"],
+            "message": [
+                '{"sender": "user1", "message": "Hello user two"}'
+            ],
+            "receiver_username": "user2",
+            "sender_username": "user1",
             "start_date": "Wed, 31 Jan 2024 00:00:00 GMT",
             "end_date": "Fri, 01 Mar 2024 00:00:00 GMT",
             "sender_id": 1,
