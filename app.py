@@ -23,8 +23,12 @@ from flask_socketio import SocketIO, emit, join_room , leave_room
 load_dotenv()
 
 
-
 app = Flask(__name__)
+
+
+app.config.from_object('lib.flaskcfg.flaskcfg.Config')
+
+app.config['TESTING'] = True
 
 
 # Token Setup
@@ -449,6 +453,7 @@ def get_chats_by_chat_id(chat_id):
     return jsonify(messages), 200
 
 
-
 if __name__ == "__main__":
-    socketio.run(app, debug=True, port=int(os.environ.get("PORT", 5001)))
+    port = int(os.environ.get("PORT", 5001))
+    print(f"Starting server on port {port}...")
+    socketio.run(app, debug=True, port=port)
