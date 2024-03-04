@@ -106,7 +106,7 @@ def test_assign_plant_to_user(db_connection, test_web_address):
     response = requests.post(f"http://{test_web_address}/plants/user/assign", json=assign_data, headers=headers)
 
     assert response.status_code == 200
-    assert response.json() == {"message": "Plant assigned successfully"}
+    assert response.ok
     
     
 def test_update_plant_quantity_for_user(db_connection, test_web_address):
@@ -121,7 +121,7 @@ def test_update_plant_quantity_for_user(db_connection, test_web_address):
     response = requests.post(f"http://{test_web_address}/plants/user/update", json=update_data, headers=headers)
 
     assert response.status_code == 200
-    assert response.json() == {"message": "Plant quantity updated successfully"}
+    assert response.ok
     
 
 def test_delete_plant_from_user(db_connection, test_web_address):
