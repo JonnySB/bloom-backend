@@ -50,4 +50,46 @@ class HelpOfferRepository():
         self.connection.execute("DELETE FROM help_offers WHERE id = %s", [offer_id])
         return None
 
+    # user a help_offer_id to find all other help_offer_ids associated with that
+    # request_id. I.e. all help_offer_ids belonging to request.
+    # UNTESTED
+    def get_other_help_offer_ids_associated_with_request_id(self, help_offer_id):
+        rows = self.connection.execute(
+            """
+            select id 
+            from help_offers
+            where request_id = ( 
+                select request_id
+                from help_offers
+                where id = %s
+                );
+            """
+        , [help_offer_id])
 
+        help_offer_ids = []
+        for row in rows:
+            help_offer_ids.append(row["id"])
+
+        return help_offer_ids
+
+    # accept help offer
+    # UNTESTED
+    def accept_help_offer(self, help_offer_id):
+        self.connection.execute(
+            """
+            UPDATE help_offers 
+            SET status='accepted'
+            WHERE help_offers.id = %s;
+            """
+        , [help_offer_id])
+
+    # reject help offer
+    # UNTESTED
+    def reject_help_offer(self, help_offer_id):
+        self.connection.execute(
+            """
+            UPDATE help_offers 
+            SET status='rejected'
+            WHERE help_offers.id = %s;
+            """
+        , [help_offer_id])

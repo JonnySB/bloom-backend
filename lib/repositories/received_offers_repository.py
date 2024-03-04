@@ -5,6 +5,7 @@ class ReceivedOffersRepository():
         self.connection = connection
 
     # gets all received offers for a particular user_id
+    # UNTESTED
     def get_all_received_offers_for_user(self, user_id):
         rows = self.connection.execute(
             """
@@ -50,8 +51,6 @@ class ReceivedOffersRepository():
                 help_offer_avatar_url_string = row["help_offer_avatar_url_string"],
             )
             received_offers.append(received_offer)
-
-        print(received_offers)
 
         return received_offers
 

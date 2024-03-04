@@ -4,6 +4,7 @@ from flask.helpers import get_flashed_messages
 from lib.database_connection import get_flask_database_connection
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required
 from dotenv import load_dotenv
+from flask_cors import CORS
 from lib.repositories.plants_repository import PlantsRepository
 from lib.repositories.plants_user_repository import PlantsUserRepository
 from lib.models.user import User
@@ -19,6 +20,7 @@ from lib.repositories.received_offers_repository import ReceivedOffersRepository
 load_dotenv()
 
 app = Flask(__name__)
+CORS(app)
 
 # Token Setup
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
@@ -165,38 +167,10 @@ def create_help_offer(help_request_id):
         return jsonify({"msg" : "Help offer creation unsuccessful"}), 400
 
 
-# #return array of offers for requests made by user
-# @app.route("/help_offers/help_requests/<user_id>", methods=["GET"])
-# @jwt_required()
-# def help_offered_to_user(user_id):
-#
-#     #connect to db and set up offer repository
-#     connection = get_flask_database_connection(app)
-#     request_repository = HelpRequestRepository(connection)
-#     offer_repository = HelpOfferRepository(connection)
-#
-#     #get IDs of help requests made by user
-#     requests_by_user = request_repository.find_requests_by_user_id(user_id)
-#     
-#     #get IDs of offers matching user help requests
-#     help_offered = []
-#     for request in requests_by_user:
-#         offers_for_request = offer_repository.find_by_request_id(request.id)
-#         for offer in offers_for_request:
-#             offer_obj = {
-#             "id": offer.id,
-#             "user_id": offer.user_id,
-#             "request_id": offer.request_id,
-#             "message": offer.message,
-#             "bid": offer.bid,
-#             "status": offer.status
-#         }
-#             help_offered.append(offer_obj)
-#     return jsonify(help_offered)
-
 # return array of offers made to a particular user (user_id)
+# UNTESTED
 @app.route("/help_offers/help_requests/<user_id>")
-@jwt_required()
+# @jwt_required()
 def received_help_offers_by_user_id(user_id):
     connection = get_flask_database_connection(app)
     received_offers_repostitory = ReceivedOffersRepository(connection)
@@ -206,7 +180,7 @@ def received_help_offers_by_user_id(user_id):
     for offer in received_offers:
         offer_obj = {
             "help_request_id" : offer.help_request_id,
-            "help_request_start_date " : offer.help_request_start_date,
+            "help_request_start_date" : offer.help_request_start_date,
             "help_request_end_date" : offer.help_request_end_date,
             "help_request_name" : offer.help_request_name,
             "help_request_user_id" : offer.help_request_user_id,
@@ -223,6 +197,36 @@ def received_help_offers_by_user_id(user_id):
         help_offered.append(offer_obj)
     return jsonify(help_offered)
 
+# accept help offer
+# UNTESTED
+@app.route("/help_offers/accept_offer/<help_offer_id>")
+# @jwt_required()
+def accept_help_offer(help_offer_id):
+    connection = get_flask_database_connection(app)
+    help_offers_repository = HelpOfferRepository(connection)
+
+    # get list of help_offer_ids associated with request (id to accept excluded) 
+    associated_help_offer_ids = help_offers_repository.get_other_help_offer_ids_associated_with_request_id(help_offer_id)
+    associated_help_offer_ids.remove(int(help_offer_id))
+
+    # Accept help_offer
+    help_offers_repository.accept_help_offer(help_offer_id)
+
+    # Reject other associated help offers
+    for help_offer_id in associated_help_offer_ids:
+        help_offers_repository.reject_help_offer(help_offer_id)
+
+    return jsonify({"msg" : "Accepted help offer"}), 201
+
+# reject help offer
+# UNTESTED
+@app.route("/help_offers/reject_offer/<help_offer_id>")
+# @jwt_required()
+def reject_help_offer(help_offer_id):
+    connection = get_flask_database_connection(app)
+    help_offers_repository = HelpOfferRepository(connection)
+    help_offers_repository.reject_help_offer(help_offer_id)
+    return jsonify({"msg" : "Rejected help offer"}), 201
     
 # Help Request Routes
 @app.route('/help_requests', methods=['GET'])
