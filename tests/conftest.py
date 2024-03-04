@@ -62,12 +62,14 @@ def test_web_address(xprocess):
     app_file = py.path.local(__file__).dirpath("../app.py")
     port = str(random.randint(4000, 4999))
 
+    # Form the pattern string with string formatting
+    my_pattern = "Server initialized for gevent."
+    print("Pattern used for matching Flask server startup:", my_pattern)
+
     class Starter(ProcessStarter):
         env = {"PORT": port, "APP_ENV": "test", **os.environ}
-        # pattern = "Debugger PIN" ## THIS ONE WILL PASS LOCALLY BUT FAIL IN PRODUCTION 
-        # pattern = r"\* Running on http:\/\/127\.0\.0\.1:5001"  ## THIS ONE WILL PASS IN PRODUCITON BUT FAIL IN LOCALLY 
-        pattern = ""  ## TESTING WITH BLANKET brackets 
-        timeout = 180
+        pattern = my_pattern
+        # timeout = 180
         args = [python_executable, app_file]
 
     xprocess.ensure("flask_test_server", Starter)
