@@ -17,11 +17,11 @@ def db_connection():
 def test_web_address(xprocess):
     python_executable = sys.executable
     app_file = py.path.local(__file__).dirpath("../app.py")
-    port = str(random.randint(4000, 4999))
+    port = "5001"
 
     class Starter(ProcessStarter):
         env = {"PORT": port, "APP_ENV": "test", **os.environ}
-        pattern = "[Dd]ebugger is active"
+        pattern = "[Dd]ebugger is active" # this one [Dd]ebugger is active pass locally 
         args = [python_executable, app_file]
 
     xprocess.ensure("flask_test_server", Starter)
