@@ -118,7 +118,7 @@ INSERT INTO user_plants (user_id, plant_id, quantity) VALUES (1, 1, 2);
 INSERT INTO user_plants (user_id, plant_id, quantity) VALUES (2, 2, 2);
 -- INSERT INTO user_plants (user_id, plant_id, quantity) VALUES (1, 2, 2);
 
-INSERT INTO chats (recipient_id, message, start_date, end_date, receiver_username, sender_username, sender_id) VALUES (2, '{"{\"sender\": \"user1\", \"message\": \"Hello user two\"}"}', '2024-01-31','2024-03-01', 'user02', 'user01', 1);
+INSERT INTO chats (recipient_id, message, start_date, end_date, receiver_username, sender_username, sender_id) VALUES (2, '{"{\"sender\": \"user1\", \"message\": \"Hello user two\"}"}', '2024-01-31','2024-03-01', 'user2', 'user1', 1);
 -- INSERT INTO chats (recipient_id, message, start_date, end_date, receiver_username, sender_username, sender_id) VALUES (3, '{"{\"sender\": \"user2\", \"message\": \"Hello user 01\"}"}',  '2024-01-31','2024-03-01', 'user01', 'user02', 4);
 -- INSERT INTO chats (recipient_id, message, date, sender_id) VALUES (2, '{"Hello user 02 one more time"}', NOW(), 1);
 

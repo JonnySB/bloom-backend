@@ -422,7 +422,7 @@ def post_messages():
     send_message = repository.create(user_id, receiver_id, get_message, receiver_username, sender_username)
 
     socketio.emit('new_messages', {'messages': send_message}, room=user_id)
-    return jsonify({"message": "Message sent sucefully"}), 200
+    return jsonify({"message": "Message sent successfully"}), 200
 
 
 @socketio.on('join')

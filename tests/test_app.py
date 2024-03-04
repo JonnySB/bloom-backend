@@ -580,3 +580,53 @@ def test_get_messages_by_user_id(db_connection, test_web_address):
             "sender_id": 1,
         }]
     assert response.json() == chats
+    
+
+
+def test_create_messages(db_connection, test_web_address):
+    db_connection.seed("seeds/bloom.sql")
+    login_data = {"username_email": "user1", "password": "Password123!"}
+    login_response = requests.post(f"http://{test_web_address}/token", json=login_data)
+    assert login_response.status_code == 201 
+    access_token = login_response.json()["token"]
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/json"
+    }
+    message_payload = {
+        "userId": 1, 
+        "receiverId": 2, 
+        "content": '{"sender": "user1", "message": "Hello user two"}',
+        "receiver_username": "user2",
+        "sender_username": "user1"
+    }
+    response = requests.post(f"http://{test_web_address}/messages", json=message_payload, headers=headers)
+    
+
+    assert response.status_code == 200
+    assert response.json() == {"message": "Message sent successfully"}
+    
+    
+    
+def test_select_chat_by_id(db_connection, test_web_address):
+    db_connection.seed("seeds/bloom.sql")
+    login_data = {"username_email": "user1", "password": "Password123!"}
+    login_response = requests.post(f"http://{test_web_address}/token", json=login_data)
+    assert login_response.status_code == 201 
+    access_token = login_response.json()["token"]
+    headers = {"Authorization": f"Bearer {access_token}"}
+    response = requests.get(f"http://{test_web_address}/messages/1", headers=headers)
+    assert response.status_code == 200
+    chat = [{
+            "id": 1,
+            "recipient_id": 2,
+            "message": [
+                '{"sender": "user1", "message": "Hello user two"}'
+            ],
+            "receiver_username": "user2",
+            "sender_username": "user1",
+            "start_date": "Wed, 31 Jan 2024 00:00:00 GMT",
+            "end_date": "Fri, 01 Mar 2024 00:00:00 GMT",
+            "sender_id": 1,
+        }]
+    assert response.json() == chat
