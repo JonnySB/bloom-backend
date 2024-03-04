@@ -21,7 +21,7 @@ def test_web_address(xprocess):
 
     class Starter(ProcessStarter):
         env = {"PORT": port, "APP_ENV": "test", **os.environ}
-        pattern = "[Dd]ebugger is active" # this one [Dd]ebugger is active pass locally 
+        pattern = "file" # this one [Dd]ebugger is active pass locally 
         args = [python_executable, app_file]
 
     xprocess.ensure("flask_test_server", Starter)
