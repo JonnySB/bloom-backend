@@ -199,7 +199,7 @@ def received_help_offers_by_user_id(user_id):
 
 # accept help offer
 # UNTESTED
-@app.route("/help_offers/accept_offer/<help_offer_id>")
+@app.route("/help_offers/accept_offer/<help_offer_id>", methods=["PUT"])
 # @jwt_required()
 def accept_help_offer(help_offer_id):
     connection = get_flask_database_connection(app)
@@ -220,7 +220,7 @@ def accept_help_offer(help_offer_id):
 
 # reject help offer
 # UNTESTED
-@app.route("/help_offers/reject_offer/<help_offer_id>")
+@app.route("/help_offers/reject_offer/<help_offer_id>", methods=["PUT"])
 # @jwt_required()
 def reject_help_offer(help_offer_id):
     connection = get_flask_database_connection(app)
