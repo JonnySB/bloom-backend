@@ -16,7 +16,7 @@ from lib.models.help_request import HelpRequest
 from lib.repositories.help_request_repository import HelpRequestRepository
 from datetime import timedelta
 from flask_cors import cross_origin
-
+from flask import make_response
 # load .env file variables see readme details
 
 #dependecies for livechat
@@ -30,7 +30,8 @@ app = Flask(__name__)
 # Token Setup
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(days=1)  # I JUST ADD THIS FOR NOW SO THE TOKEN DON"T KEEP EXIRING PLEASE REMOVE LATER.
-CORS(app, resources={r"/messages/*": {"origins": "http://localhost:5173"}}, supports_credentials=True)
+# CORS(app, resources={r"/messages/*": {"origins": "http://localhost:5173"}}, supports_credentials=True)
+CORS(app, supports_credentials=True)
 socketio = SocketIO(app, cors_allowed_origins="*", logger=True, engineio_logger=True, async_mode='gevent') # we are allowing all origings just for development 
 jwt = JWTManager(app)
 
@@ -109,7 +110,6 @@ def get_user_details(id):
     user_repository = UserRepository(connection)
     user = user_repository.get_user_by_id(id)
 
-
     if user:
         return (
             jsonify(
@@ -124,7 +124,48 @@ def get_user_details(id):
                 }
             )
         ), 200
-    return jsonify({"msg": "User not found"}), 400
+    return jsonify({"msg": "User not found TEST HERE"}), 400
+
+
+# Takes user_id and updates the user_details
+@app.route("/edit_user_details/<int:id>", methods=['PUT', 'OPTIONS'])
+@jwt_required()
+def edit_user_details(id):
+    if request.method == 'OPTIONS':
+        response = make_response()
+        response.headers["Access-Control-Allow-Origin"] = "*"
+        response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+        response.headers["Access-Control-Allow-Methods"] = "PUT, OPTIONS"
+        return response
+
+    # PUT request processing
+    try:
+        connection = get_flask_database_connection(app)
+        user_repository = UserRepository(connection)
+        first_name = request.json.get("first_name")
+        last_name = request.json.get("last_name")
+        username = request.json.get("username")
+        email = request.json.get("email")
+        address = request.json.get("address")
+        user_repository.edit_user_details(id,first_name,last_name,username,email,address)
+        response = make_response(jsonify({"msg": "User updated successful"}), 200)
+        print(response)
+        return response
+       
+    except Exception as e:
+        print(f"Error processing PUT request: {e}")
+        response = make_response(jsonify({"error": "Internal Server Error"}), 500)
+        print(response)
+   
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    return response
+
+
+
+
+
+
+
 
 
 #get all help offers made by a specific user

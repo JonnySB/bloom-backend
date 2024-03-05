@@ -105,3 +105,9 @@ class UserRepository:
             )
         except:
             return False
+    
+    def edit_user_details(self, user_id, first_name, last_name, username, email, address):
+        update_query = """UPDATE users SET first_name = %s, last_name = %s, username = %s, email = %s, address = %s WHERE id = %s"""
+        result = self.connection.execute(update_query, [first_name, last_name, username, email, address, user_id])
+        print(result)
+        return result
