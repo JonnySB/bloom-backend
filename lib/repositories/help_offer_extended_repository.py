@@ -1,13 +1,13 @@
-from lib.models.received_offer import ReceivedOffer
+from lib.models.help_offer_extended import HelpOfferExtended
 
 
-class ReceivedOffersRepository:
+class HelpOfferExtendedRepository:
     def __init__(self, connection):
         self.connection = connection
 
     # gets all received offers for a particular user_id
     # UNTESTED
-    def get_all_received_offers_for_user(self, user_id):
+    def get_all_help_offer_extended_for_user(self, user_id):
         rows = self.connection.execute(
             """
             select
@@ -33,9 +33,9 @@ class ReceivedOffersRepository:
             [user_id],
         )
 
-        received_offers = []
+        help_offer_extended_list = []
         for row in rows:
-            received_offer = ReceivedOffer(
+            help_offer_extended = HelpOfferExtended(
                 help_request_id=row["help_request_id"],
                 help_request_start_date=row["help_request_start_date"],
                 help_request_end_date=row["help_request_end_date"],
@@ -51,6 +51,6 @@ class ReceivedOffersRepository:
                 help_offer_username=row["help_offer_username"],
                 help_offer_avatar_url_string=row["help_offer_avatar_url_string"],
             )
-            received_offers.append(received_offer)
+            help_offer_extended_list.append(help_offer_extended)
 
-        return received_offers
+        return help_offer_extended_list

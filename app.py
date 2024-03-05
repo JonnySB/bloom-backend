@@ -13,14 +13,14 @@ from flask_socketio import SocketIO, emit, join_room, leave_room
 from lib.database_connection import get_flask_database_connection
 from lib.models.help_offer import HelpOffer
 from lib.models.help_request import HelpRequest
-from lib.models.received_offer import ReceivedOffer
+from lib.models.help_offer_extended import HelpOfferExtended
 from lib.models.user import User
 from lib.repositories.chat_repository import ChatRepository
 from lib.repositories.help_offer_repository import HelpOfferRepository
 from lib.repositories.help_request_repository import HelpRequestRepository
 from lib.repositories.plants_repository import PlantsRepository
 from lib.repositories.plants_user_repository import PlantsUserRepository
-from lib.repositories.received_offers_repository import ReceivedOffersRepository
+from lib.repositories.help_offer_extended_repository import HelpOfferExtendedRepository
 from lib.repositories.user_repository import UserRepository
 
 # load .env file variables see readme details
@@ -199,13 +199,13 @@ def create_help_offer(help_request_id):
 @cross_origin()
 def received_help_offers_by_user_id(user_id):
     connection = get_flask_database_connection(app)
-    received_offers_repostitory = ReceivedOffersRepository(connection)
-    received_offers = received_offers_repostitory.get_all_received_offers_for_user(
+    help_offer_extended_repostitory = HelpOfferExtendedRepository(connection)
+    help_offer_extended = help_offer_extended_repostitory.get_all_help_offer_extended_for_user(
         user_id
     )
 
     help_offered = []
-    for offer in received_offers:
+    for offer in help_offer_extended:
         offer_obj = {
             "help_request_id": offer.help_request_id,
             "help_request_start_date": offer.help_request_start_date,

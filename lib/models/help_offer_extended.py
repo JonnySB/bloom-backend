@@ -1,4 +1,4 @@
-class ReceivedOffer:
+class HelpOfferExtended:
     # UNTESTED
     def __init__(
         self,
@@ -38,4 +38,4 @@ class ReceivedOffer:
 
     # UNTESTED
     def __repr__(self):
-        return f"ReceivedOffer: {self.help_request_id}, {self.help_request_start_date}, {self.help_request_end_date}, {self.help_request_name}, {self.help_request_user_id}, {self.help_offer_id}, {self.help_offer_message}, {self.help_offer_status}, {self.help_offer_user_id}, {self.help_offer_bid}, {self.help_offer_first_name}, {self.help_offer_last_name}, {self.help_offer_username}, {self.help_offer_avatar_url_string})"
+        return f"HelpOfferExtended: {self.help_request_id}, {self.help_request_start_date}, {self.help_request_end_date}, {self.help_request_name}, {self.help_request_user_id}, {self.help_offer_id}, {self.help_offer_message}, {self.help_offer_status}, {self.help_offer_user_id}, {self.help_offer_bid}, {self.help_offer_first_name}, {self.help_offer_last_name}, {self.help_offer_username}, {self.help_offer_avatar_url_string})"
