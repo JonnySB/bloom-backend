@@ -4,6 +4,12 @@ from lib.database_connection import DatabaseConnection
 from app import app
 
 
+import pytest, sys, random, py, pytest, os
+from xprocess import ProcessStarter
+from lib.database_connection import DatabaseConnection
+from app import app
+
+
 # This fixture is used to create a database connection.
 @pytest.fixture
 def db_connection():
@@ -17,13 +23,16 @@ def db_connection():
 def test_web_address(xprocess):
     python_executable = sys.executable
     app_file = py.path.local(__file__).dirpath("../app.py")
-    port = "5001"
+    port = str(random.randint(4000, 4999))
+
+    # Form the pattern string with string formatting
+    my_pattern = "Server initialized for gevent."
+    print("Pattern used for matching Flask server startup:", my_pattern)
 
     class Starter(ProcessStarter):
         env = {"PORT": port, "APP_ENV": "test", **os.environ}
-        pattern = r"\* Running on http:\/\/127\.0\.0\.1:5001"
-        timeout = 180  # Adjust this value as necessary
-        # pattern = "file" # this one [Dd]ebugger is active pass locally 
+        pattern = my_pattern
+        # timeout = 180 testing one more time. 
         args = [python_executable, app_file]
 
     xprocess.ensure("flask_test_server", Starter)

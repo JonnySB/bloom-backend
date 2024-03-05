@@ -16,6 +16,7 @@ from lib.models.help_request import HelpRequest
 from lib.repositories.help_request_repository import HelpRequestRepository
 from datetime import timedelta
 from flask_cors import cross_origin
+
 # load .env file variables see readme details
 
 #dependecies for livechat
@@ -26,16 +27,11 @@ load_dotenv()
 app = Flask(__name__)
 
 
-app.config.from_object('lib.flaskcfg.flaskcfg.Config')
-
-app.config['TESTING'] = True
-
-
 # Token Setup
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(days=1)  # I JUST ADD THIS FOR NOW SO THE TOKEN DON"T KEEP EXIRING PLEASE REMOVE LATER.
 CORS(app, resources={r"/messages/*": {"origins": "http://localhost:5173"}}, supports_credentials=True)
-socketio = SocketIO(app, cors_allowed_origins="*", logger=True, engineio_logger=True) # we are allowing all origings just for development 
+socketio = SocketIO(app, cors_allowed_origins="*", logger=True, engineio_logger=True, async_mode='gevent') # we are allowing all origings just for development 
 jwt = JWTManager(app)
 
 
@@ -442,8 +438,6 @@ def on_leave(data):
     socketio.emit('left_room', {'message': 'You have left the room.'}, room=user_id)
 
 
-
-
 @app.route('/messages/<chat_id>', methods=['GET'])
 @jwt_required()
 def get_chats_by_chat_id(chat_id):
@@ -455,5 +449,5 @@ def get_chats_by_chat_id(chat_id):
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5001))
-    print(f"Starting server on port {port}...")
-    socketio.run(app, debug=True, allow_unsafe_werkzeug=True, port=port)
+    print(f" * Running on http://127.0.0.1:{port}")
+    socketio.run(app, debug=True, port=port, use_reloader=False)
