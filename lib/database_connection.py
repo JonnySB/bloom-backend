@@ -23,7 +23,10 @@ class DatabaseConnection:
         if self.test_mode:
             try:
                 self.connection = psycopg.connect(
-                    f"postgresql://localhost/{self._database_name()}", user="postgres", password="postgres", row_factory=dict_row
+                    f"postgresql://localhost/{self._database_name()}",
+                    user="postgres",
+                    password="postgres",
+                    row_factory=dict_row,
                 )
             except psycopg.OperationalError:
                 raise Exception(
@@ -33,7 +36,8 @@ class DatabaseConnection:
         else:
             try:
                 self.connection = psycopg.connect(
-                    f"postgresql://localhost/{self._database_name()}", row_factory=dict_row
+                    f"postgresql://localhost/{self._database_name()}",
+                    row_factory=dict_row,
                 )
             except psycopg.OperationalError:
                 raise Exception(

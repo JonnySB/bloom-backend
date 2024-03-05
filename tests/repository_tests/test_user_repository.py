@@ -59,7 +59,7 @@ def test_get_all_users(db_connection):
             "test_image5.png",
             "test_address5",
         ),
-         User(
+        User(
             6,
             "user",
             "6",

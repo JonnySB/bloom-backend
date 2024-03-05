@@ -117,15 +117,15 @@ def get_user_details(id):
     return jsonify({"msg": "User not found"}), 400
 
 
-#get all help offers made by a specific user
+# get all help offers made by a specific user
 @app.route("/help_offers/<user_id>", methods=["GET"])
 def find_offers_by_user_id(user_id):
 
-    #connect to db and set up offer repository
+    # connect to db and set up offer repository
     connection = get_flask_database_connection(app)
     offer_repository = HelpOfferRepository(connection)
 
-    #returns array of HelpOffer object IDs made by user matching user_id
+    # returns array of HelpOffer object IDs made by user matching user_id
     offers_by_user = offer_repository.find_by_user(user_id)
     user_offers = []
     for offer in offers_by_user:
@@ -135,22 +135,23 @@ def find_offers_by_user_id(user_id):
             "request_id": offer.request_id,
             "message": offer.message,
             "bid": offer.bid,
-            "status": offer.status
+            "status": offer.status,
         }
         user_offers.append(offer_obj)
 
     return jsonify(user_offers), 200
 
-#create a new help offer for a help request
+
+# create a new help offer for a help request
 @app.route("/help_offers/<help_request_id>", methods=["POST"])
 @jwt_required()
 def create_help_offer(help_request_id):
     try:
-        #connect to db and set up offer repository
+        # connect to db and set up offer repository
         connection = get_flask_database_connection(app)
         offer_repository = HelpOfferRepository(connection)
 
-        #get data from request body and create help_offer in DB
+        # get data from request body and create help_offer in DB
         user_id = request.json.get("user_id")
         request_id = help_request_id
         message = request.json.get("message")
@@ -160,11 +161,11 @@ def create_help_offer(help_request_id):
         new_offer = HelpOffer(None, user_id, request_id, message, bid, status)
 
         if None in (user_id, request_id, message, bid, status):
-            raise ValueError("All required fields must be filled")    
+            raise ValueError("All required fields must be filled")
         offer_repository.create_offer(new_offer)
         return jsonify({"msg": "Help Offer Created"}), 201
     except:
-        return jsonify({"msg" : "Help offer creation unsuccessful"}), 400
+        return jsonify({"msg": "Help offer creation unsuccessful"}), 400
 
 
 # return array of offers made to a particular user (user_id)
@@ -174,28 +175,31 @@ def create_help_offer(help_request_id):
 def received_help_offers_by_user_id(user_id):
     connection = get_flask_database_connection(app)
     received_offers_repostitory = ReceivedOffersRepository(connection)
-    received_offers = received_offers_repostitory.get_all_received_offers_for_user(user_id)
-    
+    received_offers = received_offers_repostitory.get_all_received_offers_for_user(
+        user_id
+    )
+
     help_offered = []
     for offer in received_offers:
         offer_obj = {
-            "help_request_id" : offer.help_request_id,
-            "help_request_start_date" : offer.help_request_start_date,
-            "help_request_end_date" : offer.help_request_end_date,
-            "help_request_name" : offer.help_request_name,
-            "help_request_user_id" : offer.help_request_user_id,
-            "help_offer_id" : offer.help_offer_id,
-            "help_offer_message" : offer.help_offer_message,
-            "help_offer_status" : offer.help_offer_status,
-            "help_offer_user_id" : offer.help_offer_user_id,
-            "help_offer_bid" : offer.help_offer_bid,
-            "help_offer_first_name" : offer.help_offer_first_name,
-            "help_offer_last_name" : offer.help_offer_last_name,
-            "help_offer_avatar_url_string" : offer.help_offer_avatar_url_string,
-            "help_offer_username" : offer.help_offer_username,
+            "help_request_id": offer.help_request_id,
+            "help_request_start_date": offer.help_request_start_date,
+            "help_request_end_date": offer.help_request_end_date,
+            "help_request_name": offer.help_request_name,
+            "help_request_user_id": offer.help_request_user_id,
+            "help_offer_id": offer.help_offer_id,
+            "help_offer_message": offer.help_offer_message,
+            "help_offer_status": offer.help_offer_status,
+            "help_offer_user_id": offer.help_offer_user_id,
+            "help_offer_bid": offer.help_offer_bid,
+            "help_offer_first_name": offer.help_offer_first_name,
+            "help_offer_last_name": offer.help_offer_last_name,
+            "help_offer_avatar_url_string": offer.help_offer_avatar_url_string,
+            "help_offer_username": offer.help_offer_username,
         }
         help_offered.append(offer_obj)
     return jsonify(help_offered)
+
 
 # accept help offer
 # UNTESTED
@@ -205,8 +209,12 @@ def accept_help_offer(help_offer_id):
     connection = get_flask_database_connection(app)
     help_offers_repository = HelpOfferRepository(connection)
 
-    # get list of help_offer_ids associated with request (id to accept excluded) 
-    associated_help_offer_ids = help_offers_repository.get_other_help_offer_ids_associated_with_request_id(help_offer_id)
+    # get list of help_offer_ids associated with request (id to accept excluded)
+    associated_help_offer_ids = (
+        help_offers_repository.get_other_help_offer_ids_associated_with_request_id(
+            help_offer_id
+        )
+    )
     associated_help_offer_ids.remove(int(help_offer_id))
 
     # Accept help_offer
@@ -216,7 +224,8 @@ def accept_help_offer(help_offer_id):
     for help_offer_id in associated_help_offer_ids:
         help_offers_repository.reject_help_offer(help_offer_id)
 
-    return jsonify({"msg" : "Accepted help offer"}), 201
+    return jsonify({"msg": "Help offer accepted"}), 200
+
 
 # reject help offer
 # UNTESTED
@@ -225,11 +234,14 @@ def accept_help_offer(help_offer_id):
 def reject_help_offer(help_offer_id):
     connection = get_flask_database_connection(app)
     help_offers_repository = HelpOfferRepository(connection)
+
     help_offers_repository.reject_help_offer(help_offer_id)
-    return jsonify({"msg" : "Rejected help offer"}), 201
-    
+
+    return jsonify({"msg": "Help offer rejected"}), 200
+
+
 # Help Request Routes
-@app.route('/help_requests', methods=['GET'])
+@app.route("/help_requests", methods=["GET"])
 def get_all_help_requests():
     connection = get_flask_database_connection(app)
     request_repository = HelpRequestRepository(connection)
@@ -245,32 +257,39 @@ def get_all_help_requests():
                 "start_date": request.start_date.strftime("%Y-%m-%d"),
                 "end_date": request.end_date.strftime("%Y-%m-%d"),
                 "user_id": request.user_id,
-                "maxprice": request.maxprice
+                "maxprice": request.maxprice,
             }
             for request in all_requests
         ]
         return jsonify(request_data), 200
-    return jsonify({"message" : "Unable to find all requests"}), 400
+    return jsonify({"message": "Unable to find all requests"}), 400
 
-@app.route('/help_requests/<id>', methods=['GET'])
+
+@app.route("/help_requests/<id>", methods=["GET"])
 def get_one_help_request_by_id(id):
     connection = get_flask_database_connection(app)
     request_repository = HelpRequestRepository(connection)
     request = request_repository.find_request_by_id(id)
     if request:
-        return jsonify({
-            "id": request.id,
-            "date": request.date.strftime("%Y-%m-%d %H:%M:%S"),
-            "title": request.title,
-            "message": request.message,
-            "start_date": request.start_date.strftime("%Y-%m-%d"),
-            "end_date": request.end_date.strftime("%Y-%m-%d"),
-            "user_id": request.user_id,
-            "maxprice": request.maxprice
-        }), 200
-    return jsonify({"message" : "Help Request not found"}), 400
+        return (
+            jsonify(
+                {
+                    "id": request.id,
+                    "date": request.date.strftime("%Y-%m-%d %H:%M:%S"),
+                    "title": request.title,
+                    "message": request.message,
+                    "start_date": request.start_date.strftime("%Y-%m-%d"),
+                    "end_date": request.end_date.strftime("%Y-%m-%d"),
+                    "user_id": request.user_id,
+                    "maxprice": request.maxprice,
+                }
+            ),
+            200,
+        )
+    return jsonify({"message": "Help Request not found"}), 400
 
-@app.route('/help_requests/user/<user_id>', methods=['GET'])
+
+@app.route("/help_requests/user/<user_id>", methods=["GET"])
 @jwt_required()
 def get_all_requests_made_by_one_user(user_id):
     connection = get_flask_database_connection(app)
@@ -287,57 +306,64 @@ def get_all_requests_made_by_one_user(user_id):
             "start_date": request.start_date.strftime("%Y-%m-%d"),
             "end_date": request.end_date.strftime("%Y-%m-%d"),
             "user_id": request.user_id,
-            "maxprice": request.maxprice
+            "maxprice": request.maxprice,
         }
         formatted_requests.append(formatted_request)
-        
-    if formatted_requests: 
+
+    if formatted_requests:
         return jsonify(formatted_requests), 200
     else:
         return jsonify({"message": "Help requests for current user not found"}), 400
 
 
-@app.route("/help_requests/create/<user_id>", methods=['POST'])
+@app.route("/help_requests/create/<user_id>", methods=["POST"])
 @jwt_required()
 def create_help_request(user_id):
     try:
         connection = get_flask_database_connection(app)
         request_repository = HelpRequestRepository(connection)
-        date = request.json.get('date')
-        title = request.json.get('title')
-        message = request.json.get('message')
-        start_date = request.json.get('start_date')
+        date = request.json.get("date")
+        title = request.json.get("title")
+        message = request.json.get("message")
+        start_date = request.json.get("start_date")
         end_date = request.json.get("end_date")
         maxprice = request.json.get("maxprice")
         if None in (date, title, message, start_date, end_date, maxprice):
             raise ValueError("All required fields must be filled")
-        request_repository.create_request(HelpRequest(None, date, title, message, start_date, end_date, user_id, maxprice))
-        return jsonify({"message" : "Help request created successfully"}), 200
+        request_repository.create_request(
+            HelpRequest(
+                None, date, title, message, start_date, end_date, user_id, maxprice
+            )
+        )
+        return jsonify({"message": "Help request created successfully"}), 200
     except:
-        return jsonify({"message" : "Help request creation unsuccessful"}), 400
+        return jsonify({"message": "Help request creation unsuccessful"}), 400
+
 
 ### PLANTS ROUT ###
 
+
 # Show all plants in DB
-@app.route('/plants', methods=['GET'])
+@app.route("/plants", methods=["GET"])
 def get_plants():
     connection = get_flask_database_connection(app)
     repository = PlantsRepository(connection)
     plants = repository.all()
-    data_json = [{
-        "id" : plant.id,
-        "common_name" : plant.common_name,
-        "latin_name": plant.latin_name,
-        "photo": plant.photo,
-        "watering_frequency": plant.watering_frequency
+    data_json = [
+        {
+            "id": plant.id,
+            "common_name": plant.common_name,
+            "latin_name": plant.latin_name,
+            "photo": plant.photo,
+            "watering_frequency": plant.watering_frequency,
         }
-    for plant in plants
+        for plant in plants
     ]
     return jsonify(data_json), 200
 
 
-#Show all plants by user
-@app.route('/plants/user/<user_id>', methods=['GET'])
+# Show all plants by user
+@app.route("/plants/user/<user_id>", methods=["GET"])
 @jwt_required()
 def get_plants_by_user(user_id):
     connection = get_flask_database_connection(app)
@@ -353,14 +379,14 @@ def get_plants_by_user(user_id):
             "latin_name": plant.latin_name,
             "photo": plant.photo,
             "watering_frequency": plant.watering_frequency,
-            "quantity": quantity
+            "quantity": quantity,
         }
         user_plants.append(plant_obj)
 
     return jsonify(user_plants), 200
 
 
-@app.route('/plants/user/assign', methods=['POST'])
+@app.route("/plants/user/assign", methods=["POST"])
 @jwt_required()
 def assign_plant_to_user():
     user_id = request.json.get("user_id")
@@ -374,7 +400,7 @@ def assign_plant_to_user():
     return jsonify({"message": "Plant assigned successfully"}), 200
 
 
-@app.route('/plants/user/update', methods=['POST'])
+@app.route("/plants/user/update", methods=["POST"])
 @jwt_required()
 def update_plants_quantity():
     user_id = request.json.get("user_id")
@@ -388,7 +414,7 @@ def update_plants_quantity():
     return jsonify({"message": "Plant quantity updated successfully"}), 200
 
 
-@app.route('/plants/user/delete', methods=['DELETE'])
+@app.route("/plants/user/delete", methods=["DELETE"])
 @jwt_required()
 def delete_plants_from_user():
     user_id = request.json.get("user_id")
