@@ -39,6 +39,7 @@ jwt = JWTManager(app)
 # Takes username / email and password from POST request
 # Returns authentication token if good match, otherwise 401
 @app.route("/token", methods=["POST"])
+@cross_origin()
 def create_token():
     # get username or email and password
     username_email = request.json.get("username_email", None)
