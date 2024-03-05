@@ -140,6 +140,59 @@ def test_delete_plant_from_user(db_connection, test_web_address):
 
 # Help Request route tests:
 
+def test_get_all_help_requests_with_user_details(test_web_address, db_connection):
+    db_connection.seed("seeds/bloom.sql")
+    
+    response = requests.get(f"http://{test_web_address}/help_requests2")
+    assert response.status_code == 200
+    
+    expected_data = [
+        {
+            "id": 1,
+            "date": "2023-10-19 10:23:54",
+            "title": "title_01",
+            "message": "message requesting help",
+            "start_date": "2023-02-01",
+            "end_date": "2023-03-01",
+            "user_id": 1,
+            "maxprice": 50.0,
+            "first_name": "user",  
+            "last_name": "1",
+            "username": "user1", 
+            "avatar_url_string": "test_image1.png"
+        },
+        {
+            "id": 2,
+            "date": "2023-10-20 10:23:54",
+            "title": "title_02",
+            "message": "message requesting help 2",
+            "start_date": "2023-02-03",
+            "end_date": "2023-03-03",
+            "user_id": 2,
+            "maxprice": 60.0,
+            "first_name": "user", 
+            "last_name": "2",
+            "username": "user2", 
+            "avatar_url_string": "test_image2.png"  
+        },
+        {
+            "id": 3,
+            "date": "2023-10-19 10:23:54",
+            "title": "t_03",
+            "message": "message requesting help 3",
+            "start_date": "2023-02-01",
+            "end_date": "2023-03-01",
+            "user_id": 1,
+            "maxprice": 80.0,
+            "first_name": "user",  
+            "last_name": "1",
+            "username": "user1", 
+            "avatar_url_string": "test_image1.png"
+        },
+        # Add more dictionaries for additional help requests
+    ]
+    
+    assert response.json() == expected_data
 
 def test_get_all_help_requests_from_database(test_web_address, db_connection):
     db_connection.seed("seeds/bloom.sql")
@@ -198,6 +251,12 @@ def test_get_one_help_request_from_db(test_web_address, db_connection):
         "end_date": "2023-03-03",
         "user_id": 2,
         "maxprice": 60.0,
+        "user_details": {
+            "first_name": "user",
+            "last_name": "2",
+            "username": "user2",
+            "avatar_url_string": "test_image2.png"
+        }
     }
     assert response.json() == expected_data
 
