@@ -37,6 +37,7 @@ class HelpOfferRepository:
         )
 
     # returns help offers made by a user matching user_id from DB.
+    # NOTE - FUNCTIONALIRY REPLACED IN EXTENDED HELP OFFER REPOSITORY
     def find_by_user(self, user_id):
         rows = self.connection.execute(
             "SELECT * FROM help_offers WHERE user_id = %s", [user_id]
@@ -55,6 +56,7 @@ class HelpOfferRepository:
         return offers_by_user
 
     # returns help offers matching request_id from DB.
+    # NOTE - FUNCTIONALIRY REPLACED IN EXTENDED HELP OFFER REPOSITORY
     def find_by_request_id(self, request_id):
         rows = self.connection.execute(
             "SELECT * FROM help_offers WHERE request_id = %s", [request_id]
@@ -127,6 +129,18 @@ class HelpOfferRepository:
             """
             UPDATE help_offers 
             SET status='rejected'
+            WHERE help_offers.id = %s;
+            """,
+            [help_offer_id],
+        )
+
+    # recind help offer
+    # UNTESTED
+    def recind_help_offer(self, help_offer_id):
+        self.connection.execute(
+            """
+            UPDATE help_offers 
+            SET status='recinded'
             WHERE help_offers.id = %s;
             """,
             [help_offer_id],

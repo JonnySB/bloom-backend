@@ -565,12 +565,20 @@ def test_find_offers_by_user_id(db_connection, test_web_address):
     assert response.status_code == 200
     assert response.json() == [
         {
-            "bid": 50.0,
-            "id": 1,
-            "message": "Offering help",
-            "request_id": 1,
-            "status": "pending",
-            "user_id": 1,
+            "help_offer_avatar_url_string": "test_image1.png",
+            "help_offer_bid": 50.0,
+            "help_offer_first_name": "user",
+            "help_offer_id": 1,
+            "help_offer_last_name": "1",
+            "help_offer_message": "Offering help",
+            "help_offer_status": "pending",
+            "help_offer_user_id": 1,
+            "help_offer_username": "user1",
+            "help_request_end_date": "Wed, 01 Mar 2023 00:00:00 GMT",
+            "help_request_id": 1,
+            "help_request_name": "title_01",
+            "help_request_start_date": "Wed, 01 Feb 2023 00:00:00 GMT",
+            "help_request_user_id": 1,
         }
     ]
 
@@ -769,4 +777,3 @@ def test_select_chat_by_id(db_connection, test_web_address):
         }
     ]
     assert response.json() == chat
-
