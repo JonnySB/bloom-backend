@@ -1,20 +1,22 @@
 import os
+
+from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 from flask.helpers import get_flashed_messages
-from lib.database_connection import get_flask_database_connection
+from flask_cors import CORS, cross_origin
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required
-from dotenv import load_dotenv
-from flask_cors import CORS
-from lib.repositories.plants_repository import PlantsRepository
-from lib.repositories.plants_user_repository import PlantsUserRepository
-from lib.models.user import User
-from lib.repositories.user_repository import UserRepository
-from lib.repositories.help_offer_repository import HelpOfferRepository
+
+from lib.database_connection import get_flask_database_connection
 from lib.models.help_offer import HelpOffer
 from lib.models.help_request import HelpRequest
-from lib.repositories.help_request_repository import HelpRequestRepository
 from lib.models.received_offer import ReceivedOffer
+from lib.models.user import User
+from lib.repositories.help_offer_repository import HelpOfferRepository
+from lib.repositories.help_request_repository import HelpRequestRepository
+from lib.repositories.plants_repository import PlantsRepository
+from lib.repositories.plants_user_repository import PlantsUserRepository
 from lib.repositories.received_offers_repository import ReceivedOffersRepository
+from lib.repositories.user_repository import UserRepository
 
 # load .env file variables see readme details
 load_dotenv()
@@ -231,6 +233,7 @@ def accept_help_offer(help_offer_id):
 # UNTESTED
 @app.route("/help_offers/reject_offer/<help_offer_id>", methods=["PUT"])
 # @jwt_required()
+@cross_origin()
 def reject_help_offer(help_offer_id):
     connection = get_flask_database_connection(app)
     help_offers_repository = HelpOfferRepository(connection)
