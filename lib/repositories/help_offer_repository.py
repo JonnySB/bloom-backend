@@ -131,3 +131,15 @@ class HelpOfferRepository:
             """,
             [help_offer_id],
         )
+
+    # recind help offer
+    # UNTESTED
+    def recind_help_offer(self, help_offer_id):
+        self.connection.execute(
+            """
+            UPDATE help_offers 
+            SET status='recind'
+            WHERE help_offers.id = %s;
+            """,
+            [help_offer_id],
+        )

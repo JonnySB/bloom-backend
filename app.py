@@ -11,16 +11,16 @@ from flask_jwt_extended import JWTManager, create_access_token, jwt_required
 from flask_socketio import SocketIO, emit, join_room, leave_room
 
 from lib.database_connection import get_flask_database_connection
+from lib.models.extended_help_offer import ExtendedHelpOffer
 from lib.models.help_offer import HelpOffer
 from lib.models.help_request import HelpRequest
-from lib.models.help_offer_extended import HelpOfferExtended
 from lib.models.user import User
 from lib.repositories.chat_repository import ChatRepository
+from lib.repositories.extended_help_offer_repository import ExtendedHelpOfferRepository
 from lib.repositories.help_offer_repository import HelpOfferRepository
 from lib.repositories.help_request_repository import HelpRequestRepository
 from lib.repositories.plants_repository import PlantsRepository
 from lib.repositories.plants_user_repository import PlantsUserRepository
-from lib.repositories.help_offer_extended_repository import HelpOfferExtendedRepository
 from lib.repositories.user_repository import UserRepository
 
 # load .env file variables see readme details
@@ -199,13 +199,13 @@ def create_help_offer(help_request_id):
 @cross_origin()
 def received_help_offers_by_user_id(user_id):
     connection = get_flask_database_connection(app)
-    help_offer_extended_repostitory = HelpOfferExtendedRepository(connection)
-    help_offer_extended = help_offer_extended_repostitory.get_all_help_offer_extended_for_user(
-        user_id
+    extended_help_offer_repostitory = ExtendedHelpOfferRepository(connection)
+    extended_help_offer = (
+        extended_help_offer_repostitory.get_all_received_extended_help_offers(user_id)
     )
 
     help_offered = []
-    for offer in help_offer_extended:
+    for offer in extended_help_offer:
         offer_obj = {
             "help_request_id": offer.help_request_id,
             "help_request_start_date": offer.help_request_start_date,
@@ -258,7 +258,6 @@ def accept_help_offer(help_offer_id):
 @app.route("/help_offers/reject_offer/<help_offer_id>", methods=["PUT"])
 # @jwt_required()
 @cross_origin()
-@cross_origin()
 def reject_help_offer(help_offer_id):
     connection = get_flask_database_connection(app)
     help_offers_repository = HelpOfferRepository(connection)
@@ -266,6 +265,54 @@ def reject_help_offer(help_offer_id):
     help_offers_repository.reject_help_offer(help_offer_id)
 
     return jsonify({"msg": "Help offer rejected"}), 200
+
+
+# return array of offers made by a particular user (user_id)
+# UNTESTED
+@app.route("/help_offers/<user_id>")
+# @jwt_required()
+@cross_origin()
+def outgoing_help_offers_by_user_id(user_id):
+    connection = get_flask_database_connection(app)
+    extended_help_offer_repostitory = ExtendedHelpOfferRepository(connection)
+    extended_help_offer = (
+        extended_help_offer_repostitory.get_all_outgoing_extended_help_offers(user_id)
+    )
+
+    help_offered = []
+    for offer in extended_help_offer:
+        offer_obj = {
+            "help_request_id": offer.help_request_id,
+            "help_request_start_date": offer.help_request_start_date,
+            "help_request_end_date": offer.help_request_end_date,
+            "help_request_name": offer.help_request_name,
+            "help_request_user_id": offer.help_request_user_id,
+            "help_offer_id": offer.help_offer_id,
+            "help_offer_message": offer.help_offer_message,
+            "help_offer_status": offer.help_offer_status,
+            "help_offer_user_id": offer.help_offer_user_id,
+            "help_offer_bid": offer.help_offer_bid,
+            "help_offer_first_name": offer.help_offer_first_name,
+            "help_offer_last_name": offer.help_offer_last_name,
+            "help_offer_avatar_url_string": offer.help_offer_avatar_url_string,
+            "help_offer_username": offer.help_offer_username,
+        }
+        help_offered.append(offer_obj)
+    return jsonify(help_offered)
+
+
+# reject help offer
+# UNTESTED
+@app.route("/help_offers/recind_offer/<help_offer_id>", methods=["PUT"])
+# @jwt_required()
+@cross_origin()
+def recind_help_offer(help_offer_id):
+    connection = get_flask_database_connection(app)
+    help_offers_repository = HelpOfferRepository(connection)
+
+    help_offers_repository.recind_help_offer(help_offer_id)
+
+    return jsonify({"msg": "Help offer recinded"}), 200
 
 
 # Help Request Routes
@@ -572,4 +619,3 @@ if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5001))
     print(f" * Running on http://127.0.0.1:{port}")
     socketio.run(app, debug=True, port=port, use_reloader=False)
-
