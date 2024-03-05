@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
@@ -6,25 +7,24 @@ from flask.helpers import get_flashed_messages
 from flask_cors import CORS, cross_origin
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required
 
+# dependecies for livechat
+from flask_socketio import SocketIO, emit, join_room, leave_room
+
 from lib.database_connection import get_flask_database_connection
 from lib.models.help_offer import HelpOffer
 from lib.models.help_request import HelpRequest
 from lib.models.received_offer import ReceivedOffer
 from lib.models.user import User
+from lib.repositories.chat_repository import ChatRepository
 from lib.repositories.help_offer_repository import HelpOfferRepository
 from lib.repositories.help_request_repository import HelpRequestRepository
 from lib.repositories.plants_repository import PlantsRepository
 from lib.repositories.plants_user_repository import PlantsUserRepository
-from lib.repositories.chat_repository import ChatRepository
-from lib.models.user import User
 from lib.repositories.received_offers_repository import ReceivedOffersRepository
 from lib.repositories.user_repository import UserRepository
-from datetime import timedelta
 
 # load .env file variables see readme details
 
-#dependecies for livechat
-from flask_socketio import SocketIO, emit, join_room , leave_room
 load_dotenv()
 
 
@@ -33,11 +33,22 @@ app = Flask(__name__)
 
 # Token Setup
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
-app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(days=1)  # I JUST ADD THIS FOR NOW SO THE TOKEN DON"T KEEP EXIRING PLEASE REMOVE LATER.
-CORS(app, resources={r"/messages/*": {"origins": "http://localhost:5173"}}, supports_credentials=True)
-socketio = SocketIO(app, cors_allowed_origins="*", logger=True, engineio_logger=True, async_mode='gevent') # we are allowing all origings just for development 
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(
+    days=1
+)  # I JUST ADD THIS FOR NOW SO THE TOKEN DON"T KEEP EXIRING PLEASE REMOVE LATER.
+CORS(
+    app,
+    resources={r"/messages/*": {"origins": "http://localhost:5173"}},
+    supports_credentials=True,
+)
+socketio = SocketIO(
+    app,
+    cors_allowed_origins="*",
+    logger=True,
+    engineio_logger=True,
+    async_mode="gevent",
+)  # we are allowing all origings just for development
 jwt = JWTManager(app)
-
 
 
 # Takes username / email and password from POST request
@@ -107,18 +118,17 @@ def create_user():
 
 # Takes user_id and returns user_details
 @app.route("/user_details/<id>")
-@cross_origin() # WE NEED TO PASS THE CORS ORIGIN IN ORDER TO ENABLE THE BROWSER TO MAKE REQUESTS FROM THE ORIGIN DOMAIN
+@cross_origin()  # WE NEED TO PASS THE CORS ORIGIN IN ORDER TO ENABLE THE BROWSER TO MAKE REQUESTS FROM THE ORIGIN DOMAIN
 def get_user_details(id):
     connection = get_flask_database_connection(app)
     user_repository = UserRepository(connection)
     user = user_repository.get_user_by_id(id)
 
-
     if user:
         return (
             jsonify(
                 {
-                    "id" : user.id,
+                    "id": user.id,
                     "first_name": user.first_name,
                     "last_name": user.last_name,
                     "username": user.username,
@@ -186,6 +196,7 @@ def create_help_offer(help_request_id):
 # UNTESTED
 @app.route("/help_offers/help_requests/<user_id>")
 # @jwt_required()
+@cross_origin()
 def received_help_offers_by_user_id(user_id):
     connection = get_flask_database_connection(app)
     received_offers_repostitory = ReceivedOffersRepository(connection)
@@ -219,6 +230,7 @@ def received_help_offers_by_user_id(user_id):
 # UNTESTED
 @app.route("/help_offers/accept_offer/<help_offer_id>", methods=["PUT"])
 # @jwt_required()
+@cross_origin()
 def accept_help_offer(help_offer_id):
     connection = get_flask_database_connection(app)
     help_offers_repository = HelpOfferRepository(connection)
@@ -245,6 +257,7 @@ def accept_help_offer(help_offer_id):
 # UNTESTED
 @app.route("/help_offers/reject_offer/<help_offer_id>", methods=["PUT"])
 # @jwt_required()
+@cross_origin()
 @cross_origin()
 def reject_help_offer(help_offer_id):
     connection = get_flask_database_connection(app)
@@ -279,37 +292,43 @@ def get_all_help_requests():
         return jsonify(request_data), 200
     return jsonify({"message": "Unable to find all requests"}), 400
 
-@app.route('/help_requests2', methods=['GET'])
+
+@app.route("/help_requests2", methods=["GET"])
 def get_all_help_requests_with_user_details():
     connection = get_flask_database_connection(app)
     request_repository = HelpRequestRepository(connection)
-    help_requests_with_users = request_repository.get_all_help_requests_with_user_first_name_and_last_name()
-    
+    help_requests_with_users = (
+        request_repository.get_all_help_requests_with_user_first_name_and_last_name()
+    )
+
     response_data = []
     for help_request, user_details in help_requests_with_users:
-        response_data.append({
-            "id": help_request.id,
-            "date": help_request.date.strftime("%Y-%m-%d %H:%M:%S"),
-            "title": help_request.title,
-            "message": help_request.message,
-            "start_date": help_request.start_date.strftime("%Y-%m-%d"),
-            "end_date": help_request.end_date.strftime("%Y-%m-%d"),
-            "user_id": help_request.user_id,
-            "maxprice": help_request.maxprice,
-            "first_name": user_details["first_name"], 
-            "last_name": user_details["last_name"],
-            "username": user_details["username"],
-            "avatar_url_string": user_details["avatar_url_string"]
-        })
-    
+        response_data.append(
+            {
+                "id": help_request.id,
+                "date": help_request.date.strftime("%Y-%m-%d %H:%M:%S"),
+                "title": help_request.title,
+                "message": help_request.message,
+                "start_date": help_request.start_date.strftime("%Y-%m-%d"),
+                "end_date": help_request.end_date.strftime("%Y-%m-%d"),
+                "user_id": help_request.user_id,
+                "maxprice": help_request.maxprice,
+                "first_name": user_details["first_name"],
+                "last_name": user_details["last_name"],
+                "username": user_details["username"],
+                "avatar_url_string": user_details["avatar_url_string"],
+            }
+        )
+
     return jsonify(response_data), 200
 
-@app.route('/help_requests/<request_id>', methods=['GET'])
+
+@app.route("/help_requests/<request_id>", methods=["GET"])
 def get_one_help_request_by_id(request_id):
     connection = get_flask_database_connection(app)
     request_repository = HelpRequestRepository(connection)
     request_with_user_details = request_repository.find_request_by_id(request_id)
-    
+
     if request_with_user_details:
         help_request, user_details = request_with_user_details
         response_data = {
@@ -322,14 +341,14 @@ def get_one_help_request_by_id(request_id):
             "user_id": help_request.user_id,
             "maxprice": help_request.maxprice,
             "user_details": {
-                "first_name": user_details["first_name"], 
+                "first_name": user_details["first_name"],
                 "last_name": user_details["last_name"],
                 "username": user_details["username"],
-                "avatar_url_string": user_details["avatar_url_string"]
-            }
+                "avatar_url_string": user_details["avatar_url_string"],
+            },
         }
         return jsonify(response_data), 200
-    return jsonify({"message" : "Help Request not found"}), 400
+    return jsonify({"message": "Help Request not found"}), 400
 
 
 @app.route("/help_requests/user/<user_id>", methods=["GET"])
@@ -441,8 +460,11 @@ def assign_plant_to_user():
     repository.assign_plant_to_user(user_id, plant_id, quantity)
     access_token = create_access_token(identity=user_id)
 
+    return (
+        jsonify({"message": "Plant assigned successfully", "token": access_token}),
+        200,
+    )
 
-    return jsonify({"message": "Plant assigned successfully", "token": access_token}), 200
 
 @app.route("/plants/user/update", methods=["POST"])
 @jwt_required()
@@ -456,7 +478,12 @@ def update_plants_quantity():
     repository.update_plants_quantity(user_id, plant_id, new_quantity)
     access_token = create_access_token(identity=user_id)
 
-    return jsonify({"message": "Plant quantity updated successfully", "token": access_token}), 200
+    return (
+        jsonify(
+            {"message": "Plant quantity updated successfully", "token": access_token}
+        ),
+        200,
+    )
 
 
 @app.route("/plants/user/delete", methods=["DELETE"])
@@ -472,10 +499,8 @@ def delete_plants_from_user():
     return jsonify({"message": "Plant deleted successfully"}), 200
 
 
-
-
-#Show all chats by user
-@app.route('/messages/user/<user_id>', methods=['GET'])
+# Show all chats by user
+@app.route("/messages/user/<user_id>", methods=["GET"])
 @jwt_required()
 def get_chats_by_user_id(user_id):
     connection = get_flask_database_connection(app)
@@ -483,55 +508,58 @@ def get_chats_by_user_id(user_id):
     messages = repository.find_messages_by_userid(user_id)
     all_messages = []
     for message_info in messages:
-        receiver_username = message_info['receiver_username']
-        sender_username = message_info['sender_username']
-        message = message_info['message']
+        receiver_username = message_info["receiver_username"]
+        sender_username = message_info["sender_username"]
+        message = message_info["message"]
         message_obj = {
             "id": message.id,
             "recipient_id": message.recipient_id,
             "message": message.message,
             "start_date": message.start_date,
-            "end_date" : message.end_date,
+            "end_date": message.end_date,
             "sender_id": message.sender_id,
-            "receiver_username" : receiver_username,
-            "sender_username" : sender_username
+            "receiver_username": receiver_username,
+            "sender_username": sender_username,
         }
         all_messages.append(message_obj)
-    
+
     return jsonify(all_messages), 200
 
 
-@app.route('/messages', methods=['POST'])
+@app.route("/messages", methods=["POST"])
 @jwt_required()
 def post_messages():
     connection = get_flask_database_connection(app)
     repository = ChatRepository(connection)
-    get_message = request.json.get('content')
-    receiver_id = request.json.get('receiverId')
-    receiver_username = request.json.get('receiver_username')
-    sender_username = request.json.get('sender_username')
-    user_id = request.json.get('userId')
-  
-    send_message = repository.create(user_id, receiver_id, get_message, receiver_username, sender_username)
+    get_message = request.json.get("content")
+    receiver_id = request.json.get("receiverId")
+    receiver_username = request.json.get("receiver_username")
+    sender_username = request.json.get("sender_username")
+    user_id = request.json.get("userId")
 
-    socketio.emit('new_messages', {'messages': send_message}, room=user_id)
+    send_message = repository.create(
+        user_id, receiver_id, get_message, receiver_username, sender_username
+    )
+
+    socketio.emit("new_messages", {"messages": send_message}, room=user_id)
     return jsonify({"message": "Message sent successfully"}), 200
 
 
-@socketio.on('join')
+@socketio.on("join")
 def on_join(data):
-    user_id = data['user_id']
+    user_id = data["user_id"]
     join_room(user_id)
-    socketio.emit('joined_room', {'message': 'You have joined the room.'}, room=user_id)
+    socketio.emit("joined_room", {"message": "You have joined the room."}, room=user_id)
 
-@socketio.on('leave')
+
+@socketio.on("leave")
 def on_leave(data):
-    user_id = data['user_id']
+    user_id = data["user_id"]
     leave_room(user_id)
-    socketio.emit('left_room', {'message': 'You have left the room.'}, room=user_id)
+    socketio.emit("left_room", {"message": "You have left the room."}, room=user_id)
 
 
-@app.route('/messages/<chat_id>', methods=['GET'])
+@app.route("/messages/<chat_id>", methods=["GET"])
 @jwt_required()
 def get_chats_by_chat_id(chat_id):
     connection = get_flask_database_connection(app)
@@ -544,3 +572,4 @@ if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5001))
     print(f" * Running on http://127.0.0.1:{port}")
     socketio.run(app, debug=True, port=port, use_reloader=False)
+
