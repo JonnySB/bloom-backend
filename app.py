@@ -54,6 +54,7 @@ jwt = JWTManager(app)
 # Takes username / email and password from POST request
 # Returns authentication token if good match, otherwise 401
 @app.route("/token", methods=["POST"])
+@cross_origin()
 def create_token():
     # get username or email and password
     username_email = request.json.get("username_email", None)
@@ -424,8 +425,9 @@ def get_plants():
     return jsonify(data_json), 200
 
 
-# Show all plants by user
-@app.route("/plants/user/<user_id>", methods=["GET"])
+#Show all plants by user
+@app.route('/plants/user/<user_id>', methods=['GET'])
+@cross_origin()
 @jwt_required()
 def get_plants_by_user(user_id):
     connection = get_flask_database_connection(app)
