@@ -383,8 +383,10 @@ def assign_plant_to_user():
     connection = get_flask_database_connection(app)
     repository = PlantsUserRepository(connection)
     repository.assign_plant_to_user(user_id, plant_id, quantity)
+    access_token = create_access_token(identity=user_id)
 
-    return jsonify({"message": "Plant assigned successfully"}), 200
+
+    return jsonify({"message": "Plant assigned successfully", "token": access_token}), 200
 
 
 @app.route('/plants/user/update', methods=['POST'])
@@ -397,8 +399,9 @@ def update_plants_quantity():
     connection = get_flask_database_connection(app)
     repository = PlantsUserRepository(connection)
     repository.update_plants_quantity(user_id, plant_id, new_quantity)
+    access_token = create_access_token(identity=user_id)
 
-    return jsonify({"message": "Plant quantity updated successfully"}), 200
+    return jsonify({"message": "Plant quantity updated successfully", "token": access_token}), 200
 
 
 @app.route('/plants/user/delete', methods=['DELETE'])
