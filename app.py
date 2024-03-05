@@ -7,23 +7,33 @@ from dotenv import load_dotenv
 from flask_cors import CORS
 from lib.repositories.plants_repository import PlantsRepository
 from lib.repositories.plants_user_repository import PlantsUserRepository
-
+from lib.repositories.chat_repository import ChatRepository
 from lib.models.user import User
 from lib.repositories.user_repository import UserRepository
 from lib.repositories.help_offer_repository import HelpOfferRepository
 from lib.models.help_offer import HelpOffer
 from lib.models.help_request import HelpRequest
 from lib.repositories.help_request_repository import HelpRequestRepository
+from datetime import timedelta
+from flask_cors import cross_origin
 
 # load .env file variables see readme details
+
+#dependecies for livechat
+from flask_socketio import SocketIO, emit, join_room , leave_room
 load_dotenv()
 
+
 app = Flask(__name__)
-CORS(app)
+
 
 # Token Setup
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(days=1)  # I JUST ADD THIS FOR NOW SO THE TOKEN DON"T KEEP EXIRING PLEASE REMOVE LATER.
+CORS(app, resources={r"/messages/*": {"origins": "http://localhost:5173"}}, supports_credentials=True)
+socketio = SocketIO(app, cors_allowed_origins="*", logger=True, engineio_logger=True, async_mode='gevent') # we are allowing all origings just for development 
 jwt = JWTManager(app)
+
 
 
 # Takes username / email and password from POST request
@@ -93,17 +103,18 @@ def create_user():
 
 # Takes user_id and returns user_details
 @app.route("/user_details/<id>")
+@cross_origin() # WE NEED TO PASS THE CORS ORIGIN IN ORDER TO ENABLE THE BROWSER TO MAKE REQUESTS FROM THE ORIGIN DOMAIN
 def get_user_details(id):
     connection = get_flask_database_connection(app)
     user_repository = UserRepository(connection)
     user = user_repository.get_user_by_id(id)
 
-    print(user)
 
     if user:
         return (
             jsonify(
                 {
+                    "id" : user.id,
                     "first_name": user.first_name,
                     "last_name": user.last_name,
                     "username": user.username,
@@ -371,5 +382,75 @@ def delete_plants_from_user():
     return jsonify({"message": "Plant deleted successfully"}), 200
 
 
+
+
+#Show all chats by user
+@app.route('/messages/user/<user_id>', methods=['GET'])
+@jwt_required()
+def get_chats_by_user_id(user_id):
+    connection = get_flask_database_connection(app)
+    repository = ChatRepository(connection)
+    messages = repository.find_messages_by_userid(user_id)
+    all_messages = []
+    for message_info in messages:
+        receiver_username = message_info['receiver_username']
+        sender_username = message_info['sender_username']
+        message = message_info['message']
+        message_obj = {
+            "id": message.id,
+            "recipient_id": message.recipient_id,
+            "message": message.message,
+            "start_date": message.start_date,
+            "end_date" : message.end_date,
+            "sender_id": message.sender_id,
+            "receiver_username" : receiver_username,
+            "sender_username" : sender_username
+        }
+        all_messages.append(message_obj)
+    
+    return jsonify(all_messages), 200
+
+
+@app.route('/messages', methods=['POST'])
+@jwt_required()
+def post_messages():
+    connection = get_flask_database_connection(app)
+    repository = ChatRepository(connection)
+    get_message = request.json.get('content')
+    receiver_id = request.json.get('receiverId')
+    receiver_username = request.json.get('receiver_username')
+    sender_username = request.json.get('sender_username')
+    user_id = request.json.get('userId')
+  
+    send_message = repository.create(user_id, receiver_id, get_message, receiver_username, sender_username)
+
+    socketio.emit('new_messages', {'messages': send_message}, room=user_id)
+    return jsonify({"message": "Message sent successfully"}), 200
+
+
+@socketio.on('join')
+def on_join(data):
+    user_id = data['user_id']
+    join_room(user_id)
+    socketio.emit('joined_room', {'message': 'You have joined the room.'}, room=user_id)
+
+@socketio.on('leave')
+def on_leave(data):
+    user_id = data['user_id']
+    leave_room(user_id)
+    socketio.emit('left_room', {'message': 'You have left the room.'}, room=user_id)
+
+
+@app.route('/messages/<chat_id>', methods=['GET'])
+@jwt_required()
+def get_chats_by_chat_id(chat_id):
+    connection = get_flask_database_connection(app)
+    repository = ChatRepository(connection)
+    messages = repository.find_message_by_chat_id(chat_id)
+    return jsonify(messages), 200
+
+
 if __name__ == "__main__":
-    app.run(debug=True, port=int(os.environ.get("PORT", 5001)))
+    port = int(os.environ.get("PORT", 5001))
+    print(f" * Running on http://127.0.0.1:{port}")
+    socketio.run(app, debug=True, port=port, use_reloader=False)
