@@ -142,29 +142,29 @@ def get_user_details(id):
     return jsonify({"msg": "User not found"}), 400
 
 
-# get all help offers made by a specific user
-@app.route("/help_offers/<user_id>", methods=["GET"])
-def find_offers_by_user_id(user_id):
-
-    # connect to db and set up offer repository
-    connection = get_flask_database_connection(app)
-    offer_repository = HelpOfferRepository(connection)
-
-    # returns array of HelpOffer object IDs made by user matching user_id
-    offers_by_user = offer_repository.find_by_user(user_id)
-    user_offers = []
-    for offer in offers_by_user:
-        offer_obj = {
-            "id": offer.id,
-            "user_id": offer.user_id,
-            "request_id": offer.request_id,
-            "message": offer.message,
-            "bid": offer.bid,
-            "status": offer.status,
-        }
-        user_offers.append(offer_obj)
-
-    return jsonify(user_offers), 200
+# # get all help offers made by a specific user
+# @app.route("/help_offers/<user_id>", methods=["GET"])
+# def find_offers_by_user_id(user_id):
+#
+#     # connect to db and set up offer repository
+#     connection = get_flask_database_connection(app)
+#     offer_repository = HelpOfferRepository(connection)
+#
+#     # returns array of HelpOffer object IDs made by user matching user_id
+#     offers_by_user = offer_repository.find_by_user(user_id)
+#     user_offers = []
+#     for offer in offers_by_user:
+#         offer_obj = {
+#             "id": offer.id,
+#             "user_id": offer.user_id,
+#             "request_id": offer.request_id,
+#             "message": offer.message,
+#             "bid": offer.bid,
+#             "status": offer.status,
+#         }
+#         user_offers.append(offer_obj)
+#
+#     return jsonify(user_offers), 200
 
 
 # create a new help offer for a help request
@@ -194,7 +194,6 @@ def create_help_offer(help_request_id):
 
 
 # return array of offers made to a particular user (user_id)
-# UNTESTED
 @app.route("/help_offers/help_requests/<user_id>")
 # @jwt_required()
 @cross_origin()
@@ -269,7 +268,6 @@ def reject_help_offer(help_offer_id):
 
 
 # return array of offers made by a particular user (user_id)
-# UNTESTED
 @app.route("/help_offers/<user_id>")
 # @jwt_required()
 @cross_origin()
@@ -472,8 +470,8 @@ def get_plants():
     return jsonify(data_json), 200
 
 
-#Show all plants by user
-@app.route('/plants/user/<user_id>', methods=['GET'])
+# Show all plants by user
+@app.route("/plants/user/<user_id>", methods=["GET"])
 @cross_origin()
 @jwt_required()
 def get_plants_by_user(user_id):
