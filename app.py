@@ -351,6 +351,7 @@ def get_plants():
 
 #Show all plants by user
 @app.route('/plants/user/<user_id>', methods=['GET'])
+@cross_origin()
 @jwt_required()
 def get_plants_by_user(user_id):
     connection = get_flask_database_connection(app)
