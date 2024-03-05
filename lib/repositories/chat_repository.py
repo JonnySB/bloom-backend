@@ -1,7 +1,6 @@
 from lib.models.chat import Chat
 from datetime import datetime, timedelta
 
-
 class ChatRepository:
     def __init__(self, connection):
         self._connection = connection
@@ -31,9 +30,6 @@ class ChatRepository:
             }
             messages.append(message)
         return messages
-
-        
-    
         # the logic is we will only show messages that are 30 days old to avoid creating multiple messages in the database. if there is a chat between the users within the last 30 days, then we will append the new message to an array,
         #otherwise we will create a new message
     

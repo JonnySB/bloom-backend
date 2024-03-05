@@ -42,6 +42,7 @@ def test_can_get_all_help_requests(db_connection):
         )
     ]
 
+
 def test_can_find_help_request_by_id(db_connection):
     db_connection.seed("seeds/bloom.sql")
     repository = HelpRequestRepository(db_connection)
@@ -64,6 +65,8 @@ def test_can_find_help_request_by_id(db_connection):
         "avatar_url_string": "test_image1.png"
     }
 
+
+    
     assert result[0] == expected_help_request
     assert result[1] == expected_user_details
     
@@ -149,6 +152,7 @@ def test_create_new_help_request_with_fields(db_connection):
             60.0
         )
     ]
+
 
 def test_can_delete_request(db_connection):
     db_connection.seed("seeds/bloom.sql")
@@ -283,11 +287,13 @@ def test_can_find_title_substring_from_requests(db_connection):
         )
     ]
 
+
 def test_can_find_no_requests_from_given_substring(db_connection):
     db_connection.seed("seeds/bloom.sql")
     repository = HelpRequestRepository(db_connection)
 
     assert repository.find_requests_by_title_substring("water") == []
+
 
 def test_can_find_one_request_from_given_substring(db_connection):
     db_connection.seed("seeds/bloom.sql")
@@ -305,6 +311,7 @@ def test_can_find_one_request_from_given_substring(db_connection):
             60.0
         )
     ]
+
 
 def test_can_find_all_help_requests_by_user_id(db_connection):
     db_connection.seed("seeds/bloom.sql")

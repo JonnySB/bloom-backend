@@ -127,4 +127,5 @@ INSERT INTO help_requests (date, title, message, start_date, end_date, user_id, 
 INSERT INTO help_requests (date, title, message, start_date, end_date, user_id, maxprice) VALUES ('2023-10-20 10:23:54', 'title_02', 'message requesting help 2', '2023-02-03', '2023-03-03', 2, 60);
 INSERT INTO help_requests (date, title, message, start_date, end_date, user_id, maxprice) VALUES ('2023-10-19 10:23:54', 't_03', 'message requesting help 3', '2023-02-01', '2023-03-01', 1, 80);
 INSERT INTO help_offers (message, status, user_id, request_id, bid) VALUES ('Offering help', 'pending', 1, 1, '50');
-
+INSERT INTO help_offers (message, status, user_id, request_id, bid) VALUES ('I am super expensive', 'pending', 2, 1, '100');
+INSERT INTO help_offers (message, status, user_id, request_id, bid) VALUES ('I am mid priced!', 'pending', 3, 1, '75');

@@ -1,7 +1,6 @@
 from lib.models.plants_user import PlantsUser
 
 
-
 def test_construction():
     plant_user = PlantsUser(1, 1, 1, 1)
     assert plant_user.id == 1
