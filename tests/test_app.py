@@ -779,6 +779,7 @@ def test_select_chat_by_id(db_connection, test_web_address):
     assert response.json() == chat
 
 
+
 def test_edit_user_details(db_connection, test_web_address):
     db_connection.seed("seeds/bloom.sql")
     login_data = {"username_email": "user1", "password": "Password123!"}
@@ -815,3 +816,4 @@ def test_edit_user_details(db_connection, test_web_address):
     assert updated_user_details["username"] == "UpdatedUsername"
     assert updated_user_details["email"] == "updated@email.com"
     assert updated_user_details["address"] == "Updated Address"
+

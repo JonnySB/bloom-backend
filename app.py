@@ -12,6 +12,7 @@ from flask_socketio import SocketIO, emit, join_room, leave_room
 
 from lib.database_connection import get_flask_database_connection
 from lib.models.extended_help_offer import ExtendedHelpOffer
+
 from lib.models.help_offer import HelpOffer
 from lib.models.help_request import HelpRequest
 from lib.models.user import User
@@ -23,12 +24,13 @@ from lib.repositories.plants_repository import PlantsRepository
 from lib.repositories.plants_user_repository import PlantsUserRepository
 from lib.repositories.user_repository import UserRepository
 from lib.repositories.help_offer_repository import HelpOfferRepository
-from lib.models.help_offer import HelpOffer
-from lib.models.help_request import HelpRequest
-from lib.repositories.help_request_repository import HelpRequestRepository
+
+
 from datetime import timedelta
 from flask_cors import cross_origin
 from flask import make_response
+
+
 # load .env file variables see readme details
 
 load_dotenv()
@@ -39,10 +41,16 @@ app = Flask(__name__)
 
 # Token Setup
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
+
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(days=1)  # I JUST ADD THIS FOR NOW SO THE TOKEN DON"T KEEP EXIRING PLEASE REMOVE LATER.
 # CORS(app, resources={r"/messages/*": {"origins": "http://localhost:5173"}}, supports_credentials=True)
 CORS(app, supports_credentials=True)
 socketio = SocketIO(app, cors_allowed_origins="*", logger=True, engineio_logger=True, async_mode='gevent') # we are allowing all origings just for development 
+
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(
+    days=1
+)  # I JUST ADD THIS FOR NOW SO THE TOKEN DON"T KEEP EXIRING PLEASE REMOVE LATER.
+
 jwt = JWTManager(app)
 
 
@@ -137,6 +145,7 @@ def get_user_details(id):
     return jsonify({"msg": "User not found"}), 400
 
 
+
 # Takes user_id and updates the user_details
 @app.route("/edit_user_details/<int:id>", methods=['PUT', 'OPTIONS'])
 @jwt_required()
@@ -197,6 +206,31 @@ def find_offers_by_user_id(user_id):
 
     return jsonify(user_offers), 200
 
+# # get all help offers made by a specific user
+# @app.route("/help_offers/<user_id>", methods=["GET"])
+# def find_offers_by_user_id(user_id):
+#
+#     # connect to db and set up offer repository
+#     connection = get_flask_database_connection(app)
+#     offer_repository = HelpOfferRepository(connection)
+#
+#     # returns array of HelpOffer object IDs made by user matching user_id
+#     offers_by_user = offer_repository.find_by_user(user_id)
+#     user_offers = []
+#     for offer in offers_by_user:
+#         offer_obj = {
+#             "id": offer.id,
+#             "user_id": offer.user_id,
+#             "request_id": offer.request_id,
+#             "message": offer.message,
+#             "bid": offer.bid,
+#             "status": offer.status,
+#         }
+#         user_offers.append(offer_obj)
+#
+#     return jsonify(user_offers), 200
+
+
 
 # create a new help offer for a help request
 @app.route("/help_offers/<help_request_id>", methods=["POST"])
@@ -235,6 +269,7 @@ def received_help_offers_by_user_id(user_id):
         extended_help_offer_repostitory.get_all_received_extended_help_offers(user_id)
     )
 
+
     help_offered = []
     for offer in extended_help_offer:
         offer_obj = {
@@ -255,6 +290,7 @@ def received_help_offers_by_user_id(user_id):
         }
         help_offered.append(offer_obj)
     return jsonify(help_offered)
+
 
 
 # accept help offer
