@@ -84,6 +84,7 @@ def create_token():
 # creates user in database
 # return 201 if okay, otherwise 401
 @app.route("/user/signup", methods=["POST"])
+@cross_origin()
 def create_user():
     # NOTE - form validation must be handled on the front end to ensure that
     # appropriate fields are completed. e.g. first_name != "" etc.
@@ -234,6 +235,7 @@ def find_offers_by_user_id(user_id):
 
 # create a new help offer for a help request
 @app.route("/help_offers/<help_request_id>", methods=["POST"])
+@cross_origin()
 @jwt_required()
 def create_help_offer(help_request_id):
     try:
@@ -246,7 +248,7 @@ def create_help_offer(help_request_id):
         request_id = help_request_id
         message = request.json.get("message")
         bid = request.json.get("bid")
-        status = request.json.get("status")
+        status = "pending"
 
         new_offer = HelpOffer(None, user_id, request_id, message, bid, status)
 
@@ -407,6 +409,7 @@ def get_all_help_requests():
 
 
 @app.route("/help_requests2", methods=["GET"])
+@cross_origin()
 def get_all_help_requests_with_user_details():
     connection = get_flask_database_connection(app)
     request_repository = HelpRequestRepository(connection)
@@ -437,6 +440,7 @@ def get_all_help_requests_with_user_details():
 
 
 @app.route("/help_requests/<request_id>", methods=["GET"])
+@cross_origin()
 def get_one_help_request_by_id(request_id):
     connection = get_flask_database_connection(app)
     request_repository = HelpRequestRepository(connection)
@@ -466,6 +470,7 @@ def get_one_help_request_by_id(request_id):
 
 @app.route("/help_requests/user/<user_id>", methods=["GET"])
 @jwt_required()
+@cross_origin()
 def get_all_requests_made_by_one_user(user_id):
     connection = get_flask_database_connection(app)
     request_repository = HelpRequestRepository(connection)
@@ -485,14 +490,13 @@ def get_all_requests_made_by_one_user(user_id):
         }
         formatted_requests.append(formatted_request)
 
-    if formatted_requests:
-        return jsonify(formatted_requests), 200
-    else:
-        return jsonify({"message": "Help requests for current user not found"}), 400
+    return jsonify(formatted_requests), 200
+
 
 
 @app.route("/help_requests/create/<user_id>", methods=["POST"])
 @jwt_required()
+@cross_origin()
 def create_help_request(user_id):
     try:
         connection = get_flask_database_connection(app)
