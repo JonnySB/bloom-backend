@@ -2,7 +2,7 @@ import os
 from datetime import timedelta
 
 from dotenv import load_dotenv
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, make_response, request
 from flask.helpers import get_flashed_messages
 from flask_cors import CORS, cross_origin
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required
@@ -12,7 +12,6 @@ from flask_socketio import SocketIO, emit, join_room, leave_room
 
 from lib.database_connection import get_flask_database_connection
 from lib.models.extended_help_offer import ExtendedHelpOffer
-
 from lib.models.help_offer import HelpOffer
 from lib.models.help_request import HelpRequest
 from lib.models.user import User
@@ -23,13 +22,6 @@ from lib.repositories.help_request_repository import HelpRequestRepository
 from lib.repositories.plants_repository import PlantsRepository
 from lib.repositories.plants_user_repository import PlantsUserRepository
 from lib.repositories.user_repository import UserRepository
-from lib.repositories.help_offer_repository import HelpOfferRepository
-
-
-from datetime import timedelta
-from flask_cors import cross_origin
-from flask import make_response
-
 
 # load .env file variables see readme details
 
@@ -149,12 +141,11 @@ def get_user_details(id):
     return jsonify({"msg": "User not found"}), 400
 
 
-
 # Takes user_id and updates the user_details
-@app.route("/edit_user_details/<int:id>", methods=['PUT', 'OPTIONS'])
+@app.route("/edit_user_details/<int:id>", methods=["PUT", "OPTIONS"])
 @jwt_required()
 def edit_user_details(id):
-    if request.method == 'OPTIONS':
+    if request.method == "OPTIONS":
         response = make_response()
         response.headers["Access-Control-Allow-Origin"] = "*"
         response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
@@ -170,46 +161,23 @@ def edit_user_details(id):
         username = request.json.get("username")
         email = request.json.get("email")
         address = request.json.get("address")
-        user_repository.edit_user_details(id,first_name,last_name,username,email,address)
+        user_repository.edit_user_details(
+            id, first_name, last_name, username, email, address
+        )
         response = make_response(jsonify({"msg": "User updated successful"}), 200)
         print(response)
         return response
-       
+
     except Exception as e:
         print(f"Error processing PUT request: {e}")
         response = make_response(jsonify({"error": "Internal Server Error"}), 500)
         print(response)
-   
+
     response.headers["Access-Control-Allow-Origin"] = "*"
     return response
 
 
-
-
-# get all help offers made by a specific user
-@app.route("/help_offers/<user_id>", methods=["GET"])
-def find_offers_by_user_id(user_id):
-
-    # connect to db and set up offer repository
-    connection = get_flask_database_connection(app)
-    offer_repository = HelpOfferRepository(connection)
-
-    # returns array of HelpOffer object IDs made by user matching user_id
-    offers_by_user = offer_repository.find_by_user(user_id)
-    user_offers = []
-    for offer in offers_by_user:
-        offer_obj = {
-            "id": offer.id,
-            "user_id": offer.user_id,
-            "request_id": offer.request_id,
-            "message": offer.message,
-            "bid": offer.bid,
-            "status": offer.status,
-        }
-        user_offers.append(offer_obj)
-
-    return jsonify(user_offers), 200
-
+# CONFLICTS WITH NEEDED ROUTE
 # # get all help offers made by a specific user
 # @app.route("/help_offers/<user_id>", methods=["GET"])
 # def find_offers_by_user_id(user_id):
@@ -234,6 +202,29 @@ def find_offers_by_user_id(user_id):
 #
 #     return jsonify(user_offers), 200
 
+# # get all help offers made by a specific user
+# @app.route("/help_offers/<user_id>", methods=["GET"])
+# def find_offers_by_user_id(user_id):
+#
+#     # connect to db and set up offer repository
+#     connection = get_flask_database_connection(app)
+#     offer_repository = HelpOfferRepository(connection)
+#
+#     # returns array of HelpOffer object IDs made by user matching user_id
+#     offers_by_user = offer_repository.find_by_user(user_id)
+#     user_offers = []
+#     for offer in offers_by_user:
+#         offer_obj = {
+#             "id": offer.id,
+#             "user_id": offer.user_id,
+#             "request_id": offer.request_id,
+#             "message": offer.message,
+#             "bid": offer.bid,
+#             "status": offer.status,
+#         }
+#         user_offers.append(offer_obj)
+#
+#     return jsonify(user_offers), 200
 
 
 # create a new help offer for a help request
@@ -274,7 +265,6 @@ def received_help_offers_by_user_id(user_id):
         extended_help_offer_repostitory.get_all_received_extended_help_offers(user_id)
     )
 
-
     help_offered = []
     for offer in extended_help_offer:
         offer_obj = {
@@ -295,7 +285,6 @@ def received_help_offers_by_user_id(user_id):
         }
         help_offered.append(offer_obj)
     return jsonify(help_offered)
-
 
 
 # accept help offer
@@ -494,7 +483,6 @@ def get_all_requests_made_by_one_user(user_id):
         formatted_requests.append(formatted_request)
 
     return jsonify(formatted_requests), 200
-
 
 
 @app.route("/help_requests/create/<user_id>", methods=["POST"])
