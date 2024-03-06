@@ -189,7 +189,8 @@ def create_help_offer(help_request_id):
             raise ValueError("All required fields must be filled")
         offer_repository.create_offer(new_offer)
         return jsonify({"msg": "Help Offer Created"}), 201
-    except:
+    except Exception as e:
+        print(e)
         return jsonify({"msg": "Help offer creation unsuccessful"}), 400
 
 
