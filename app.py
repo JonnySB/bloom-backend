@@ -6,7 +6,6 @@ from flask import Flask, jsonify, request
 from flask.helpers import get_flashed_messages
 from flask_cors import CORS, cross_origin
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required
-
 # dependecies for livechat
 from flask_socketio import SocketIO, emit, join_room, leave_room
 
@@ -16,7 +15,8 @@ from lib.models.help_offer import HelpOffer
 from lib.models.help_request import HelpRequest
 from lib.models.user import User
 from lib.repositories.chat_repository import ChatRepository
-from lib.repositories.extended_help_offer_repository import ExtendedHelpOfferRepository
+from lib.repositories.extended_help_offer_repository import \
+    ExtendedHelpOfferRepository
 from lib.repositories.help_offer_repository import HelpOfferRepository
 from lib.repositories.help_request_repository import HelpRequestRepository
 from lib.repositories.plants_repository import PlantsRepository
@@ -36,11 +36,13 @@ app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(
     days=1
 )  # I JUST ADD THIS FOR NOW SO THE TOKEN DON"T KEEP EXIRING PLEASE REMOVE LATER.
-CORS(
-    app,
-    resources={r"/messages/*": {"origins": "http://localhost:5173"}},
-    supports_credentials=True,
-)
+# CORS(
+#     app,
+#     resources={r"/messages/*": {"origins": "http://localhost:5173"}},
+#     supports_credentials=True,
+# )
+CORS(app, supports_credentials=True)
+
 socketio = SocketIO(
     app,
     cors_allowed_origins="*",
@@ -195,7 +197,7 @@ def create_help_offer(help_request_id):
 
 # return array of offers made to a particular user (user_id)
 @app.route("/help_offers/help_requests/<user_id>")
-# @jwt_required()
+@jwt_required()
 @cross_origin()
 def received_help_offers_by_user_id(user_id):
     connection = get_flask_database_connection(app)
@@ -229,7 +231,7 @@ def received_help_offers_by_user_id(user_id):
 # accept help offer
 # UNTESTED
 @app.route("/help_offers/accept_offer/<help_offer_id>", methods=["PUT"])
-# @jwt_required()
+@jwt_required()
 @cross_origin()
 def accept_help_offer(help_offer_id):
     connection = get_flask_database_connection(app)
@@ -256,7 +258,7 @@ def accept_help_offer(help_offer_id):
 # reject help offer
 # UNTESTED
 @app.route("/help_offers/reject_offer/<help_offer_id>", methods=["PUT"])
-# @jwt_required()
+@jwt_required()
 @cross_origin()
 def reject_help_offer(help_offer_id):
     connection = get_flask_database_connection(app)
@@ -269,7 +271,7 @@ def reject_help_offer(help_offer_id):
 
 # return array of offers made by a particular user (user_id)
 @app.route("/help_offers/<user_id>")
-# @jwt_required()
+@jwt_required()
 @cross_origin()
 def outgoing_help_offers_by_user_id(user_id):
     connection = get_flask_database_connection(app)
@@ -303,7 +305,7 @@ def outgoing_help_offers_by_user_id(user_id):
 # reject help offer
 # UNTESTED
 @app.route("/help_offers/recind_offer/<help_offer_id>", methods=["PUT"])
-# @jwt_required()
+@jwt_required()
 @cross_origin()
 def recind_help_offer(help_offer_id):
     connection = get_flask_database_connection(app)
