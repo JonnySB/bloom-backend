@@ -520,6 +520,7 @@ def create_help_request(user_id):
 
 # Show all plants in DB
 @app.route("/plants", methods=["GET"])
+@cross_origin()
 def get_plants():
     connection = get_flask_database_connection(app)
     repository = PlantsRepository(connection)
@@ -563,6 +564,7 @@ def get_plants_by_user(user_id):
 
 
 @app.route("/plants/user/assign", methods=["POST"])
+@cross_origin()
 @jwt_required()
 def assign_plant_to_user():
     user_id = request.json.get("user_id")
@@ -581,6 +583,7 @@ def assign_plant_to_user():
 
 
 @app.route("/plants/user/update", methods=["POST"])
+@cross_origin()
 @jwt_required()
 def update_plants_quantity():
     user_id = request.json.get("user_id")
