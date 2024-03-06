@@ -12,6 +12,7 @@ from flask_socketio import SocketIO, emit, join_room, leave_room
 
 from lib.database_connection import get_flask_database_connection
 from lib.models.extended_help_offer import ExtendedHelpOffer
+
 from lib.models.help_offer import HelpOffer
 from lib.models.help_request import HelpRequest
 from lib.models.user import User
@@ -22,6 +23,13 @@ from lib.repositories.help_request_repository import HelpRequestRepository
 from lib.repositories.plants_repository import PlantsRepository
 from lib.repositories.plants_user_repository import PlantsUserRepository
 from lib.repositories.user_repository import UserRepository
+from lib.repositories.help_offer_repository import HelpOfferRepository
+
+
+from datetime import timedelta
+from flask_cors import cross_origin
+from flask import make_response
+
 
 # load .env file variables see readme details
 
@@ -79,6 +87,7 @@ def create_token():
 # creates user in database
 # return 201 if okay, otherwise 401
 @app.route("/user/signup", methods=["POST"])
+@cross_origin()
 def create_user():
     # NOTE - form validation must be handled on the front end to ensure that
     # appropriate fields are completed. e.g. first_name != "" etc.
@@ -140,6 +149,67 @@ def get_user_details(id):
     return jsonify({"msg": "User not found"}), 400
 
 
+
+# Takes user_id and updates the user_details
+@app.route("/edit_user_details/<int:id>", methods=['PUT', 'OPTIONS'])
+@jwt_required()
+def edit_user_details(id):
+    if request.method == 'OPTIONS':
+        response = make_response()
+        response.headers["Access-Control-Allow-Origin"] = "*"
+        response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+        response.headers["Access-Control-Allow-Methods"] = "PUT, OPTIONS"
+        return response
+
+    # PUT request processing
+    try:
+        connection = get_flask_database_connection(app)
+        user_repository = UserRepository(connection)
+        first_name = request.json.get("first_name")
+        last_name = request.json.get("last_name")
+        username = request.json.get("username")
+        email = request.json.get("email")
+        address = request.json.get("address")
+        user_repository.edit_user_details(id,first_name,last_name,username,email,address)
+        response = make_response(jsonify({"msg": "User updated successful"}), 200)
+        print(response)
+        return response
+       
+    except Exception as e:
+        print(f"Error processing PUT request: {e}")
+        response = make_response(jsonify({"error": "Internal Server Error"}), 500)
+        print(response)
+   
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    return response
+
+
+
+
+# get all help offers made by a specific user
+@app.route("/help_offers/<user_id>", methods=["GET"])
+def find_offers_by_user_id(user_id):
+
+    # connect to db and set up offer repository
+    connection = get_flask_database_connection(app)
+    offer_repository = HelpOfferRepository(connection)
+
+    # returns array of HelpOffer object IDs made by user matching user_id
+    offers_by_user = offer_repository.find_by_user(user_id)
+    user_offers = []
+    for offer in offers_by_user:
+        offer_obj = {
+            "id": offer.id,
+            "user_id": offer.user_id,
+            "request_id": offer.request_id,
+            "message": offer.message,
+            "bid": offer.bid,
+            "status": offer.status,
+        }
+        user_offers.append(offer_obj)
+
+    return jsonify(user_offers), 200
+
 # # get all help offers made by a specific user
 # @app.route("/help_offers/<user_id>", methods=["GET"])
 # def find_offers_by_user_id(user_id):
@@ -165,8 +235,10 @@ def get_user_details(id):
 #     return jsonify(user_offers), 200
 
 
+
 # create a new help offer for a help request
 @app.route("/help_offers/<help_request_id>", methods=["POST"])
+@cross_origin()
 @jwt_required()
 def create_help_offer(help_request_id):
     try:
@@ -179,7 +251,7 @@ def create_help_offer(help_request_id):
         request_id = help_request_id
         message = request.json.get("message")
         bid = request.json.get("bid")
-        status = request.json.get("status")
+        status = "pending"
 
         new_offer = HelpOffer(None, user_id, request_id, message, bid, status)
 
@@ -202,6 +274,7 @@ def received_help_offers_by_user_id(user_id):
         extended_help_offer_repostitory.get_all_received_extended_help_offers(user_id)
     )
 
+
     help_offered = []
     for offer in extended_help_offer:
         offer_obj = {
@@ -222,6 +295,7 @@ def received_help_offers_by_user_id(user_id):
         }
         help_offered.append(offer_obj)
     return jsonify(help_offered)
+
 
 
 # accept help offer
@@ -338,6 +412,7 @@ def get_all_help_requests():
 
 
 @app.route("/help_requests2", methods=["GET"])
+@cross_origin()
 def get_all_help_requests_with_user_details():
     connection = get_flask_database_connection(app)
     request_repository = HelpRequestRepository(connection)
@@ -368,6 +443,7 @@ def get_all_help_requests_with_user_details():
 
 
 @app.route("/help_requests/<request_id>", methods=["GET"])
+@cross_origin()
 def get_one_help_request_by_id(request_id):
     connection = get_flask_database_connection(app)
     request_repository = HelpRequestRepository(connection)
@@ -397,6 +473,7 @@ def get_one_help_request_by_id(request_id):
 
 @app.route("/help_requests/user/<user_id>", methods=["GET"])
 @jwt_required()
+@cross_origin()
 def get_all_requests_made_by_one_user(user_id):
     connection = get_flask_database_connection(app)
     request_repository = HelpRequestRepository(connection)
@@ -416,14 +493,13 @@ def get_all_requests_made_by_one_user(user_id):
         }
         formatted_requests.append(formatted_request)
 
-    if formatted_requests:
-        return jsonify(formatted_requests), 200
-    else:
-        return jsonify({"message": "Help requests for current user not found"}), 400
+    return jsonify(formatted_requests), 200
+
 
 
 @app.route("/help_requests/create/<user_id>", methods=["POST"])
 @jwt_required()
+@cross_origin()
 def create_help_request(user_id):
     try:
         connection = get_flask_database_connection(app)
@@ -451,6 +527,7 @@ def create_help_request(user_id):
 
 # Show all plants in DB
 @app.route("/plants", methods=["GET"])
+@cross_origin()
 def get_plants():
     connection = get_flask_database_connection(app)
     repository = PlantsRepository(connection)
@@ -494,6 +571,7 @@ def get_plants_by_user(user_id):
 
 
 @app.route("/plants/user/assign", methods=["POST"])
+@cross_origin()
 @jwt_required()
 def assign_plant_to_user():
     user_id = request.json.get("user_id")
@@ -512,6 +590,7 @@ def assign_plant_to_user():
 
 
 @app.route("/plants/user/update", methods=["POST"])
+@cross_origin()
 @jwt_required()
 def update_plants_quantity():
     user_id = request.json.get("user_id")
