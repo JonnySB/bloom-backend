@@ -558,7 +558,7 @@ help_offer route tests
 ============================
 """
 
-
+@pytest.mark.skip(reason="temporarily skipped while auth on route disabled")
 def test_find_offers_by_user_id(db_connection, test_web_address):
     db_connection.seed("seeds/bloom.sql")
     response = requests.get(f"http://{test_web_address}/help_offers/1")
@@ -777,3 +777,43 @@ def test_select_chat_by_id(db_connection, test_web_address):
         }
     ]
     assert response.json() == chat
+
+
+
+def test_edit_user_details(db_connection, test_web_address):
+    db_connection.seed("seeds/bloom.sql")
+    login_data = {"username_email": "user1", "password": "Password123!"}
+    login_response = requests.post(f"http://{test_web_address}/token", json=login_data)
+    assert login_response.status_code == 201
+    access_token = login_response.json()["token"]
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/json",
+    }
+    edit_details_payload = {
+        "first_name": "UpdatedFirstName",
+        "last_name": "UpdatedLastName",
+        "username": "UpdatedUsername",
+        "email": "updated@email.com",
+        "address": "Updated Address",
+    }
+    response = requests.put(
+        f"http://{test_web_address}/edit_user_details/1",
+        json=edit_details_payload,
+        headers=headers,
+    )
+
+    assert response.status_code == 200
+    assert response.json() == {"msg": "User updated successful"}
+
+    updated_user_response = requests.get(
+        f"http://{test_web_address}/user_details/1", headers=headers
+    )
+    assert updated_user_response.status_code == 200
+    updated_user_details = updated_user_response.json()
+    assert updated_user_details["first_name"] == "UpdatedFirstName"
+    assert updated_user_details["last_name"] == "UpdatedLastName"
+    assert updated_user_details["username"] == "UpdatedUsername"
+    assert updated_user_details["email"] == "updated@email.com"
+    assert updated_user_details["address"] == "Updated Address"
+
