@@ -1,13 +1,13 @@
 DROP TABLE IF EXISTS user_plants CASCADE;
 DROP TABLE IF EXISTS chats CASCADE;
-DROP TABLE IF EXISTS help_request CASCADE;
+DROP TABLE IF EXISTS help_requests CASCADE;
 DROP TABLE IF EXISTS help_offers CASCADE;
 DROP TABLE IF EXISTS plants CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
 -- Drop sequences if they exist
 DROP SEQUENCE IF EXISTS user_plants_id_seq CASCADE;
 DROP SEQUENCE IF EXISTS chats_id_seq CASCADE;
-DROP SEQUENCE IF EXISTS help_request_id_seq CASCADE;
+DROP SEQUENCE IF EXISTS help_requests_id_seq CASCADE;
 DROP SEQUENCE IF EXISTS help_offers_id_seq CASCADE;
 DROP SEQUENCE IF EXISTS plants_id_seq CASCADE;
 DROP SEQUENCE IF EXISTS users_id_seq CASCADE;
@@ -58,20 +58,21 @@ CREATE TABLE chats (
     CONSTRAINT fk_user_sender FOREIGN KEY (sender_id) REFERENCES users (id),
     CONSTRAINT fk_user_recipient FOREIGN KEY (recipient_id) REFERENCES users (id)
 );
--- Create sequence for help_request
-CREATE SEQUENCE help_request_id_seq;
--- Create help_request table
-CREATE TABLE help_request (
+
+-- Create sequence for chats
+CREATE SEQUENCE help_requests_id_seq;
+-- Create help_requests table
+CREATE TABLE help_requests (
     id SERIAL PRIMARY KEY,
-    date TIMESTAMP WITHOUT TIME ZONE NOT NULL,
-    title VARCHAR(255) NOT NULL,
-    message TEXT NOT NULL,
-    daterange DATERANGE NOT NULL,
-    user_id INT NOT NULL,
-    maxprice MONEY NOT NULL,
+    date TIMESTAMP WITHOUT TIME ZONE,
+    title VARCHAR(255), 
+    message VARCHAR(255), -- depending on requirements, could be TEXT type for longer messages
+    start_date DATE, 
+    end_date DATE,
+    user_id INT,
+    maxprice REAL,
     CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (id)
 );
-
 CREATE SEQUENCE help_offers_id_seq;
 -- Create help_offers table
 CREATE TABLE help_offers (
