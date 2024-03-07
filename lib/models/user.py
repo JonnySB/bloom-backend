@@ -10,7 +10,7 @@ class User:
         username: str,
         email: str,
         password: str,
-        avatar_url_string: str = "default_image",
+        avatar_url_string: str = "https://res.cloudinary.com/dououppib/image/upload/v1709830638/PLANTS/placeholder_ry6d8v.webp",
         address: str = "",
     ):
         self.id = id
