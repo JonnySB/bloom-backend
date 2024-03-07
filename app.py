@@ -93,7 +93,9 @@ def create_user():
 
     if password == password_confirm:
         try:
-            user = User(None, first_name, last_name, username, email, password, address)
+            user = User(
+                None, first_name, last_name, username, email, password, "", address
+            )
 
             connection = get_flask_database_connection(app)
             user_repository = UserRepository(connection)
