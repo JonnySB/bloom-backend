@@ -109,9 +109,16 @@ INSERT INTO users (first_name, last_name, username, email, hashed_password, avat
 INSERT INTO users (first_name, last_name, username, email, hashed_password, avatar_url_string, address) VALUES ('user', '6', 'user6', 'user6@email.com', '$2b$12$6Og77D1E.ObtWMOX9dw//.AJpsNFAR6/6E1OHputlDCUFRytgEQGq', 'test_image6.png', 'test_address5');
 
 -- CREATE PLANTS SEED --
-INSERT INTO plants (common_name, latin_name, photo, watering_frequency) VALUES ('African sheepbush', 'Pentzia incana', 'plant_01.png', 2);
-INSERT INTO plants (common_name, latin_name, photo, watering_frequency) VALUES ('Alder', 'Alnus. Black alder', 'plant_02.png', 1);
-INSERT INTO plants (common_name, latin_name, photo, watering_frequency) VALUES ('Almond', 'Prunus dulcis', 'plant_03.png', 1);
+-- INSERT INTO plants (common_name, latin_name, photo, watering_frequency) VALUES ('African sheepbush', 'Pentzia incana', 'plant_01.png', 2);
+-- INSERT INTO plants (common_name, latin_name, photo, watering_frequency) VALUES ('Alder', 'Alnus. Black alder', 'plant_02.png', 1);
+-- INSERT INTO plants (common_name, latin_name, photo, watering_frequency) VALUES ('Almond', 'Prunus dulcis', 'plant_03.png', 1);
+INSERT INTO "public"."plants" ("id", "common_name", "latin_name", "photo", "watering_frequency") VALUES
+(1, 'African sheepbush', 'Pentzia incana', 'https://res.cloudinary.com/dououppib/image/upload/v1709740425/PLANTS/African_sheepbush_lyorlf.jpg', 2),
+(2, 'Alder', 'Alnus. Black alder', 'https://res.cloudinary.com/dououppib/image/upload/v1709740428/PLANTS/Alder_jc4szc.jpg', 1),
+(3, 'Almond', 'Prunus dulcis', 'https://res.cloudinary.com/dououppib/image/upload/v1709740430/PLANTS/Almond_aikcyc.jpg', 1),
+(4, 'Bamboo', 'Fargesia', 'https://res.cloudinary.com/dououppib/image/upload/v1709740434/PLANTS/Bamboo_bkwm52.jpg', 1),
+(5, 'Barberry', 'Berberis', 'https://res.cloudinary.com/dououppib/image/upload/v1709740432/PLANTS/Barberry_copy_gseiuj.png', 1),
+(6, 'Bergamot', 'Monarda', 'https://res.cloudinary.com/dououppib/image/upload/v1709740426/PLANTS/Bergamot_k7ympf.jpg', 1);
 
 -- CREATE USER PLANTS SEED --
 INSERT INTO user_plants (user_id, plant_id, quantity) VALUES (1, 1, 2);
