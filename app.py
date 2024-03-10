@@ -163,6 +163,7 @@ def edit_user_details(id):
         username = request.json.get("username")
         email = request.json.get("email")
         address = request.json.get("address")
+
         user_repository.edit_user_details(
             id, first_name, last_name, username, email, address
         )
