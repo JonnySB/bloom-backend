@@ -196,9 +196,11 @@ def edit_user_picture(id):
             return jsonify({"msg": "No selected file"}), 400
         
         filename = secure_filename(file.filename)
-        result = cloudinary.uploader.upload(file)
+        result = cloudinary.uploader.upload(
+            file,
+            folder="PLANTS/AVATARS"                           
+        )
         avatar_url = result.get("url")
-        print(filename, result, avatar_url)
         connection = get_flask_database_connection(app)
         user_repository = UserRepository(connection)
         user_repository.edit_user_avatar(id, avatar_url)
