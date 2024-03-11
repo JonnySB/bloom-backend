@@ -33,6 +33,7 @@ class PlantsRepository:
         return plant_list
 
     def delete(self, plant_id):
+        self.connection.execute("DELETE FROM user_plants WHERE plant_id = %s", [plant_id])
         self.connection.execute("DELETE FROM plants WHERE id = %s", [plant_id])
         return None
 

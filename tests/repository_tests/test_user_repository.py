@@ -200,18 +200,14 @@ def test_get_user_by_id(db_connection):
         "test_address3",
     )
 
-# this might fail need to come back
+
 def test_edit_user_details(db_connection):
     db_connection.seed("seeds/bloom.sql")
     repository = UserRepository(db_connection)
-    user_details = repository.edit_user_details(1, "tom", "Jones", "tee-jay", "tjones@email.com" "Password123!", "test_address1")
-    
-    assert user_details == User(
-    1,
-    "tom",
-    "Jones",
-    "tee-jay",
-    "tjones@email.com",
-    "Password123!",
-    "test_address1",
-)
+    repository.edit_user_details(1, "Tom", "jones", "tee-jay", "tjones@email.com", "test_address1")
+    updated_user = repository.get_user_by_id(1)
+    assert updated_user.first_name == "Tom"
+    assert updated_user.last_name == "jones"
+    assert updated_user.username == "tee-jay"
+    assert updated_user.email == "tjones@email.com"
+    assert updated_user.address == "test_address1"
