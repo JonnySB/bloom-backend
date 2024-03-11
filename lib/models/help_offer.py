@@ -1,7 +1,7 @@
 class HelpOffer:
     def __init__(
         self,
-        id: int,
+        id: int | None,
         user_id: int,
         request_id: int,
         message: str,
