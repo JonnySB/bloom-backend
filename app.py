@@ -93,7 +93,9 @@ def create_user():
 
     if password == password_confirm:
         try:
-            user = User(None, first_name, last_name, username, email, password, address)
+            user = User(
+                None, first_name, last_name, username, email, password, "", address
+            )
 
             connection = get_flask_database_connection(app)
             user_repository = UserRepository(connection)
@@ -161,6 +163,7 @@ def edit_user_details(id):
         username = request.json.get("username")
         email = request.json.get("email")
         address = request.json.get("address")
+
         user_repository.edit_user_details(
             id, first_name, last_name, username, email, address
         )
@@ -178,8 +181,7 @@ def edit_user_details(id):
 
 
 # CONFLICTS WITH NEEDED ROUTE
-# # get all help offers made by a specific user
-# @app.route("/help_offers/<user_id>", methods=["GET"])
+# # get all help offers made by a specific "" @app.route("/help_offers/<user_id>", methods=["GET"])
 # def find_offers_by_user_id(user_id):
 #
 #     # connect to db and set up offer repository

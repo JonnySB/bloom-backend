@@ -8,65 +8,56 @@ def test_get_all_users(db_connection):
     repository = UserRepository(db_connection)
 
     users = repository.get_all_users()
+
     assert users == [
         User(
             1,
-            "user",
-            "1",
-            "user1",
-            "user1@email.com",
+            "Tom",
+            "Jones",
+            "tee-jay",
+            "tjones@email.com",
             "Password123!",
-            "test_image1.png",
+            "https://res.cloudinary.com/dououppib/image/upload/v1708633707/MY_UPLOADS/aibxzxdpk6gl4u5xjgjg.jpg",
             "test_address1",
         ),
         User(
             2,
-            "user",
-            "2",
-            "user2",
-            "user2@email.com",
+            "Jane",
+            "Smith",
+            "jane95",
+            "jsmith@email.com",
             "Password123!",
-            "test_image2.png",
+            "https://res.cloudinary.com/dououppib/image/upload/v1709830407/PLANTS/person4_kqdufy.jpg",
             "test_address2",
         ),
         User(
             3,
-            "user",
-            "3",
-            "user3",
-            "user3@email.com",
+            "Jilly",
+            "Smith",
+            "sm1thi",
+            "jsmith2@email.com",
             "Password123!",
-            "test_image3.png",
+            "https://res.cloudinary.com/dououppib/image/upload/v1709830406/PLANTS/person2_jpuq5z.jpg",
             "test_address3",
         ),
         User(
             4,
-            "user",
-            "4",
-            "user4",
-            "user4@email.com",
+            "Barbra",
+            "Banes",
+            "barn-owl58",
+            "bbanes@email.com",
             "Password123!",
-            "test_image4.png",
+            "https://res.cloudinary.com/dououppib/image/upload/v1709830406/PLANTS/person1_jdh4xm.jpg",
             "test_address4",
         ),
         User(
             5,
-            "user",
-            "5",
-            "user5",
-            "user5@email.com",
+            "Alice",
+            "Lane",
+            "laney",
+            "alane@email.com",
             "Password123!",
-            "test_image5.png",
-            "test_address5",
-        ),
-        User(
-            6,
-            "user",
-            "6",
-            "user6",
-            "user6@email.com",
-            "Password123!",
-            "test_image6.png",
+            "https://res.cloudinary.com/dououppib/image/upload/v1709830407/PLANTS/person3_itrqub.jpg",
             "test_address5",
         ),
     ]
@@ -79,72 +70,62 @@ def test_create_user(db_connection):
     repository = UserRepository(db_connection)
 
     # id updated to correct (7) when reconstructed from db
-    user = User(None, "user", "7", "user7", "user7@email.com", "Password123!")
+    user = User(None, "user", "6", "user6", "user6@email.com", "Password123!")
     repository.add_user_to_db(user)
 
     users = repository.get_all_users()
     assert users == [
         User(
             1,
-            "user",
-            "1",
-            "user1",
-            "user1@email.com",
+            "Tom",
+            "Jones",
+            "tee-jay",
+            "tjones@email.com",
             "Password123!",
-            "test_image1.png",
+            "https://res.cloudinary.com/dououppib/image/upload/v1708633707/MY_UPLOADS/aibxzxdpk6gl4u5xjgjg.jpg",
             "test_address1",
         ),
         User(
             2,
-            "user",
-            "2",
-            "user2",
-            "user2@email.com",
+            "Jane",
+            "Smith",
+            "jane95",
+            "jsmith@email.com",
             "Password123!",
-            "test_image2.png",
+            "https://res.cloudinary.com/dououppib/image/upload/v1709830407/PLANTS/person4_kqdufy.jpg",
             "test_address2",
         ),
         User(
             3,
-            "user",
-            "3",
-            "user3",
-            "user3@email.com",
+            "Jilly",
+            "Smith",
+            "sm1thi",
+            "jsmith2@email.com",
             "Password123!",
-            "test_image3.png",
+            "https://res.cloudinary.com/dououppib/image/upload/v1709830406/PLANTS/person2_jpuq5z.jpg",
             "test_address3",
         ),
         User(
             4,
-            "user",
-            "4",
-            "user4",
-            "user4@email.com",
+            "Barbra",
+            "Banes",
+            "barn-owl58",
+            "bbanes@email.com",
             "Password123!",
-            "test_image4.png",
+            "https://res.cloudinary.com/dououppib/image/upload/v1709830406/PLANTS/person1_jdh4xm.jpg",
             "test_address4",
         ),
         User(
             5,
-            "user",
-            "5",
-            "user5",
-            "user5@email.com",
+            "Alice",
+            "Lane",
+            "laney",
+            "alane@email.com",
             "Password123!",
-            "test_image5.png",
+            "https://res.cloudinary.com/dououppib/image/upload/v1709830407/PLANTS/person3_itrqub.jpg",
             "test_address5",
         ),
-        User(
-            6,
-            "user",
-            "6",
-            "user6",
-            "user6@email.com",
-            "Password123!",
-            "test_image6.png",
-            "test_address5",
-        ),
-        User(7, "user", "7", "user7", "user7@email.com", "Password123!"),
+        User(6, "user", "6", "user6", "user6@email.com", "Password123!"),
     ]
 
 
@@ -163,7 +144,7 @@ def test_find_user_by_username(db_connection):
     db_connection.seed("seeds/bloom.sql")
     repository = UserRepository(db_connection)
 
-    user_id = repository.get_user_id_from_username_or_email("user1")
+    user_id = repository.get_user_id_from_username_or_email("tee-jay")
     assert user_id == 1
 
 
@@ -172,8 +153,8 @@ def test_find_user_by_email(db_connection):
     db_connection.seed("seeds/bloom.sql")
     repository = UserRepository(db_connection)
 
-    user_id = repository.get_user_id_from_username_or_email("user5@email.com")
-    assert user_id == 5
+    user_id = repository.get_user_id_from_username_or_email("tjones@email.com")
+    assert user_id == 1
 
 
 # tests that when called with correct password, the corresponding user id is
@@ -181,22 +162,22 @@ def test_find_user_by_email(db_connection):
 def test_correct_password_returns_user_id(db_connection):
     db_connection.seed("seeds/bloom.sql")
     repository = UserRepository(db_connection)
-    user = User(None, "user", "7", "user7", "user7@email.com", "Password123!")
+    user = User(None, "user", "6", "user6", "user6@email.com", "Password123!")
 
     repository.add_user_to_db(user)
-    user_id = repository.check_username_or_email_and_password("user7", "Password123!")
-    assert user_id == 7
+    user_id = repository.check_username_or_email_and_password("user6", "Password123!")
+    assert user_id == 6
 
 
 # tests that when called with an incorrect password, returns false
 def test_incorrect_password_returns_false(db_connection):
     db_connection.seed("seeds/bloom.sql")
     repository = UserRepository(db_connection)
-    user = User(None, "user", "7", "user7", "user7@email.com", "Password123!")
+    user = User(None, "user", "6", "user6", "user6@email.com", "Password123!")
 
     repository.add_user_to_db(user)
     is_valid_password = repository.check_username_or_email_and_password(
-        "user7", "dawdawd"
+        "user6", "dawdawd"
     )
     assert is_valid_password == False
 
@@ -210,11 +191,11 @@ def test_get_user_by_id(db_connection):
     user_details = repository.get_user_by_id(3)
     assert user_details == User(
         3,
-        "user",
-        "3",
-        "user3",
-        "user3@email.com",
+        "Jilly",
+        "Smith",
+        "sm1thi",
+        "jsmith2@email.com",
         "Password123!",
-        "test_image3.png",
+        "https://res.cloudinary.com/dououppib/image/upload/v1709830406/PLANTS/person2_jpuq5z.jpg",
         "test_address3",
     )

@@ -10,7 +10,7 @@ class User:
         username: str,
         email: str,
         password: str,
-        avatar_url_string: str = "default_image",
+        avatar_url_string: str = "",
         address: str = "",
     ):
         self.id = id
