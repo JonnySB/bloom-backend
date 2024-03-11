@@ -40,8 +40,8 @@ CREATE TABLE user_plants (
     plant_id INT NOT NULL,
     quantity INT NOT NULL,
     PRIMARY KEY (user_id, plant_id),
-    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (id),
-    CONSTRAINT fk_plant FOREIGN KEY (plant_id) REFERENCES plants (id)
+    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+    CONSTRAINT fk_plant FOREIGN KEY (plant_id) REFERENCES plants (id) ON DELETE CASCADE
 );
 
 CREATE SEQUENCE chats_id_seq;
@@ -55,8 +55,8 @@ CREATE TABLE chats (
     receiver_username VARCHAR(255),
     sender_username VARCHAR(255),
     sender_id INT NOT NULL, 
-    CONSTRAINT fk_user_sender FOREIGN KEY (sender_id) REFERENCES users (id),
-    CONSTRAINT fk_user_recipient FOREIGN KEY (recipient_id) REFERENCES users (id)
+    CONSTRAINT fk_user_sender FOREIGN KEY (sender_id) REFERENCES users (id) ON DELETE CASCADE,
+    CONSTRAINT fk_user_recipient FOREIGN KEY (recipient_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
 -- Create sequence for chats
@@ -71,7 +71,7 @@ CREATE TABLE help_requests (
     end_date DATE,
     user_id INT,
     maxprice REAL,
-    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (id)
+    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 CREATE SEQUENCE help_offers_id_seq;
 -- Create help_offers table
@@ -82,7 +82,7 @@ CREATE TABLE help_offers (
     user_id INT,
     request_id INT,
     bid REAL,
-    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (id),
+    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
     CONSTRAINT fk_request FOREIGN KEY (request_id) REFERENCES help_requests (id) ON DELETE CASCADE
 );
 -- CREATE USER SEED --
@@ -125,18 +125,6 @@ VALUES
 ('2024-02-02 10:05:38', 'Plant care help needed urgently.', 'Looking for immediate assistance in watering my plants.', '2023-09-10', '2023-09-15', 3, 65),
 ('2024-02-14 07:30:55', 'Help needed with indoor plants.', 'Seeking someone to take care of my indoor plants for a short duration.', '2023-10-05', '2023-10-10', 4, 75),
 ('2024-02-28 15:20:10', 'Garden watering assistance required.', 'Require help in watering my garden while I am away.', '2023-11-22', '2023-11-27', 5, 60);
-
--- INSERT INTO help_requests (date, title, message, start_date, end_date, user_id, maxprice) VALUES ('2023-10-19 10:23:54', 'Help needed whilst on holiday.', 'I am going on holiday for all of of February - would love some help!', '2023-04-01', '2023-04-02', 1, 75);
--- INSERT INTO help_requests (date, title, message, start_date, end_date, user_id, maxprice) VALUES ('2023-10-20 10:23:54', 'Cactus watering, pls lol', 'My cactus is thirsty', '2023-04-03', '2023-04-13', 2, 60);
--- INSERT INTO help_requests (date, title, message, start_date, end_date, user_id, maxprice) VALUES ('2023-10-19 10:23:54', 'Lonely plants.', 'My plants need to be wispered to for at least an hour a day.', '2023-04-01', '2023-05-01', 1, 80);
--- INSERT INTO help_requests (date, title, message, start_date, end_date, user_id, maxprice) VALUES ('2023-10-19 10:23:54', 'Help needed whilst on holiday.', 'I am going on holiday for all of of February - would love some help!', '2023-04-01', '2023-04-02', 1, 75);
--- INSERT INTO help_requests (date, title, message, start_date, end_date, user_id, maxprice) VALUES ('2023-10-20 10:23:54', 'Cactus watering, pls lol', 'My cactus is thirsty', '2023-04-03', '2023-04-13', 2, 60);
--- INSERT INTO help_requests (date, title, message, start_date, end_date, user_id, maxprice) VALUES ('2023-10-19 10:23:54', 'Lonely plants.', 'My plants need to be wispered to for at least an hour a day.', '2023-04-01', '2023-05-01', 1, 80);
-
--- INSERT INTO help_offers (message, status, user_id, request_id, bid) VALUES ('Offering help', 'pending', 1, 1, '50');
--- INSERT INTO help_offers (message, status, user_id, request_id, bid) VALUES ('I am super expensive', 'pending', 2, 1, '100');
--- INSERT INTO help_offers (message, status, user_id, request_id, bid) VALUES ('I am mid priced!', 'pending', 3, 1, '75');
-
 
 INSERT INTO help_offers (message, status, user_id, request_id, bid) 
 VALUES 
