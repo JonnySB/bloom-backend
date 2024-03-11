@@ -742,23 +742,9 @@ def test_return_user_not_found_for_invalid_user_id(db_connection, test_web_addre
     assert response.json() == {"msg": "User not found"}
 
 
-"""
-============================
-help_offer route tests
-============================
-"""
-
-
-# # wrong password to make sure no auth
-# user_data = {"username_email": "tee-jay", "password": "Password456!"}
-# login_response = requests.post(f"http://{test_web_address}/token", json=user_data)
-# token = login_response.json()["token"]
-#
-# response = requests.get(
-#     f"http://{test_web_address}/help_offers/help_requests/1",
-#     headers={"Authorization": f"Bearer {token}"},
-# )
-# assert response.status_code == 401
+####################################
+###### help_offer route tests ######
+####################################
 
 
 def test_find_offers_by_user_id(db_connection, test_web_address):
