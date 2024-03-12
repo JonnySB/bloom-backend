@@ -323,7 +323,6 @@ def received_help_offers_by_user_id(user_id):
 
 
 # accept help offer
-# UNTESTED
 @app.route("/help_offers/accept_offer/<help_offer_id>", methods=["PUT"])
 @jwt_required()
 @cross_origin()
@@ -350,7 +349,6 @@ def accept_help_offer(help_offer_id):
 
 
 # reject help offer
-# UNTESTED
 @app.route("/help_offers/reject_offer/<help_offer_id>", methods=["PUT"])
 @jwt_required()
 @cross_origin()
@@ -401,7 +399,6 @@ def outgoing_help_offers_by_user_id(user_id):
 
 
 # reject help offer
-# UNTESTED
 @app.route("/help_offers/rescind_offer/<help_offer_id>", methods=["PUT"])
 @jwt_required()
 @cross_origin()
