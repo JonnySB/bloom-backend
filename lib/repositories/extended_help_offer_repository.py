@@ -6,7 +6,6 @@ class ExtendedHelpOfferRepository:
         self.connection = connection
 
     # gets all received offers for a particular user_id
-    # UNTESTED
     def get_all_received_extended_help_offers(self, user_id):
         rows = self.connection.execute(
             """
@@ -61,13 +60,9 @@ class ExtendedHelpOfferRepository:
                 help_receive_avatar_url_string=row["help_receive_avatar_url_string"],
             )
             extended_help_offer_list.append(extended_help_offer)
-
-        print(">>>>>>>>>>>>", extended_help_offer_list)
-
         return extended_help_offer_list
 
     # gets all outgoing help offers for a particular user_id
-    # UNTESTED
     def get_all_outgoing_extended_help_offers(self, user_id):
         rows = self.connection.execute(
             """

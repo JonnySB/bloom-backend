@@ -8,7 +8,6 @@ from flask import Flask, jsonify, make_response, request
 from flask.helpers import get_flashed_messages
 from flask_cors import CORS, cross_origin
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required
-
 # dependecies for livechat
 from flask_socketio import SocketIO, emit, join_room, leave_room
 from werkzeug.utils import secure_filename
@@ -19,7 +18,8 @@ from lib.models.help_offer import HelpOffer
 from lib.models.help_request import HelpRequest
 from lib.models.user import User
 from lib.repositories.chat_repository import ChatRepository
-from lib.repositories.extended_help_offer_repository import ExtendedHelpOfferRepository
+from lib.repositories.extended_help_offer_repository import \
+    ExtendedHelpOfferRepository
 from lib.repositories.help_offer_repository import HelpOfferRepository
 from lib.repositories.help_request_repository import HelpRequestRepository
 from lib.repositories.plants_repository import PlantsRepository
@@ -409,9 +409,9 @@ def recind_help_offer(help_offer_id):
     connection = get_flask_database_connection(app)
     help_offers_repository = HelpOfferRepository(connection)
 
-    help_offers_repository.recind_help_offer(help_offer_id)
+    help_offers_repository.rescind_help_offer(help_offer_id)
 
-    return jsonify({"msg": "Help offer recinded"}), 200
+    return jsonify({"msg": "Help offer rescinded"}), 200
 
 
 # Help Request Routes
