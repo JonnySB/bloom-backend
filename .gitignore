@@ -4,4 +4,5 @@
 __pycache__
 **/*.orig
 .env
+API_KEYS.py
 .orig

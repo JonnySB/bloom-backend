@@ -199,3 +199,15 @@ def test_get_user_by_id(db_connection):
         "https://res.cloudinary.com/dououppib/image/upload/v1709830406/PLANTS/person2_jpuq5z.jpg",
         "test_address3",
     )
+
+
+def test_edit_user_details(db_connection):
+    db_connection.seed("seeds/bloom.sql")
+    repository = UserRepository(db_connection)
+    repository.edit_user_details(1, "Tom", "jones", "tee-jay", "tjones@email.com", "test_address1")
+    updated_user = repository.get_user_by_id(1)
+    assert updated_user.first_name == "Tom"
+    assert updated_user.last_name == "jones"
+    assert updated_user.username == "tee-jay"
+    assert updated_user.email == "tjones@email.com"
+    assert updated_user.address == "test_address1"

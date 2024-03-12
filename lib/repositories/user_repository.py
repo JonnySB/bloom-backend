@@ -111,8 +111,10 @@ class UserRepository:
         self, user_id, first_name, last_name, username, email, address
     ):
         update_query = """UPDATE users SET first_name = %s, last_name = %s, username = %s, email = %s, address = %s WHERE id = %s"""
-        result = self.connection.execute(
-            update_query, [first_name, last_name, username, email, address, user_id]
-        )
-        print(result)
+        result = self.connection.execute(update_query, [first_name, last_name, username, email, address, user_id])
+        return result
+
+    def edit_user_avatar(self, user_id, avatar):
+        update_query = """UPDATE users SET avatar_url_string = %s WHERE id = %s"""
+        result = self.connection.execute(update_query, [avatar, user_id])
         return result

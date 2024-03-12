@@ -16,6 +16,7 @@ requests = "*"
 flask-cors = "*"
 flask-socketio = "*"
 gevent = "*"
+cloudinary = "*"
 
 [dev-packages]
 autopep8 = "*"

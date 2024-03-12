@@ -40,8 +40,8 @@ CREATE TABLE user_plants (
     plant_id INT NOT NULL,
     quantity INT NOT NULL,
     PRIMARY KEY (user_id, plant_id),
-    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
-    CONSTRAINT fk_plant FOREIGN KEY (plant_id) REFERENCES plants (id) ON DELETE CASCADE
+    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (id),
+    CONSTRAINT fk_plant FOREIGN KEY (plant_id) REFERENCES plants (id)
 );
 
 CREATE SEQUENCE chats_id_seq;

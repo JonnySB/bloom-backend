@@ -2,7 +2,9 @@ import datetime
 
 import pytest
 import requests
-
+from unittest.mock import patch, MagicMock
+from werkzeug.datastructures import FileStorage
+import io
 from app import *
 
 #########################
@@ -1080,3 +1082,32 @@ def test_edit_user_details(db_connection, test_web_address):
     assert updated_user_details["username"] == "UpdatedUsername"
     assert updated_user_details["email"] == "updated@email.com"
     assert updated_user_details["address"] == "Updated Address"
+
+@pytest.mark.skip # THIS TEST PASS BUT IT DOES NOT PASS ON CI, REQUIRES Cloudinary KEYS 
+def test_edit_user_avatar(db_connection, test_web_address):
+    db_connection.seed("seeds/bloom.sql")
+    login_data = {"username_email": "tee-jay", "password": "Password123!"}
+    login_response = requests.post(f"http://{test_web_address}/token", json=login_data)
+    assert login_response.status_code == 201
+    access_token = login_response.json()["token"]
+
+    app.testing = True
+    client = app.test_client()
+    data = io.BytesIO(b'mock image data')
+    data.name = 'test_avatar.png'
+
+    mock_cloudinary_response = {'url': 'http://cloudinary.com/someimageurl'}
+
+    with patch('cloudinary.uploader.upload', return_value=mock_cloudinary_response):
+        response = client.put(
+            f"/edit_user_avatar/1",
+            content_type='multipart/form-data',
+            data={'avatar': (data, 'test_avatar.png')},
+            headers={'Authorization': f'Bearer {access_token}'}  
+        )
+
+    assert response.status_code == 200
+    assert response.get_json() == {"msg": "Avatar updated successfully", "avatar_url": "http://cloudinary.com/someimageurl"}
+
+
+
