@@ -1,3 +1,5 @@
+from datetime import date
+
 from lib.models.extended_help_offer import ExtendedHelpOffer
 
 
@@ -46,8 +48,8 @@ def test_constructs():
 def test_equal():
     extended_help_offer1 = ExtendedHelpOffer(
         1,
-        "2024-12-02",
-        "2024-12-15",
+        date(2024, 12, 2),
+        date(2024, 12, 15),
         "help request name",
         1,
         1,
@@ -67,8 +69,8 @@ def test_equal():
 
     extended_help_offer2 = ExtendedHelpOffer(
         1,
-        "2024-12-02",
-        "2024-12-15",
+        date(2024, 12, 2),
+        date(2024, 12, 15),
         "help request name",
         1,
         1,
@@ -92,8 +94,8 @@ def test_equal():
 def test_repr():
     extended_help_offer = ExtendedHelpOffer(
         1,
-        "2024-12-02",
-        "2024-12-15",
+        date(2024, 12, 2),
+        date(2024, 12, 15),
         "help request name",
         1,
         1,
@@ -113,5 +115,5 @@ def test_repr():
 
     assert (
         str(extended_help_offer)
-        == "ExtendedHelpOffer: 1, 2024-12-02, 2024-12-15, help request name, 1, 1, I can help!, pending, 2, 50, Tom, Smith, tsmith, avatar_string_tsmith, Joe, Dune, jdune, avatar_string_jdune"
+        == "ExtendedHelpOffer(1, 2024-12-02, 2024-12-15, help request name, 1, 1, I can help!, pending, 2, 50, Tom, Smith, tsmith, avatar_string_tsmith, Joe, Dune, jdune, avatar_string_jdune)"
     )

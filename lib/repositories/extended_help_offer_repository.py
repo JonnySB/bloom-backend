@@ -62,6 +62,8 @@ class ExtendedHelpOfferRepository:
             )
             extended_help_offer_list.append(extended_help_offer)
 
+        print(">>>>>>>>>>>>", extended_help_offer_list)
+
         return extended_help_offer_list
 
     # gets all outgoing help offers for a particular user_id
