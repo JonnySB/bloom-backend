@@ -21,13 +21,18 @@ class ExtendedHelpOfferRepository:
                 help_offers.status as help_offer_status,
                 help_offers.user_id  as help_offer_user_id,
                 help_offers.bid as help_offer_bid,
-                users.first_name as help_offer_first_name,
-                users.last_name as help_offer_last_name,
-                users.username as help_offer_username,
-                users.avatar_url_string as help_offer_avatar_url_string
+                user_offer.first_name as help_offer_first_name,
+                user_offer.last_name as help_offer_last_name,
+                user_offer.username as help_offer_username,
+                user_offer.avatar_url_string as help_offer_avatar_url_string,
+                user_receive.first_name as help_receive_first_name,
+                user_receive.last_name as help_receive_last_name,
+                user_receive.username as help_receive_username,
+                user_receive.avatar_url_string as help_receive_avatar_url_string
             from help_requests
             join help_offers on help_requests.id = help_offers.request_id
-            join users on help_offers.user_id = users.id
+            join users user_offer on help_offers.user_id = user_offer.id
+            join users user_receive on help_requests.user_id = user_receive.id
             where help_requests.user_id = %s;
             """,
             [user_id],
@@ -50,6 +55,10 @@ class ExtendedHelpOfferRepository:
                 help_offer_last_name=row["help_offer_last_name"],
                 help_offer_username=row["help_offer_username"],
                 help_offer_avatar_url_string=row["help_offer_avatar_url_string"],
+                help_receive_first_name=row["help_receive_first_name"],
+                help_receive_last_name=row["help_receive_last_name"],
+                help_receive_username=row["help_receive_username"],
+                help_receive_avatar_url_string=row["help_receive_avatar_url_string"],
             )
             extended_help_offer_list.append(extended_help_offer)
 
@@ -71,13 +80,18 @@ class ExtendedHelpOfferRepository:
                 help_offers.status as help_offer_status,
                 help_offers.user_id  as help_offer_user_id,
                 help_offers.bid as help_offer_bid,
-                users.first_name as help_offer_first_name,
-                users.last_name as help_offer_last_name,
-                users.username as help_offer_username,
-                users.avatar_url_string as help_offer_avatar_url_string
+                user_offer.first_name as help_offer_first_name,
+                user_offer.last_name as help_offer_last_name,
+                user_offer.username as help_offer_username,
+                user_offer.avatar_url_string as help_offer_avatar_url_string,
+                user_receive.first_name as help_receive_first_name,
+                user_receive.last_name as help_receive_last_name,
+                user_receive.username as help_receive_username,
+                user_receive.avatar_url_string as help_receive_avatar_url_string
             from help_requests
             join help_offers on help_requests.id = help_offers.request_id
-            join users on help_offers.user_id = users.id
+            join users user_offer on help_offers.user_id = user_offer.id
+            join users user_receive on help_requests.user_id = user_receive.id
             where help_offers.user_id = %s;
             """,
             [user_id],
@@ -100,6 +114,10 @@ class ExtendedHelpOfferRepository:
                 help_offer_last_name=row["help_offer_last_name"],
                 help_offer_username=row["help_offer_username"],
                 help_offer_avatar_url_string=row["help_offer_avatar_url_string"],
+                help_receive_first_name=row["help_receive_first_name"],
+                help_receive_last_name=row["help_receive_last_name"],
+                help_receive_username=row["help_receive_username"],
+                help_receive_avatar_url_string=row["help_receive_avatar_url_string"],
             )
             extended_help_offer_list.append(extended_help_offer)
 

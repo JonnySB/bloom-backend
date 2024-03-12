@@ -1,5 +1,8 @@
 import os
 from datetime import timedelta
+
+import cloudinary
+import cloudinary.uploader
 from dotenv import load_dotenv
 from flask import Flask, jsonify, make_response, request
 from flask.helpers import get_flashed_messages
@@ -8,6 +11,7 @@ from flask_jwt_extended import JWTManager, create_access_token, jwt_required
 
 # dependecies for livechat
 from flask_socketio import SocketIO, emit, join_room, leave_room
+from werkzeug.utils import secure_filename
 
 from lib.database_connection import get_flask_database_connection
 from lib.models.extended_help_offer import ExtendedHelpOffer
@@ -21,10 +25,6 @@ from lib.repositories.help_request_repository import HelpRequestRepository
 from lib.repositories.plants_repository import PlantsRepository
 from lib.repositories.plants_user_repository import PlantsUserRepository
 from lib.repositories.user_repository import UserRepository
-import cloudinary
-import cloudinary.uploader
-from werkzeug.utils import secure_filename
-
 
 load_dotenv()
 
@@ -181,31 +181,32 @@ def edit_user_details(id):
     return response
 
 
-cloudinary.config( 
-  cloud_name = os.getenv("CLOUDINARY_CLOUD_NAME"),
-  api_key = os.getenv("CLOUDINARY_API_KEY"),
-  api_secret = os.getenv("CLOUDINARY_API_SECRET")
+cloudinary.config(
+    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.getenv("CLOUDINARY_API_KEY"),
+    api_secret=os.getenv("CLOUDINARY_API_SECRET"),
 )
+
 
 @app.route("/edit_user_avatar/<int:id>", methods=["PUT"])
 @jwt_required()
 def edit_user_picture(id):
-        if 'avatar' not in request.files:
-            return jsonify({"msg": "No avatar file part"}), 400
-        file = request.files['avatar']
-        if file.filename == '':
-            return jsonify({"msg": "No selected file"}), 400
-        
-        filename = secure_filename(file.filename)
-        result = cloudinary.uploader.upload(
-            file,
-            folder="PLANTS/AVATARS"                           
-        )
-        avatar_url = result.get("url")
-        connection = get_flask_database_connection(app)
-        user_repository = UserRepository(connection)
-        user_repository.edit_user_avatar(id, avatar_url)
-        return jsonify({"msg": "Avatar updated successfully", "avatar_url": avatar_url}), 200
+    if "avatar" not in request.files:
+        return jsonify({"msg": "No avatar file part"}), 400
+    file = request.files["avatar"]
+    if file.filename == "":
+        return jsonify({"msg": "No selected file"}), 400
+
+    filename = secure_filename(file.filename)
+    result = cloudinary.uploader.upload(file, folder="PLANTS/AVATARS")
+    avatar_url = result.get("url")
+    connection = get_flask_database_connection(app)
+    user_repository = UserRepository(connection)
+    user_repository.edit_user_avatar(id, avatar_url)
+    return (
+        jsonify({"msg": "Avatar updated successfully", "avatar_url": avatar_url}),
+        200,
+    )
 
 
 # CONFLICTS WITH NEEDED ROUTE
@@ -312,6 +313,10 @@ def received_help_offers_by_user_id(user_id):
             "help_offer_last_name": offer.help_offer_last_name,
             "help_offer_avatar_url_string": offer.help_offer_avatar_url_string,
             "help_offer_username": offer.help_offer_username,
+            "help_receive_first_name": offer.help_receive_first_name,
+            "help_receive_last_name": offer.help_receive_last_name,
+            "help_receive_avatar_url_string": offer.help_receive_avatar_url_string,
+            "help_receive_username": offer.help_receive_username,
         }
         help_offered.append(offer_obj)
     return jsonify(help_offered)
@@ -386,6 +391,10 @@ def outgoing_help_offers_by_user_id(user_id):
             "help_offer_last_name": offer.help_offer_last_name,
             "help_offer_avatar_url_string": offer.help_offer_avatar_url_string,
             "help_offer_username": offer.help_offer_username,
+            "help_receive_first_name": offer.help_receive_first_name,
+            "help_receive_last_name": offer.help_receive_last_name,
+            "help_receive_avatar_url_string": offer.help_receive_avatar_url_string,
+            "help_receive_username": offer.help_receive_username,
         }
         help_offered.append(offer_obj)
     return jsonify(help_offered)

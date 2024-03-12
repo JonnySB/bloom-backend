@@ -16,6 +16,10 @@ class ExtendedHelpOffer:
         help_offer_last_name,
         help_offer_username,
         help_offer_avatar_url_string,
+        help_receive_first_name,
+        help_receive_last_name,
+        help_receive_username,
+        help_receive_avatar_url_string,
     ):
         self.help_request_id = help_request_id
         self.help_request_start_date = help_request_start_date
@@ -31,6 +35,10 @@ class ExtendedHelpOffer:
         self.help_offer_last_name = help_offer_last_name
         self.help_offer_username = help_offer_username
         self.help_offer_avatar_url_string = help_offer_avatar_url_string
+        self.help_receive_first_name = help_receive_first_name
+        self.help_receive_last_name = help_receive_last_name
+        self.help_receive_username = help_receive_username
+        self.help_receive_avatar_url_string = help_receive_avatar_url_string
 
     # UNTESTED
     def __eq__(self, other):
