@@ -1,6 +1,5 @@
 import os
 from datetime import timedelta
-
 from dotenv import load_dotenv
 from flask import Flask, jsonify, make_response, request
 from flask.helpers import get_flashed_messages
@@ -22,7 +21,6 @@ from lib.repositories.help_request_repository import HelpRequestRepository
 from lib.repositories.plants_repository import PlantsRepository
 from lib.repositories.plants_user_repository import PlantsUserRepository
 from lib.repositories.user_repository import UserRepository
-from API_KEYS import Keys
 import cloudinary
 import cloudinary.uploader
 from werkzeug.utils import secure_filename
@@ -182,11 +180,11 @@ def edit_user_details(id):
     response.headers["Access-Control-Allow-Origin"] = "*"
     return response
 
-cloud_keys = Keys()
+
 cloudinary.config( 
-  cloud_name = cloud_keys.CLOUDNAME,
-  api_key = cloud_keys.API_KEY,
-  api_secret = cloud_keys.CLOUDINARY_API_SECRET
+  cloud_name = os.getenv("CLOUDINARY_CLOUD_NAME"),
+  api_key = os.getenv("CLOUDINARY_API_KEY"),
+  api_secret = os.getenv("CLOUDINARY_API_SECRET")
 )
 
 @app.route("/edit_user_avatar/<int:id>", methods=["PUT"])
