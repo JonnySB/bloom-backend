@@ -983,6 +983,48 @@ def test_get_help_offered_to_user(db_connection, test_web_address):
         },
     ]
 
+def test_accept_offer(db_connection, test_web_address):
+    db_connection.seed("seeds/bloom.sql")
+
+    user_data = {"username_email": "tee-jay", "password": "Password123!"}
+    login_response = requests.post(f"http://{test_web_address}/token", json=user_data)
+    token = login_response.json()["token"]
+
+    response = requests.put(
+        f"http://{test_web_address}/help_offers/accept_offer/2",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert response.status_code == 200
+    assert response.json() == {"msg": "Help offer accepted"}
+
+
+def test_reject_offer(db_connection, test_web_address):
+    db_connection.seed("seeds/bloom.sql")
+
+    user_data = {"username_email": "tee-jay", "password": "Password123!"}
+    login_response = requests.post(f"http://{test_web_address}/token", json=user_data)
+    token = login_response.json()["token"]
+
+    response = requests.put(
+        f"http://{test_web_address}/help_offers/reject_offer/2",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert response.status_code == 200
+    assert response.json() == {"msg": "Help offer rejected"}
+
+def test_rescind_offer(db_connection, test_web_address):
+    db_connection.seed("seeds/bloom.sql")
+
+    user_data = {"username_email": "tee-jay", "password": "Password123!"}
+    login_response = requests.post(f"http://{test_web_address}/token", json=user_data)
+    token = login_response.json()["token"]
+
+    response = requests.put(
+        f"http://{test_web_address}/help_offers/rescind_offer/2",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert response.status_code == 200
+    assert response.json() == {"msg": "Help offer rescinded"}
 
 def test_get_help_offered_to_user_no_auth(db_connection, test_web_address):
     db_connection.seed("seeds/bloom.sql")
@@ -1145,3 +1187,5 @@ def test_edit_user_avatar(db_connection, test_web_address):
         "msg": "Avatar updated successfully",
         "avatar_url": "http://cloudinary.com/someimageurl",
     }
+
+

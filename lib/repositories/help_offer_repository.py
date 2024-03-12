@@ -109,7 +109,6 @@ class HelpOfferRepository:
         return help_offer_ids
 
     # accept help offer
-    # UNTESTED
     def accept_help_offer(self, help_offer_id):
         self.connection.execute(
             """
@@ -121,7 +120,6 @@ class HelpOfferRepository:
         )
 
     # reject help offer
-    # UNTESTED
     def reject_help_offer(self, help_offer_id):
         self.connection.execute(
             """
@@ -132,8 +130,7 @@ class HelpOfferRepository:
             [help_offer_id],
         )
 
-    # recind help offer
-    # UNTESTED
+    # rescind help offer
     def rescind_help_offer(self, help_offer_id):
         self.connection.execute(
             """

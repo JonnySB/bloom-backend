@@ -402,10 +402,10 @@ def outgoing_help_offers_by_user_id(user_id):
 
 # reject help offer
 # UNTESTED
-@app.route("/help_offers/recind_offer/<help_offer_id>", methods=["PUT"])
+@app.route("/help_offers/rescind_offer/<help_offer_id>", methods=["PUT"])
 @jwt_required()
 @cross_origin()
-def recind_help_offer(help_offer_id):
+def rescind_help_offer(help_offer_id):
     connection = get_flask_database_connection(app)
     help_offers_repository = HelpOfferRepository(connection)
 
