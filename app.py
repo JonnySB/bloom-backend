@@ -7,7 +7,7 @@ from flask_cors import CORS, cross_origin
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required
 
 # dependecies for livechat
-from flask_socketio import SocketIO, emit, join_room, leave_room
+from flask_socketio import SocketIO, emit, join_room, leave_room, rooms
 
 from lib.database_connection import get_flask_database_connection
 from lib.models.extended_help_offer import ExtendedHelpOffer
@@ -678,27 +678,39 @@ def post_messages():
     receiver_username = request.json.get("receiver_username")
     sender_username = request.json.get("sender_username")
     user_id = request.json.get("userId")
+    repository.create(user_id, receiver_id, get_message, receiver_username, sender_username)
 
-    send_message = repository.create(
-        user_id, receiver_id, get_message, receiver_username, sender_username
-    )
-
-    socketio.emit("new_messages", {"messages": send_message}, room=user_id)
     return jsonify({"message": "Message sent successfully"}), 200
 
 
-@socketio.on("join")
+# @socketio.on('join')
+# def on_join(data):
+#     room = data['room']
+#     sid = request.sid 
+#     join_room(room)
+#     emit('joined_room', {'message': f"Joined room {room}"}, to=sid)
+
+
+room_memberships = {}
+
+@socketio.on('join')
 def on_join(data):
-    user_id = data["user_id"]
-    join_room(user_id)
-    socketio.emit("joined_room", {"message": "You have joined the room."}, room=user_id)
+    room = data['room']
+    sid = request.sid
+    join_room(room)
+    
+    if room not in room_memberships:
+        room_memberships[room] = []
+    if sid not in room_memberships[room]:
+        room_memberships[room].append(sid)
+    
+    print(f"Current sockets in room {room}: {room_memberships[room]}")
+    emit('joined_room', {'message': f"Joined room {room}"}, to=sid)
 
-
-@socketio.on("leave")
-def on_leave(data):
-    user_id = data["user_id"]
-    leave_room(user_id)
-    socketio.emit("left_room", {"message": "You have left the room."}, room=user_id)
+@socketio.on('message')
+def handle_message(data):
+    room = data['room']
+    emit('new_messages', {'messages': data['message']}, room=room, include_self=False)
 
 
 @app.route("/messages/<chat_id>", methods=["GET"])
