@@ -705,12 +705,14 @@ def on_join(data):
         room_memberships[room].append(sid)
     
     print(f"Current sockets in room {room}: {room_memberships[room]}")
-    emit('joined_room', {'message': f"Joined room {room}"}, to=sid)
+    socketio.emit('joined_room', {'message': f"Joined room {room}"}, to=sid)
+    
 
 @socketio.on('message')
 def handle_message(data):
     room = data['room']
-    emit('new_messages', {'messages': data['message']}, room=room, include_self=False)
+    socketio.emit('new_messages', {'messages': data['message']}, room=room, include_self=False)
+    
 
 
 @app.route("/messages/<chat_id>", methods=["GET"])
