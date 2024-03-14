@@ -32,3 +32,23 @@ def test_user_constructs_invalid_password():
     # This password is too short, it won't pass validation
     user = User(1, "John", "Doe", "jdoe", "jdoe@email.com", "Pwd123!")
     assert user.hashed_password is None
+
+def test_invalid_email():
+    # Create a user with an invalid email address
+    user = User(1, "John", "Doe", "jdoe", "invalidEmail", "Password123!")
+    assert user.email is None
+
+def test_invalid_email_2():
+    # Create a user with an invalid email address
+    user = User(1, "John", "Doe", "jdoe", "invalidEmail@email", "Password123!")
+    assert user.email is None
+
+def test_invalid_email_3():
+    # Create a user with an invalid email address
+    user = User(1, "John", "Doe", "jdoe", "invalidEmail@email.", "Password123!")
+    assert user.email is None
+    
+def test_invalid_email_4():
+    # Create a user with an invalid email address
+    user = User(1, "John", "Doe", "jdoe", "invalidEmail@email.c", "Password123!")
+    assert user.email is None

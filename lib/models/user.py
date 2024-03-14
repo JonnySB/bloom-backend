@@ -17,7 +17,7 @@ class User:
         self.first_name = first_name
         self.last_name = last_name
         self.username = username
-        self.email = email
+        self.email = email if self._validate_email(email) else None
         self.hashed_password = self._hash_password(password) if self._validate_password(password) else None
         self.avatar_url_string = avatar_url_string
         self.address = address
@@ -60,3 +60,9 @@ class User:
         if not re.search(r"[!@#$%^&*()-_=+{};:,<.>]", password):
             return False
         return True
+    
+    @staticmethod
+    def _validate_email(email):
+        # Simple regex pattern to check email validity
+        email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        return re.match(email_regex, email) is not None
