@@ -27,3 +27,8 @@ def test_identical_users():
     user1 = User(1, "John", "Doe", "jdoe", "jdoe@email.com", "Password123!")
     user2 = User(1, "John", "Doe", "jdoe", "jdoe@email.com", "Password123!")
     assert user1 == user2
+
+def test_user_constructs_invalid_password():
+    # This password is too short, it won't pass validation
+    user = User(1, "John", "Doe", "jdoe", "jdoe@email.com", "Pwd123!")
+    assert user.hashed_password is None
