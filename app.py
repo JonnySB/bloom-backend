@@ -683,14 +683,6 @@ def post_messages():
     return jsonify({"message": "Message sent successfully"}), 200
 
 
-# @socketio.on('join')
-# def on_join(data):
-#     room = data['room']
-#     sid = request.sid 
-#     join_room(room)
-#     emit('joined_room', {'message': f"Joined room {room}"}, to=sid)
-
-
 room_memberships = {}
 
 @socketio.on('join')
@@ -711,8 +703,28 @@ def on_join(data):
 @socketio.on('message')
 def handle_message(data):
     room = data['room']
-    socketio.emit('new_messages', {'messages': data['message']}, room=room, include_self=False)
+    socketio.emit('new_messages', {'sender': data['sender'], 'message': data['message']}, room=room, include_self=False)
     
+
+@socketio.on('leave')
+def on_leave(data):
+    room = data['room']
+    sid = request.sid
+    leave_room(room)
+    if room in room_memberships and sid in room_memberships[room]:
+        room_memberships[room].remove(sid)
+        print(f"Socket {sid} left room {room}. Current sockets in room: {room_memberships.get(room, [])}")
+
+@socketio.on('disconnect')
+def handle_disconnect():
+    sid = request.sid
+    for room, members in room_memberships.items():
+        if sid in members:
+            members.remove(sid)
+            print(f"Socket {sid} removed from room {room} upon disconnect.")
+            socketio.emit('user_left', {'sid': sid, 'room': room}, room=room)
+            
+            
 
 
 @app.route("/messages/<chat_id>", methods=["GET"])
