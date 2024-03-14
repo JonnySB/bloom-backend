@@ -1,5 +1,5 @@
 import bcrypt
-
+import re
 
 class User:
     def __init__(
@@ -18,11 +18,11 @@ class User:
         self.last_name = last_name
         self.username = username
         self.email = email
-        self.hashed_password = self._hash_password(password)
+        self.hashed_password = self._hash_password(password) if self._validate_password(password) else None
         self.avatar_url_string = avatar_url_string
         self.address = address
 
-    # ensure two object with identical attrs will be found equal
+    # ensure two objects with identical attributes will be found equal
     def __eq__(self, other):
         # includes all items apart from hashed password
         return all(
@@ -37,7 +37,7 @@ class User:
             ]
         )
 
-    # return nicely formatted string version of User object
+    # return a nicely formatted string version of the User object
     def __repr__(self):
         return f"User: {self.id}, {self.first_name}, {self.last_name}, {self.username}, {self.email}, {self.avatar_url_string}, {self.address}"
 
@@ -47,3 +47,16 @@ class User:
         salt = bcrypt.gensalt()
         password_hash = bcrypt.hashpw(password_bytes, salt)
         return password_hash
+
+    @staticmethod
+    def _validate_password(password):
+        # Password must have at least 8 characters, one capital letter, one number, and one special character
+        if len(password) < 8:
+            return False
+        if not re.search(r"[A-Z]", password):
+            return False
+        if not re.search(r"\d", password):
+            return False
+        if not re.search(r"[!@#$%^&*()-_=+{};:,<.>]", password):
+            return False
+        return True
