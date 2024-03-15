@@ -9,7 +9,7 @@ from flask.helpers import get_flashed_messages
 from flask_cors import CORS, cross_origin
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required
 # dependecies for livechat
-from flask_socketio import SocketIO, emit, join_room, leave_room
+from flask_socketio import SocketIO, emit, join_room, leave_room, rooms
 from werkzeug.utils import secure_filename
 
 from lib.database_connection import get_flask_database_connection
@@ -684,27 +684,53 @@ def post_messages():
     receiver_username = request.json.get("receiver_username")
     sender_username = request.json.get("sender_username")
     user_id = request.json.get("userId")
+    repository.create(user_id, receiver_id, get_message, receiver_username, sender_username)
 
-    send_message = repository.create(
-        user_id, receiver_id, get_message, receiver_username, sender_username
-    )
-
-    socketio.emit("new_messages", {"messages": send_message}, room=user_id)
     return jsonify({"message": "Message sent successfully"}), 200
 
 
-@socketio.on("join")
+room_memberships = {}
+
+@socketio.on('join')
 def on_join(data):
-    user_id = data["user_id"]
-    join_room(user_id)
-    socketio.emit("joined_room", {"message": "You have joined the room."}, room=user_id)
+    room = data['room']
+    sid = request.sid
+    join_room(room)
+    
+    if room not in room_memberships:
+        room_memberships[room] = []
+    if sid not in room_memberships[room]:
+        room_memberships[room].append(sid)
+    
+    print(f"Current sockets in room {room}: {room_memberships[room]}")
+    socketio.emit('joined_room', {'message': f"Joined room {room}"}, to=sid)
+    
 
+@socketio.on('message')
+def handle_message(data):
+    room = data['room']
+    socketio.emit('new_messages', {'sender': data['sender'], 'message': data['message']}, room=room, include_self=False)
+    
 
-@socketio.on("leave")
+@socketio.on('leave')
 def on_leave(data):
-    user_id = data["user_id"]
-    leave_room(user_id)
-    socketio.emit("left_room", {"message": "You have left the room."}, room=user_id)
+    room = data['room']
+    sid = request.sid
+    leave_room(room)
+    if room in room_memberships and sid in room_memberships[room]:
+        room_memberships[room].remove(sid)
+        print(f"Socket {sid} left room {room}. Current sockets in room: {room_memberships.get(room, [])}")
+
+@socketio.on('disconnect')
+def handle_disconnect():
+    sid = request.sid
+    for room, members in room_memberships.items():
+        if sid in members:
+            members.remove(sid)
+            print(f"Socket {sid} removed from room {room} upon disconnect.")
+            socketio.emit('user_left', {'sid': sid, 'room': room}, room=room)
+            
+            
 
 
 @app.route("/messages/<chat_id>", methods=["GET"])
