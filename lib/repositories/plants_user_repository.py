@@ -14,7 +14,7 @@ class PlantsUserRepository:
 
     # using this function we can retrive the plant's information and the user's information
     def find_plants_by_user_id(self, user_id):
-        query = """SELECT p.*, up.quantity FROM plants p JOIN user_plants up ON p.id = up.plant_id WHERE up.user_id = %s"""
+        query = """SELECT p.*, up.quantity FROM plants p JOIN user_plants up ON p.plant_id = up.plant_id WHERE up.user_id = %s"""
         rows = self.connection.execute(query, [user_id])
         plants_by_user = []
         for row in rows:
