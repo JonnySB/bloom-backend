@@ -1,5 +1,6 @@
 import os
 from datetime import timedelta
+import requests
 
 import cloudinary
 import cloudinary.uploader
@@ -10,9 +11,11 @@ from flask_cors import CORS, cross_origin
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required
 # dependecies for livechat
 from flask_socketio import SocketIO, emit, join_room, leave_room, rooms
+
 from werkzeug.utils import secure_filename
 
 from lib.database_connection import get_flask_database_connection
+
 from lib.models.extended_help_offer import ExtendedHelpOffer
 from lib.models.help_offer import HelpOffer
 from lib.models.help_request import HelpRequest
@@ -38,11 +41,11 @@ app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(
     days=1
 )  # I JUST ADD THIS FOR NOW SO THE TOKEN DON"T KEEP EXIRING PLEASE REMOVE LATER.
 
-CORS(app, supports_credentials=True)
+CORS(app, origins=["http://localhost:5173"], supports_credentials=True) # also added this
 
 socketio = SocketIO(
     app,
-    cors_allowed_origins="*",
+    cors_allowed_origins=["http://localhost:5173"],# added this instead of allowing all 
     logger=True,
     engineio_logger=True,
     async_mode="gevent",
@@ -611,6 +614,25 @@ def assign_plant_to_user():
         jsonify({"message": "Plant assigned successfully", "token": access_token}),
         200,
     )
+
+# API REQUEST 
+@app.route('/api/plants')
+@cross_origin()
+@jwt_required()
+def get_plant():
+    token = "-y-wxiT1X3z5emjJ1u1h7Flnpe65UO82CUGHkisnVJY"
+    response = requests.get(f"https://trefle.io/api/v1/plants?token={token}&page=2")
+    if response.ok:
+        plant_data = response.json()
+        my_plants = []
+        for item in plant_data['data']:
+            plant_info = {"common_name": item['common_name'],"plant_id": item['id']}
+            my_plants.append(plant_info)
+        return jsonify(my_plants)
+    else:
+        return jsonify({"error": "Failed to fetch data from Trefle API"}), response.status_code
+
+
 
 
 @app.route("/plants/user/update", methods=["POST"])
