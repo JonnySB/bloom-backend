@@ -32,7 +32,7 @@ CREATE TABLE plants (
     common_name VARCHAR(255),
     latin_name VARCHAR(255),
     photo VARCHAR(255),
-    watering_frequency INT NOT NULL
+    watering_frequency INT 
 );
 -- Create user_plants table
 CREATE TABLE user_plants (

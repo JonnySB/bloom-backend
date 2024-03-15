@@ -572,6 +572,22 @@ def get_plants():
     return jsonify(data_json), 200
 
 
+@app.route("/plants/create", methods=["POST"])
+@cross_origin()
+def add_new_plant():
+    connection = get_flask_database_connection(app)
+    repository = PlantsRepository(connection)
+    user_id = request.json.get("user_id")
+    plant_id = request.json.get("plant_id")
+    common_name = request.json.get("common_name")
+    latin_name = request.json.get("latin_name")
+    photo = request.json.get("photo")
+    water_frequency = 1
+    repository.create(plant_id, common_name, latin_name, photo, water_frequency)
+   
+    # return jsonify(data_json), 200
+
+
 # Show all plants by user
 @app.route("/plants/user/<user_id>", methods=["GET"])
 @cross_origin()
@@ -604,7 +620,6 @@ def assign_plant_to_user():
     user_id = request.json.get("user_id")
     plant_id = request.json.get("plant_id")
     quantity = request.json.get("quantity", 1)  # Default quantity to 1 if not specified
-
     connection = get_flask_database_connection(app)
     repository = PlantsUserRepository(connection)
     repository.assign_plant_to_user(user_id, plant_id, quantity)
@@ -621,16 +636,18 @@ def assign_plant_to_user():
 @jwt_required()
 def get_plant():
     token = "-y-wxiT1X3z5emjJ1u1h7Flnpe65UO82CUGHkisnVJY"
-    response = requests.get(f"https://trefle.io/api/v1/plants?token={token}&page=2")
+    response = requests.get(f"https://trefle.io/api/v1/plants?token={token}&page=1")
     if response.ok:
         plant_data = response.json()
         my_plants = []
         for item in plant_data['data']:
-            plant_info = {"common_name": item['common_name'],"plant_id": item['id']}
+            plant_info = {"common_name": item['common_name'],"plant_id": item['id'], 'latin_name': item['scientific_name'], 'photo': item['image_url'],  }
             my_plants.append(plant_info)
         return jsonify(my_plants)
     else:
         return jsonify({"error": "Failed to fetch data from Trefle API"}), response.status_code
+
+
 
 
 
@@ -642,7 +659,6 @@ def update_plants_quantity():
     user_id = request.json.get("user_id")
     plant_id = request.json.get("plant_id")
     new_quantity = request.json.get("new_quantity")
-
     connection = get_flask_database_connection(app)
     repository = PlantsUserRepository(connection)
     repository.update_plants_quantity(user_id, plant_id, new_quantity)

@@ -30,6 +30,7 @@ class PlantsUserRepository:
             }
             plants_by_user.append(plant_with_quantity)
         return plants_by_user
+    
 
     def update_plants_quantity(self, user_id, plant_id, new_quantity):
         self.connection.execute(
