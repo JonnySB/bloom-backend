@@ -583,11 +583,10 @@ def add_new_plant():
     latin_name = plant['latin_name']
     photo = plant['url']
     watering_frequency = 1
-    print("ABOVE",plant)
-    print("BELOW",plant_id, common_name, latin_name, photo)
+
     repository.create(plant_id, common_name, latin_name, photo, watering_frequency)
    
-    return (jsonify({"message": "Plant created successfully"}),200)
+    return (jsonify({"message": "Plant created successfully"}, plant_id),200)
 
 
 # Show all plants by user
@@ -623,6 +622,7 @@ def assign_plant_to_user():
     user_id = request.json.get("user_id")
     plant_id = request.json.get("plant_id")
     quantity = request.json.get("quantity", 1)  # Default quantity to 1 if not specified
+    print(user_id, plant_id, quantity)
     connection = get_flask_database_connection(app)
     repository = PlantsUserRepository(connection)
     repository.assign_plant_to_user(user_id, plant_id, quantity)
@@ -649,9 +649,6 @@ def get_plant():
         return jsonify(my_plants)
     else:
         return jsonify({"error": "Failed to fetch data from Trefle API"}), response.status_code
-
-
-
 
 
 
