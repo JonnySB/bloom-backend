@@ -21,6 +21,7 @@ class PlantsUserRepository:
             plant_with_quantity = {
                 "plant": Plants(
                     row["id"],
+                    row["plant_id"],
                     row["common_name"],
                     row["latin_name"],
                     row["photo"],

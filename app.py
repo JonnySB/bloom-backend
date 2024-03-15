@@ -583,6 +583,8 @@ def add_new_plant():
     latin_name = plant['latin_name']
     photo = plant['url']
     watering_frequency = 1
+    print("ABOVE",plant)
+    print("BELOW",plant_id, common_name, latin_name, photo)
     repository.create(plant_id, common_name, latin_name, photo, watering_frequency)
    
     return (jsonify({"message": "Plant created successfully"}),200)
@@ -602,6 +604,7 @@ def get_plants_by_user(user_id):
         quantity = plant_info["quantity"]
         plant_obj = {
             "id": plant.id,
+            "plant_id": plant.plant_id,
             "common_name": plant.common_name,
             "latin_name": plant.latin_name,
             "photo": plant.photo,
