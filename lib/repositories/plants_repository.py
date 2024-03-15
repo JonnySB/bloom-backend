@@ -8,8 +8,9 @@ class PlantsRepository:
 
     def create(self, plant):
         self.connection.execute(
-            "INSERT INTO plants (common_name, latin_name, photo, watering_frequency) VALUES (%s, %s, %s, %s)",
-            [
+            "INSERT INTO plants (plant_id, common_name, latin_name, photo, watering_frequency) VALUES (%s, %s, %s, %s, %s)",
+            [   
+                plant.plant_id,
                 plant.common_name,
                 plant.latin_name,
                 plant.photo,

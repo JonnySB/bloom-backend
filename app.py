@@ -577,15 +577,15 @@ def get_plants():
 def add_new_plant():
     connection = get_flask_database_connection(app)
     repository = PlantsRepository(connection)
-    user_id = request.json.get("user_id")
-    plant_id = request.json.get("plant_id")
-    common_name = request.json.get("common_name")
-    latin_name = request.json.get("latin_name")
-    photo = request.json.get("photo")
-    water_frequency = 1
-    repository.create(plant_id, common_name, latin_name, photo, water_frequency)
+    plant = request.json.get("plant")
+    plant_id = plant['plant_id']
+    common_name = plant['common_name']
+    latin_name = plant['latin_name']
+    photo = plant['url']
+    watering_frequency = 1
+    repository.create(plant_id, common_name, latin_name, photo, watering_frequency)
    
-    # return jsonify(data_json), 200
+    return (jsonify({"message": "Plant created successfully"}),200)
 
 
 # Show all plants by user
