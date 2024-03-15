@@ -7,9 +7,12 @@ class PlantsRepository:
         self.connection = connection
 
     def create(self, plant_id, common_name, latin_name, photo, watering_frequency):
-        insert_query = '''INSERT INTO plants (plant_id, common_name, latin_name, photo, watering_frequency) VALUES (%s, %s, %s, %s, %s) RETURNING *;'''
+        insert_query = '''INSERT INTO plants (plant_id, common_name, latin_name, photo, watering_frequency) VALUES (%s, %s, %s, %s, %s) ON CONFLICT (plant_id) DO NOTHING RETURNING *;'''
         result = self.connection.execute(insert_query, [plant_id, common_name, latin_name, photo, watering_frequency])
-        return result
+        if result:
+            return {"status": "created", "message": "Plant Created successfully"}
+        else:
+            return {"status": "exists", "message": "Plant already exists."}
 
 
     def all(self):

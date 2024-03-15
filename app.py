@@ -172,13 +172,11 @@ def edit_user_details(id):
             id, first_name, last_name, username, email, address
         )
         response = make_response(jsonify({"msg": "User updated successful"}), 200)
-        print(response)
         return response
 
     except Exception as e:
         print(f"Error processing PUT request: {e}")
         response = make_response(jsonify({"error": "Internal Server Error"}), 500)
-        print(response)
 
     response.headers["Access-Control-Allow-Origin"] = "*"
     return response
@@ -582,11 +580,14 @@ def add_new_plant():
     common_name = plant['common_name']
     latin_name = plant['latin_name']
     photo = plant['url']
-    watering_frequency = 1
+    watering_frequency = 1  
 
-    repository.create(plant_id, common_name, latin_name, photo, watering_frequency)
-   
-    return (jsonify({"message": "Plant created successfully"}, plant_id),200)
+    result = repository.create(plant_id, common_name, latin_name, photo, watering_frequency)
+    
+    if result['status'] == "created":
+        return jsonify({"message": result['message'], "plant_id": plant_id}), 200
+    elif result['status'] == "exists":
+        return jsonify({"message": result['message'], "plant_id": plant_id}), 200  
 
 
 # Show all plants by user
@@ -611,7 +612,6 @@ def get_plants_by_user(user_id):
             "quantity": quantity,
         }
         user_plants.append(plant_obj)
-    print(plants_with_quantity)
     return jsonify(user_plants), 200
 
 
