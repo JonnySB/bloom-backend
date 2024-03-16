@@ -176,3 +176,46 @@ class HelpRequestRepository:
             }
             help_requests_with_user_details.append((help_request, user_details))
         return help_requests_with_user_details
+    
+    def get_plant_photo_with_user_details_for_help_request(self):
+        query = """
+        SELECT 
+            hr.title,
+            hr.message,
+            hr.start_date,
+            hr.end_date,
+            hr.maxprice,
+            hr.user_id,
+            u.first_name,
+            u.last_name,
+            u.avatar_url_string,
+            p.photo AS plant_photo
+        FROM 
+            help_requests hr
+        JOIN 
+            user_plants up ON hr.user_id = up.user_id
+        JOIN 
+            plants p ON up.plant_id = p.id
+        JOIN
+            users u ON hr.user_id = u.id
+        """
+        rows = self.db_connection.execute(query)
+
+        help_requests_with_details = []
+        for row in rows:
+            help_request = HelpRequest(
+                row["title"],
+                row["message"],
+                row["start_date"],
+                row["end_date"],
+                row["maxprice"],
+                row["user_id"]
+            )
+            user_details = {
+                "first_name": row["first_name"],
+                "last_name": row["last_name"],
+                "avatar_url_string": row["avatar_url_string"]
+            }
+            plant_photo = row["plant_photo"]
+            help_requests_with_details.append((help_request, user_details, plant_photo))
+        return help_requests_with_details
