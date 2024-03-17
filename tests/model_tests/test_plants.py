@@ -4,8 +4,9 @@ from lib.models.plants import Plants
 
 
 def test_construction():
-    plant = Plants(1, "Plant Name", "Latin Plant Name", "photo title", 1)
+    plant = Plants(1, 3, "Plant Name", "Latin Plant Name", "photo title", 1)
     assert plant.id == 1
+    assert plant.plant_id == 3
     assert plant.common_name == "Plant Name"
     assert plant.latin_name == "Latin Plant Name"
     assert plant.photo == "photo title"
@@ -13,11 +14,11 @@ def test_construction():
 
 
 def test_compare():
-    plant_1 = Plants(1, "Plant Name", "Latin Plant Name", "photo title", 1)
-    plant_2 = Plants(1, "Plant Name", "Latin Plant Name", "photo title", 1)
+    plant_1 = Plants(1, 3, "Plant Name", "Latin Plant Name", "photo title", 1)
+    plant_2 = Plants(1, 3, "Plant Name", "Latin Plant Name", "photo title", 1)
     assert plant_1 == plant_2
 
 
 def test_stringfying():
-    plant = Plants(1, "Plant Name", "Latin Plant Name", "photo title", 1)
-    assert str(plant) == "Plants(1, Plant Name, Latin Plant Name, photo title, 1)"
+    plant = Plants(1, 3, "Plant Name", "Latin Plant Name", "photo title", 1)
+    assert str(plant) == "Plants(1, 3, Plant Name, Latin Plant Name, photo title, 1)"
