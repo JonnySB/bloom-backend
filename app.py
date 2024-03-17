@@ -650,6 +650,28 @@ def get_plant():
         return jsonify({"error": "Failed to fetch data from Trefle API"}), response.status_code
 
 
+#SEARCH PLANTS BY NAME 
+@app.route('/api/plants/name')
+@cross_origin()
+@jwt_required()
+def get_plants_by_name():
+    token = "-y-wxiT1X3z5emjJ1u1h7Flnpe65UO82CUGHkisnVJY"
+    name = request.json.get("name")
+    response = requests.get(f"https://trefle.io/api/v1/plants/search?token={token}&q={name}")
+    if response.ok:
+        plant_data = response.json()
+        my_plants = []
+        for item in plant_data['data']:
+            plant_info = {"common_name": item['common_name'],"plant_id": item['id'], 'latin_name': item['scientific_name'], 'photo': item['image_url'],  }
+            my_plants.append(plant_info)
+        return jsonify(my_plants)
+    else:
+        return jsonify({"error": "Failed to fetch data from Trefle API"}), response.status_code
+
+
+
+
+
 
 @app.route("/plants/user/update", methods=["POST"])
 @cross_origin()
