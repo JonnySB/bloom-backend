@@ -461,6 +461,34 @@ def get_all_help_requests_with_user_details():
     return jsonify(response_data), 200
 
 
+@app.route("/help_requests3", methods=["GET"])
+@cross_origin()
+def get_help_requests_with_plant_photo_and_user_details():
+    connection = get_flask_database_connection(app)
+    request_repository = HelpRequestRepository(connection)
+    help_requests_with_details = request_repository.get_plant_photo_with_user_details_for_help_request()
+
+    response_data = []
+    for help_request, user_details, plant_photo in help_requests_with_details:
+        response_data.append(
+            {
+                "title": help_request.title,
+                "message": help_request.message,
+                "start_date": help_request.start_date.strftime("%Y-%m-%d"),
+                "end_date": help_request.end_date.strftime("%Y-%m-%d"),
+                "maxprice": help_request.maxprice,
+                "user_id": help_request.user_id,
+                "first_name": user_details["first_name"],
+                "last_name": user_details["last_name"],
+                "avatar_url_string": user_details["avatar_url_string"],
+                "plant_photo": plant_photo,
+            }
+        )
+
+    return jsonify(response_data), 200
+
+
+
 @app.route("/help_requests/<request_id>", methods=["GET"])
 @cross_origin()
 def get_one_help_request_by_id(request_id):
