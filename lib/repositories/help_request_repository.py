@@ -181,7 +181,6 @@ class HelpRequestRepository:
         rows = self.db_connection.execute("""
                 SELECT 
                     hr.*,
-                    hr.user_id,
                     u.first_name,
                     u.last_name,
                     u.avatar_url_string,
