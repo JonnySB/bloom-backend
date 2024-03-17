@@ -10,9 +10,9 @@ class PlantsRepository:
         insert_query = '''INSERT INTO plants (plant_id, common_name, latin_name, photo, watering_frequency) VALUES (%s, %s, %s, %s, %s) ON CONFLICT (plant_id) DO NOTHING RETURNING *;'''
         result = self.connection.execute(insert_query, [plant_id, common_name, latin_name, photo, watering_frequency])
         if result:
-            return {"status": "created", "message": "Plant Created successfully"}
+            return {"status": "created", "message": "Plant inserted in the database successfully"}
         else:
-            return {"status": "exists", "message": "Plant already exists."}
+            return {"status": "exists", "message": "Plant already exists in the database."}
 
 
     def all(self):

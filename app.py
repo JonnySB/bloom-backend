@@ -623,6 +623,7 @@ def assign_plant_to_user():
     quantity = request.json.get("quantity", 1)  # Default quantity to 1 if not specified
     connection = get_flask_database_connection(app)
     repository = PlantsUserRepository(connection)
+    print(user_id, plant_id, quantity)
     repository.assign_plant_to_user(user_id, plant_id, quantity)
     access_token = create_access_token(identity=user_id)
 
@@ -644,7 +645,6 @@ def get_plants_by_name():
         plant_data = response.json()
         my_plants = []
         for item in plant_data['data']:
-            print(item)
             plant_info = {"common_name": item['common_name'],"plant_id": item['id'], 'latin_name': item['scientific_name'], 'photo': item['image_url']}
             my_plants.append(plant_info)
         return jsonify(my_plants)
