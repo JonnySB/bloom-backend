@@ -1,5 +1,6 @@
 import os
 from datetime import timedelta
+import requests
 
 import cloudinary
 import cloudinary.uploader
@@ -10,9 +11,11 @@ from flask_cors import CORS, cross_origin
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required
 # dependecies for livechat
 from flask_socketio import SocketIO, emit, join_room, leave_room, rooms
+
 from werkzeug.utils import secure_filename
 
 from lib.database_connection import get_flask_database_connection
+
 from lib.models.extended_help_offer import ExtendedHelpOffer
 from lib.models.help_offer import HelpOffer
 from lib.models.help_request import HelpRequest
@@ -38,11 +41,11 @@ app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(
     days=1
 )  # I JUST ADD THIS FOR NOW SO THE TOKEN DON"T KEEP EXIRING PLEASE REMOVE LATER.
 
-CORS(app, supports_credentials=True)
+CORS(app, origins=["http://localhost:5173"], supports_credentials=True) # also added this
 
 socketio = SocketIO(
     app,
-    cors_allowed_origins="*",
+    cors_allowed_origins=["http://localhost:5173"],# added this instead of allowing all 
     logger=True,
     engineio_logger=True,
     async_mode="gevent",
@@ -169,13 +172,11 @@ def edit_user_details(id):
             id, first_name, last_name, username, email, address
         )
         response = make_response(jsonify({"msg": "User updated successful"}), 200)
-        print(response)
         return response
 
     except Exception as e:
         print(f"Error processing PUT request: {e}")
         response = make_response(jsonify({"error": "Internal Server Error"}), 500)
-        print(response)
 
     response.headers["Access-Control-Allow-Origin"] = "*"
     return response
@@ -548,7 +549,6 @@ def create_help_request(user_id):
 
 ### PLANTS ROUT ###
 
-
 # Show all plants in DB
 @app.route("/plants", methods=["GET"])
 @cross_origin()
@@ -569,6 +569,26 @@ def get_plants():
     return jsonify(data_json), 200
 
 
+@app.route("/plants/create", methods=["POST"])
+@cross_origin()
+def add_new_plant():
+    connection = get_flask_database_connection(app)
+    repository = PlantsRepository(connection)
+    plant = request.json.get("plant")
+    watering_frequency = request.json.get("waterQuantity")
+    plant_id = plant['plant_id']
+    common_name = plant['common_name']
+    latin_name = plant['latin_name']
+    photo = plant['photo']
+
+    result = repository.create(plant_id, common_name, latin_name, photo, watering_frequency)
+    
+    if result['status'] == "created":
+        return jsonify({"message": result['message'], "plant_id": plant_id}), 200
+    elif result['status'] == "exists":
+        return jsonify({"message": result['message'], "plant_id": plant_id}), 200  
+
+
 # Show all plants by user
 @app.route("/plants/user/<user_id>", methods=["GET"])
 @cross_origin()
@@ -583,6 +603,7 @@ def get_plants_by_user(user_id):
         quantity = plant_info["quantity"]
         plant_obj = {
             "id": plant.id,
+            "plant_id": plant.plant_id,
             "common_name": plant.common_name,
             "latin_name": plant.latin_name,
             "photo": plant.photo,
@@ -590,7 +611,6 @@ def get_plants_by_user(user_id):
             "quantity": quantity,
         }
         user_plants.append(plant_obj)
-
     return jsonify(user_plants), 200
 
 
@@ -601,7 +621,6 @@ def assign_plant_to_user():
     user_id = request.json.get("user_id")
     plant_id = request.json.get("plant_id")
     quantity = request.json.get("quantity", 1)  # Default quantity to 1 if not specified
-
     connection = get_flask_database_connection(app)
     repository = PlantsUserRepository(connection)
     repository.assign_plant_to_user(user_id, plant_id, quantity)
@@ -612,6 +631,25 @@ def assign_plant_to_user():
         200,
     )
 
+my_token = os.getenv("TREFLE_KEY")
+
+#SEARCH PLANTS BY NAME 
+@app.route('/api/plants/name', methods=["POST"])
+@cross_origin()
+@jwt_required()
+def get_plants_by_name():
+    name = request.json.get("name")
+    response = requests.get(f"https://trefle.io/api/v1/species/search?token={my_token}&q={name}")
+    if response.ok:
+        plant_data = response.json()
+        my_plants = []
+        for item in plant_data['data']:
+            plant_info = {"common_name": item['common_name'],"plant_id": item['id'], 'latin_name': item['scientific_name'], 'photo': item['image_url']}
+            my_plants.append(plant_info)
+        return jsonify(my_plants)
+    else:
+        return jsonify({"error": "Failed to fetch data from Trefle API"}), response.status_code
+
 
 @app.route("/plants/user/update", methods=["POST"])
 @cross_origin()
@@ -620,7 +658,6 @@ def update_plants_quantity():
     user_id = request.json.get("user_id")
     plant_id = request.json.get("plant_id")
     new_quantity = request.json.get("new_quantity")
-
     connection = get_flask_database_connection(app)
     repository = PlantsUserRepository(connection)
     repository.update_plants_quantity(user_id, plant_id, new_quantity)
@@ -639,7 +676,6 @@ def update_plants_quantity():
 def delete_plants_from_user():
     user_id = request.json.get("user_id")
     plant_id = request.json.get("plant_id")
-
     connection = get_flask_database_connection(app)
     repository = PlantsUserRepository(connection)
     repository.delete_plants_from_user(user_id, plant_id)
@@ -746,3 +782,5 @@ if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5001))
     print(f" * Running on http://127.0.0.1:{port}")
     socketio.run(app, debug=True, port=port, use_reloader=False)
+
+
