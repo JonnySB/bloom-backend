@@ -623,7 +623,6 @@ def assign_plant_to_user():
     quantity = request.json.get("quantity", 1)  # Default quantity to 1 if not specified
     connection = get_flask_database_connection(app)
     repository = PlantsUserRepository(connection)
-    print(user_id, plant_id, quantity)
     repository.assign_plant_to_user(user_id, plant_id, quantity)
     access_token = create_access_token(identity=user_id)
 
@@ -632,15 +631,15 @@ def assign_plant_to_user():
         200,
     )
 
+my_token = os.getenv("TREFLE_KEY")
 
 #SEARCH PLANTS BY NAME 
 @app.route('/api/plants/name', methods=["POST"])
 @cross_origin()
 @jwt_required()
 def get_plants_by_name():
-    token = "-y-wxiT1X3z5emjJ1u1h7Flnpe65UO82CUGHkisnVJY"
     name = request.json.get("name")
-    response = requests.get(f"https://trefle.io/api/v1/species/search?token={token}&q={name}")
+    response = requests.get(f"https://trefle.io/api/v1/species/search?token={my_token}&q={name}")
     if response.ok:
         plant_data = response.json()
         my_plants = []
@@ -677,7 +676,6 @@ def update_plants_quantity():
 def delete_plants_from_user():
     user_id = request.json.get("user_id")
     plant_id = request.json.get("plant_id")
-
     connection = get_flask_database_connection(app)
     repository = PlantsUserRepository(connection)
     repository.delete_plants_from_user(user_id, plant_id)
