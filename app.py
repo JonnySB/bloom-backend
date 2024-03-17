@@ -549,7 +549,6 @@ def create_help_request(user_id):
 
 ### PLANTS ROUT ###
 
-
 # Show all plants in DB
 @app.route("/plants", methods=["GET"])
 @cross_origin()
@@ -576,11 +575,11 @@ def add_new_plant():
     connection = get_flask_database_connection(app)
     repository = PlantsRepository(connection)
     plant = request.json.get("plant")
+    watering_frequency = request.json.get("waterQuantity")
     plant_id = plant['plant_id']
     common_name = plant['common_name']
     latin_name = plant['latin_name']
-    photo = plant['url']
-    watering_frequency = 1  
+    photo = plant['photo']
 
     result = repository.create(plant_id, common_name, latin_name, photo, watering_frequency)
     
@@ -632,23 +631,6 @@ def assign_plant_to_user():
         200,
     )
 
-# API REQUEST 
-@app.route('/api/plants')
-@cross_origin()
-@jwt_required()
-def get_plant():
-    token = "-y-wxiT1X3z5emjJ1u1h7Flnpe65UO82CUGHkisnVJY"
-    response = requests.get(f"https://trefle.io/api/v1/plants?token={token}&page=1")
-    if response.ok:
-        plant_data = response.json()
-        my_plants = []
-        for item in plant_data['data']:
-            plant_info = {"common_name": item['common_name'],"plant_id": item['id'], 'latin_name': item['scientific_name'], 'photo': item['image_url'],  }
-            my_plants.append(plant_info)
-        return jsonify(my_plants)
-    else:
-        return jsonify({"error": "Failed to fetch data from Trefle API"}), response.status_code
-
 
 #SEARCH PLANTS BY NAME 
 @app.route('/api/plants/name', methods=["POST"])
@@ -657,12 +639,13 @@ def get_plant():
 def get_plants_by_name():
     token = "-y-wxiT1X3z5emjJ1u1h7Flnpe65UO82CUGHkisnVJY"
     name = request.json.get("name")
-    response = requests.get(f"https://trefle.io/api/v1/plants/search?token={token}&q={name}")
+    response = requests.get(f"https://trefle.io/api/v1/species/search?token={token}&q={name}")
     if response.ok:
         plant_data = response.json()
         my_plants = []
         for item in plant_data['data']:
-            plant_info = {"common_name": item['common_name'],"plant_id": item['id'], 'latin_name': item['scientific_name'], 'photo': item['image_url'],  }
+            print(item)
+            plant_info = {"common_name": item['common_name'],"plant_id": item['id'], 'latin_name': item['scientific_name'], 'photo': item['image_url']}
             my_plants.append(plant_info)
         return jsonify(my_plants)
     else:
@@ -801,3 +784,5 @@ if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5001))
     print(f" * Running on http://127.0.0.1:{port}")
     socketio.run(app, debug=True, port=port, use_reloader=False)
+
+
