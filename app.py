@@ -651,7 +651,7 @@ def get_plant():
 
 
 #SEARCH PLANTS BY NAME 
-@app.route('/api/plants/name')
+@app.route('/api/plants/name', methods=["POST"])
 @cross_origin()
 @jwt_required()
 def get_plants_by_name():
@@ -667,10 +667,6 @@ def get_plants_by_name():
         return jsonify(my_plants)
     else:
         return jsonify({"error": "Failed to fetch data from Trefle API"}), response.status_code
-
-
-
-
 
 
 @app.route("/plants/user/update", methods=["POST"])
