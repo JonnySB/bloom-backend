@@ -1,10 +1,11 @@
 import datetime
+import io
+from unittest.mock import MagicMock, patch
 
 import pytest
 import requests
-from unittest.mock import patch, MagicMock
 from werkzeug.datastructures import FileStorage
-import io
+
 from app import *
 
 #########################
@@ -132,6 +133,7 @@ def test_get_plants_by_user_id(db_connection, test_web_address):
             "id": 1,
             "latin_name": "Pentzia incana",
             "photo": "https://res.cloudinary.com/dououppib/image/upload/v1709740425/PLANTS/African_sheepbush_lyorlf.jpg",
+            "plant_id": 1,
             "quantity": 3,
             "watering_frequency": 2,
         },
@@ -140,6 +142,7 @@ def test_get_plants_by_user_id(db_connection, test_web_address):
             "id": 2,
             "latin_name": "Alnus. Black alder",
             "photo": "https://res.cloudinary.com/dououppib/image/upload/v1709740428/PLANTS/Alder_jc4szc.jpg",
+            "plant_id": 2,
             "quantity": 3,
             "watering_frequency": 1,
         },
@@ -148,6 +151,7 @@ def test_get_plants_by_user_id(db_connection, test_web_address):
             "id": 5,
             "latin_name": "Berberis",
             "photo": "https://res.cloudinary.com/dououppib/image/upload/v1709740432/PLANTS/Barberry_copy_gseiuj.png",
+            "plant_id": 5,
             "quantity": 2,
             "watering_frequency": 1,
         },
@@ -772,6 +776,10 @@ def test_find_offers_by_user_id(db_connection, test_web_address):
             "help_offer_status": "pending",
             "help_offer_user_id": 1,
             "help_offer_username": "tee-jay",
+            "help_receive_avatar_url_string": "https://res.cloudinary.com/dououppib/image/upload/v1709830407/PLANTS/person3_itrqub.jpg",
+            "help_receive_first_name": "Alice",
+            "help_receive_last_name": "Lane",
+            "help_receive_username": "laney",
             "help_request_end_date": "Mon, 27 Nov 2023 00:00:00 GMT",
             "help_request_id": 10,
             "help_request_name": "Garden watering assistance required.",
@@ -788,6 +796,10 @@ def test_find_offers_by_user_id(db_connection, test_web_address):
             "help_offer_status": "pending",
             "help_offer_user_id": 1,
             "help_offer_username": "tee-jay",
+            "help_receive_avatar_url_string": "https://res.cloudinary.com/dououppib/image/upload/v1709830407/PLANTS/person3_itrqub.jpg",
+            "help_receive_first_name": "Alice",
+            "help_receive_last_name": "Lane",
+            "help_receive_username": "laney",
             "help_request_end_date": "Sun, 18 Jun 2023 00:00:00 GMT",
             "help_request_id": 5,
             "help_request_name": "Assistance needed with garden maintenance.",
@@ -804,6 +816,10 @@ def test_find_offers_by_user_id(db_connection, test_web_address):
             "help_offer_status": "pending",
             "help_offer_user_id": 1,
             "help_offer_username": "tee-jay",
+            "help_receive_avatar_url_string": "https://res.cloudinary.com/dououppib/image/upload/v1709830407/PLANTS/person3_itrqub.jpg",
+            "help_receive_first_name": "Alice",
+            "help_receive_last_name": "Lane",
+            "help_receive_username": "laney",
             "help_request_end_date": "Mon, 27 Nov 2023 00:00:00 GMT",
             "help_request_id": 10,
             "help_request_name": "Garden watering assistance required.",
@@ -820,6 +836,10 @@ def test_find_offers_by_user_id(db_connection, test_web_address):
             "help_offer_status": "pending",
             "help_offer_user_id": 1,
             "help_offer_username": "tee-jay",
+            "help_receive_avatar_url_string": "https://res.cloudinary.com/dououppib/image/upload/v1709830407/PLANTS/person3_itrqub.jpg",
+            "help_receive_first_name": "Alice",
+            "help_receive_last_name": "Lane",
+            "help_receive_username": "laney",
             "help_request_end_date": "Sun, 18 Jun 2023 00:00:00 GMT",
             "help_request_id": 5,
             "help_request_name": "Assistance needed with garden maintenance.",
@@ -894,6 +914,10 @@ def test_get_help_offered_to_user(db_connection, test_web_address):
             "help_offer_status": "pending",
             "help_offer_user_id": 2,
             "help_offer_username": "jane95",
+            "help_receive_avatar_url_string": "https://res.cloudinary.com/dououppib/image/upload/v1708633707/MY_UPLOADS/aibxzxdpk6gl4u5xjgjg.jpg",
+            "help_receive_first_name": "Tom",
+            "help_receive_last_name": "Jones",
+            "help_receive_username": "tee-jay",
             "help_request_end_date": "Fri, 07 Jul 2023 00:00:00 GMT",
             "help_request_id": 6,
             "help_request_name": "Plant watering help required.",
@@ -910,6 +934,10 @@ def test_get_help_offered_to_user(db_connection, test_web_address):
             "help_offer_status": "pending",
             "help_offer_user_id": 2,
             "help_offer_username": "jane95",
+            "help_receive_avatar_url_string": "https://res.cloudinary.com/dououppib/image/upload/v1708633707/MY_UPLOADS/aibxzxdpk6gl4u5xjgjg.jpg",
+            "help_receive_first_name": "Tom",
+            "help_receive_last_name": "Jones",
+            "help_receive_username": "tee-jay",
             "help_request_end_date": "Tue, 28 Feb 2023 00:00:00 GMT",
             "help_request_id": 1,
             "help_request_name": "Help needed whilst on holiday.",
@@ -926,6 +954,10 @@ def test_get_help_offered_to_user(db_connection, test_web_address):
             "help_offer_status": "pending",
             "help_offer_user_id": 2,
             "help_offer_username": "jane95",
+            "help_receive_avatar_url_string": "https://res.cloudinary.com/dououppib/image/upload/v1708633707/MY_UPLOADS/aibxzxdpk6gl4u5xjgjg.jpg",
+            "help_receive_first_name": "Tom",
+            "help_receive_last_name": "Jones",
+            "help_receive_username": "tee-jay",
             "help_request_end_date": "Fri, 07 Jul 2023 00:00:00 GMT",
             "help_request_id": 6,
             "help_request_name": "Plant watering help required.",
@@ -942,6 +974,10 @@ def test_get_help_offered_to_user(db_connection, test_web_address):
             "help_offer_status": "pending",
             "help_offer_user_id": 2,
             "help_offer_username": "jane95",
+            "help_receive_avatar_url_string": "https://res.cloudinary.com/dououppib/image/upload/v1708633707/MY_UPLOADS/aibxzxdpk6gl4u5xjgjg.jpg",
+            "help_receive_first_name": "Tom",
+            "help_receive_last_name": "Jones",
+            "help_receive_username": "tee-jay",
             "help_request_end_date": "Tue, 28 Feb 2023 00:00:00 GMT",
             "help_request_id": 1,
             "help_request_name": "Help needed whilst on holiday.",
@@ -950,6 +986,48 @@ def test_get_help_offered_to_user(db_connection, test_web_address):
         },
     ]
 
+def test_accept_offer(db_connection, test_web_address):
+    db_connection.seed("seeds/bloom.sql")
+
+    user_data = {"username_email": "tee-jay", "password": "Password123!"}
+    login_response = requests.post(f"http://{test_web_address}/token", json=user_data)
+    token = login_response.json()["token"]
+
+    response = requests.put(
+        f"http://{test_web_address}/help_offers/accept_offer/2",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert response.status_code == 200
+    assert response.json() == {"msg": "Help offer accepted"}
+
+
+def test_reject_offer(db_connection, test_web_address):
+    db_connection.seed("seeds/bloom.sql")
+
+    user_data = {"username_email": "tee-jay", "password": "Password123!"}
+    login_response = requests.post(f"http://{test_web_address}/token", json=user_data)
+    token = login_response.json()["token"]
+
+    response = requests.put(
+        f"http://{test_web_address}/help_offers/reject_offer/2",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert response.status_code == 200
+    assert response.json() == {"msg": "Help offer rejected"}
+
+def test_rescind_offer(db_connection, test_web_address):
+    db_connection.seed("seeds/bloom.sql")
+
+    user_data = {"username_email": "tee-jay", "password": "Password123!"}
+    login_response = requests.post(f"http://{test_web_address}/token", json=user_data)
+    token = login_response.json()["token"]
+
+    response = requests.put(
+        f"http://{test_web_address}/help_offers/rescind_offer/2",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert response.status_code == 200
+    assert response.json() == {"msg": "Help offer rescinded"}
 
 def test_get_help_offered_to_user_no_auth(db_connection, test_web_address):
     db_connection.seed("seeds/bloom.sql")
@@ -1083,7 +1161,8 @@ def test_edit_user_details(db_connection, test_web_address):
     assert updated_user_details["email"] == "updated@email.com"
     assert updated_user_details["address"] == "Updated Address"
 
-@pytest.mark.skip # THIS TEST PASS BUT IT DOES NOT PASS ON CI, REQUIRES Cloudinary KEYS 
+
+@pytest.mark.skip  # THIS TEST PASS BUT IT DOES NOT PASS ON CI, REQUIRES Cloudinary KEYS
 def test_edit_user_avatar(db_connection, test_web_address):
     db_connection.seed("seeds/bloom.sql")
     login_data = {"username_email": "tee-jay", "password": "Password123!"}
@@ -1093,21 +1172,49 @@ def test_edit_user_avatar(db_connection, test_web_address):
 
     app.testing = True
     client = app.test_client()
-    data = io.BytesIO(b'mock image data')
-    data.name = 'test_avatar.png'
+    data = io.BytesIO(b"mock image data")
+    data.name = "test_avatar.png"
 
-    mock_cloudinary_response = {'url': 'http://cloudinary.com/someimageurl'}
+    mock_cloudinary_response = {"url": "http://cloudinary.com/someimageurl"}
 
-    with patch('cloudinary.uploader.upload', return_value=mock_cloudinary_response):
+    with patch("cloudinary.uploader.upload", return_value=mock_cloudinary_response):
         response = client.put(
             f"/edit_user_avatar/1",
-            content_type='multipart/form-data',
-            data={'avatar': (data, 'test_avatar.png')},
-            headers={'Authorization': f'Bearer {access_token}'}  
+            content_type="multipart/form-data",
+            data={"avatar": (data, "test_avatar.png")},
+            headers={"Authorization": f"Bearer {access_token}"},
         )
 
     assert response.status_code == 200
-    assert response.get_json() == {"msg": "Avatar updated successfully", "avatar_url": "http://cloudinary.com/someimageurl"}
+    assert response.get_json() == {
+        "msg": "Avatar updated successfully",
+        "avatar_url": "http://cloudinary.com/someimageurl",
+    }
 
 
 
+
+@pytest.mark.skip  # THIS TEST PASS LOCAL BUT IT DOES NOT PASS ON CI, REQUIRES API KEYS
+def test_search_plants_by_name(test_web_address, db_connection):
+    db_connection.seed("seeds/bloom.sql")
+    login_data = {"username_email": "tee-jay", "password": "Password123!"}
+    login_response = requests.post(f"http://{test_web_address}/token", json=login_data)
+    assert login_response.status_code == 201
+    access_token = login_response.json()["token"]
+
+    headers = {"Authorization": f"Bearer {access_token}"}
+    response = requests.post(
+        f"http://{test_web_address}/api/plants/name",
+        json={"name": "Rose"},
+        headers=headers
+    )
+
+    assert response.status_code == 200
+    expected_plant_data = {
+        "common_name": "Field rose",
+        "plant_id": 265580,
+        "latin_name": "Rosa arvensis",
+        "photo": "https://bs.plantnet.org/image/o/afc9f4d7ce137f04746413f629330948b73e79d3"
+    }
+    plant_data = response.json()[0]  
+    assert plant_data == expected_plant_data

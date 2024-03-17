@@ -12,6 +12,7 @@ def test_find_plants_by_user_id_one(db_connection):
         {
             "plant": Plants(
                 1,
+                1,
                 "African sheepbush",
                 "Pentzia incana",
                 "https://res.cloudinary.com/dououppib/image/upload/v1709740425/PLANTS/African_sheepbush_lyorlf.jpg",
@@ -22,6 +23,7 @@ def test_find_plants_by_user_id_one(db_connection):
         {
             "plant": Plants(
                 2,
+                2,
                 "Alder",
                 "Alnus. Black alder",
                 "https://res.cloudinary.com/dououppib/image/upload/v1709740428/PLANTS/Alder_jc4szc.jpg",
@@ -31,6 +33,7 @@ def test_find_plants_by_user_id_one(db_connection):
         },
         {
             "plant": Plants(
+                5,
                 5,
                 "Barberry",
                 "Berberis",
@@ -52,6 +55,7 @@ def test_find_plants_by_user_id_two(db_connection):
         {
             "plant": Plants(
                 1,
+                1,
                 "African sheepbush",
                 "Pentzia incana",
                 "https://res.cloudinary.com/dououppib/image/upload/v1709740425/PLANTS/African_sheepbush_lyorlf.jpg",
@@ -62,6 +66,7 @@ def test_find_plants_by_user_id_two(db_connection):
         {
             "plant": Plants(
                 2,
+                2,
                 "Alder",
                 "Alnus. Black alder",
                 "https://res.cloudinary.com/dououppib/image/upload/v1709740428/PLANTS/Alder_jc4szc.jpg",
@@ -71,6 +76,7 @@ def test_find_plants_by_user_id_two(db_connection):
         },
         {
             "plant": Plants(
+                3,
                 3,
                 "Almond",
                 "Prunus dulcis",
@@ -91,6 +97,7 @@ def test_update_plant_quantity(db_connection):
         {
             "plant": Plants(
                 1,
+                1,
                 "African sheepbush",
                 "Pentzia incana",
                 "https://res.cloudinary.com/dououppib/image/upload/v1709740425/PLANTS/African_sheepbush_lyorlf.jpg",
@@ -101,6 +108,7 @@ def test_update_plant_quantity(db_connection):
         {
             "plant": Plants(
                 4,
+                4,
                 "Bamboo",
                 "Fargesia",
                 "https://res.cloudinary.com/dououppib/image/upload/v1709740434/PLANTS/Bamboo_bkwm52.jpg",
@@ -110,6 +118,7 @@ def test_update_plant_quantity(db_connection):
         },
         {
             "plant": Plants(
+                5,
                 5,
                 "Barberry",
                 "Berberis",
@@ -131,6 +140,7 @@ def test_delete_plant_from_user(db_connection):
         {
             "plant": Plants(
                 2,
+                2,
                 "Alder",
                 "Alnus. Black alder",
                 "https://res.cloudinary.com/dououppib/image/upload/v1709740428/PLANTS/Alder_jc4szc.jpg",
@@ -140,6 +150,7 @@ def test_delete_plant_from_user(db_connection):
         },
         {
             "plant": Plants(
+                5,
                 5,
                 "Barberry",
                 "Berberis",

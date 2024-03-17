@@ -1,30 +1,33 @@
 import os
 from datetime import timedelta
+import requests
+
+import cloudinary
+import cloudinary.uploader
 from dotenv import load_dotenv
 from flask import Flask, jsonify, make_response, request
 from flask.helpers import get_flashed_messages
 from flask_cors import CORS, cross_origin
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required
-
 # dependecies for livechat
-from flask_socketio import SocketIO, emit, join_room, leave_room
+from flask_socketio import SocketIO, emit, join_room, leave_room, rooms
+
+from werkzeug.utils import secure_filename
 
 from lib.database_connection import get_flask_database_connection
+
 from lib.models.extended_help_offer import ExtendedHelpOffer
 from lib.models.help_offer import HelpOffer
 from lib.models.help_request import HelpRequest
 from lib.models.user import User
 from lib.repositories.chat_repository import ChatRepository
-from lib.repositories.extended_help_offer_repository import ExtendedHelpOfferRepository
+from lib.repositories.extended_help_offer_repository import \
+    ExtendedHelpOfferRepository
 from lib.repositories.help_offer_repository import HelpOfferRepository
 from lib.repositories.help_request_repository import HelpRequestRepository
 from lib.repositories.plants_repository import PlantsRepository
 from lib.repositories.plants_user_repository import PlantsUserRepository
 from lib.repositories.user_repository import UserRepository
-import cloudinary
-import cloudinary.uploader
-from werkzeug.utils import secure_filename
-
 
 load_dotenv()
 
@@ -38,11 +41,11 @@ app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(
     days=1
 )  # I JUST ADD THIS FOR NOW SO THE TOKEN DON"T KEEP EXIRING PLEASE REMOVE LATER.
 
-CORS(app, supports_credentials=True)
+CORS(app, origins=["http://localhost:5173"], supports_credentials=True) # also added this
 
 socketio = SocketIO(
     app,
-    cors_allowed_origins="*",
+    cors_allowed_origins=["http://localhost:5173"],# added this instead of allowing all 
     logger=True,
     engineio_logger=True,
     async_mode="gevent",
@@ -169,43 +172,42 @@ def edit_user_details(id):
             id, first_name, last_name, username, email, address
         )
         response = make_response(jsonify({"msg": "User updated successful"}), 200)
-        print(response)
         return response
 
     except Exception as e:
         print(f"Error processing PUT request: {e}")
         response = make_response(jsonify({"error": "Internal Server Error"}), 500)
-        print(response)
 
     response.headers["Access-Control-Allow-Origin"] = "*"
     return response
 
 
-cloudinary.config( 
-  cloud_name = os.getenv("CLOUDINARY_CLOUD_NAME"),
-  api_key = os.getenv("CLOUDINARY_API_KEY"),
-  api_secret = os.getenv("CLOUDINARY_API_SECRET")
+cloudinary.config(
+    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.getenv("CLOUDINARY_API_KEY"),
+    api_secret=os.getenv("CLOUDINARY_API_SECRET"),
 )
+
 
 @app.route("/edit_user_avatar/<int:id>", methods=["PUT"])
 @jwt_required()
 def edit_user_picture(id):
-        if 'avatar' not in request.files:
-            return jsonify({"msg": "No avatar file part"}), 400
-        file = request.files['avatar']
-        if file.filename == '':
-            return jsonify({"msg": "No selected file"}), 400
-        
-        filename = secure_filename(file.filename)
-        result = cloudinary.uploader.upload(
-            file,
-            folder="PLANTS/AVATARS"                           
-        )
-        avatar_url = result.get("url")
-        connection = get_flask_database_connection(app)
-        user_repository = UserRepository(connection)
-        user_repository.edit_user_avatar(id, avatar_url)
-        return jsonify({"msg": "Avatar updated successfully", "avatar_url": avatar_url}), 200
+    if "avatar" not in request.files:
+        return jsonify({"msg": "No avatar file part"}), 400
+    file = request.files["avatar"]
+    if file.filename == "":
+        return jsonify({"msg": "No selected file"}), 400
+
+    filename = secure_filename(file.filename)
+    result = cloudinary.uploader.upload(file, folder="PLANTS/AVATARS")
+    avatar_url = result.get("url")
+    connection = get_flask_database_connection(app)
+    user_repository = UserRepository(connection)
+    user_repository.edit_user_avatar(id, avatar_url)
+    return (
+        jsonify({"msg": "Avatar updated successfully", "avatar_url": avatar_url}),
+        200,
+    )
 
 
 # CONFLICTS WITH NEEDED ROUTE
@@ -312,13 +314,16 @@ def received_help_offers_by_user_id(user_id):
             "help_offer_last_name": offer.help_offer_last_name,
             "help_offer_avatar_url_string": offer.help_offer_avatar_url_string,
             "help_offer_username": offer.help_offer_username,
+            "help_receive_first_name": offer.help_receive_first_name,
+            "help_receive_last_name": offer.help_receive_last_name,
+            "help_receive_avatar_url_string": offer.help_receive_avatar_url_string,
+            "help_receive_username": offer.help_receive_username,
         }
         help_offered.append(offer_obj)
     return jsonify(help_offered)
 
 
 # accept help offer
-# UNTESTED
 @app.route("/help_offers/accept_offer/<help_offer_id>", methods=["PUT"])
 @jwt_required()
 @cross_origin()
@@ -345,7 +350,6 @@ def accept_help_offer(help_offer_id):
 
 
 # reject help offer
-# UNTESTED
 @app.route("/help_offers/reject_offer/<help_offer_id>", methods=["PUT"])
 @jwt_required()
 @cross_origin()
@@ -386,23 +390,26 @@ def outgoing_help_offers_by_user_id(user_id):
             "help_offer_last_name": offer.help_offer_last_name,
             "help_offer_avatar_url_string": offer.help_offer_avatar_url_string,
             "help_offer_username": offer.help_offer_username,
+            "help_receive_first_name": offer.help_receive_first_name,
+            "help_receive_last_name": offer.help_receive_last_name,
+            "help_receive_avatar_url_string": offer.help_receive_avatar_url_string,
+            "help_receive_username": offer.help_receive_username,
         }
         help_offered.append(offer_obj)
     return jsonify(help_offered)
 
 
 # reject help offer
-# UNTESTED
-@app.route("/help_offers/recind_offer/<help_offer_id>", methods=["PUT"])
+@app.route("/help_offers/rescind_offer/<help_offer_id>", methods=["PUT"])
 @jwt_required()
 @cross_origin()
-def recind_help_offer(help_offer_id):
+def rescind_help_offer(help_offer_id):
     connection = get_flask_database_connection(app)
     help_offers_repository = HelpOfferRepository(connection)
 
-    help_offers_repository.recind_help_offer(help_offer_id)
+    help_offers_repository.rescind_help_offer(help_offer_id)
 
-    return jsonify({"msg": "Help offer recinded"}), 200
+    return jsonify({"msg": "Help offer rescinded"}), 200
 
 
 # Help Request Routes
@@ -542,7 +549,6 @@ def create_help_request(user_id):
 
 ### PLANTS ROUT ###
 
-
 # Show all plants in DB
 @app.route("/plants", methods=["GET"])
 @cross_origin()
@@ -563,6 +569,26 @@ def get_plants():
     return jsonify(data_json), 200
 
 
+@app.route("/plants/create", methods=["POST"])
+@cross_origin()
+def add_new_plant():
+    connection = get_flask_database_connection(app)
+    repository = PlantsRepository(connection)
+    plant = request.json.get("plant")
+    watering_frequency = request.json.get("waterQuantity")
+    plant_id = plant['plant_id']
+    common_name = plant['common_name']
+    latin_name = plant['latin_name']
+    photo = plant['photo']
+
+    result = repository.create(plant_id, common_name, latin_name, photo, watering_frequency)
+    
+    if result['status'] == "created":
+        return jsonify({"message": result['message'], "plant_id": plant_id}), 200
+    elif result['status'] == "exists":
+        return jsonify({"message": result['message'], "plant_id": plant_id}), 200  
+
+
 # Show all plants by user
 @app.route("/plants/user/<user_id>", methods=["GET"])
 @cross_origin()
@@ -577,6 +603,7 @@ def get_plants_by_user(user_id):
         quantity = plant_info["quantity"]
         plant_obj = {
             "id": plant.id,
+            "plant_id": plant.plant_id,
             "common_name": plant.common_name,
             "latin_name": plant.latin_name,
             "photo": plant.photo,
@@ -584,7 +611,6 @@ def get_plants_by_user(user_id):
             "quantity": quantity,
         }
         user_plants.append(plant_obj)
-
     return jsonify(user_plants), 200
 
 
@@ -595,7 +621,6 @@ def assign_plant_to_user():
     user_id = request.json.get("user_id")
     plant_id = request.json.get("plant_id")
     quantity = request.json.get("quantity", 1)  # Default quantity to 1 if not specified
-
     connection = get_flask_database_connection(app)
     repository = PlantsUserRepository(connection)
     repository.assign_plant_to_user(user_id, plant_id, quantity)
@@ -606,6 +631,25 @@ def assign_plant_to_user():
         200,
     )
 
+my_token = os.getenv("TREFLE_KEY")
+
+#SEARCH PLANTS BY NAME 
+@app.route('/api/plants/name', methods=["POST"])
+@cross_origin()
+@jwt_required()
+def get_plants_by_name():
+    name = request.json.get("name")
+    response = requests.get(f"https://trefle.io/api/v1/species/search?token={my_token}&q={name}")
+    if response.ok:
+        plant_data = response.json()
+        my_plants = []
+        for item in plant_data['data']:
+            plant_info = {"common_name": item['common_name'],"plant_id": item['id'], 'latin_name': item['scientific_name'], 'photo': item['image_url']}
+            my_plants.append(plant_info)
+        return jsonify(my_plants)
+    else:
+        return jsonify({"error": "Failed to fetch data from Trefle API"}), response.status_code
+
 
 @app.route("/plants/user/update", methods=["POST"])
 @cross_origin()
@@ -614,7 +658,6 @@ def update_plants_quantity():
     user_id = request.json.get("user_id")
     plant_id = request.json.get("plant_id")
     new_quantity = request.json.get("new_quantity")
-
     connection = get_flask_database_connection(app)
     repository = PlantsUserRepository(connection)
     repository.update_plants_quantity(user_id, plant_id, new_quantity)
@@ -633,7 +676,6 @@ def update_plants_quantity():
 def delete_plants_from_user():
     user_id = request.json.get("user_id")
     plant_id = request.json.get("plant_id")
-
     connection = get_flask_database_connection(app)
     repository = PlantsUserRepository(connection)
     repository.delete_plants_from_user(user_id, plant_id)
@@ -678,27 +720,53 @@ def post_messages():
     receiver_username = request.json.get("receiver_username")
     sender_username = request.json.get("sender_username")
     user_id = request.json.get("userId")
+    repository.create(user_id, receiver_id, get_message, receiver_username, sender_username)
 
-    send_message = repository.create(
-        user_id, receiver_id, get_message, receiver_username, sender_username
-    )
-
-    socketio.emit("new_messages", {"messages": send_message}, room=user_id)
     return jsonify({"message": "Message sent successfully"}), 200
 
 
-@socketio.on("join")
+room_memberships = {}
+
+@socketio.on('join')
 def on_join(data):
-    user_id = data["user_id"]
-    join_room(user_id)
-    socketio.emit("joined_room", {"message": "You have joined the room."}, room=user_id)
+    room = data['room']
+    sid = request.sid
+    join_room(room)
+    
+    if room not in room_memberships:
+        room_memberships[room] = []
+    if sid not in room_memberships[room]:
+        room_memberships[room].append(sid)
+    
+    print(f"Current sockets in room {room}: {room_memberships[room]}")
+    socketio.emit('joined_room', {'message': f"Joined room {room}"}, to=sid)
+    
 
+@socketio.on('message')
+def handle_message(data):
+    room = data['room']
+    socketio.emit('new_messages', {'sender': data['sender'], 'message': data['message']}, room=room, include_self=False)
+    
 
-@socketio.on("leave")
+@socketio.on('leave')
 def on_leave(data):
-    user_id = data["user_id"]
-    leave_room(user_id)
-    socketio.emit("left_room", {"message": "You have left the room."}, room=user_id)
+    room = data['room']
+    sid = request.sid
+    leave_room(room)
+    if room in room_memberships and sid in room_memberships[room]:
+        room_memberships[room].remove(sid)
+        print(f"Socket {sid} left room {room}. Current sockets in room: {room_memberships.get(room, [])}")
+
+@socketio.on('disconnect')
+def handle_disconnect():
+    sid = request.sid
+    for room, members in room_memberships.items():
+        if sid in members:
+            members.remove(sid)
+            print(f"Socket {sid} removed from room {room} upon disconnect.")
+            socketio.emit('user_left', {'sid': sid, 'room': room}, room=room)
+            
+            
 
 
 @app.route("/messages/<chat_id>", methods=["GET"])
@@ -714,3 +782,5 @@ if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5001))
     print(f" * Running on http://127.0.0.1:{port}")
     socketio.run(app, debug=True, port=port, use_reloader=False)
+
+

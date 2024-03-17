@@ -56,7 +56,6 @@ class HelpOfferRepository:
         return offers_by_user
 
     # returns help offers matching request_id from DB.
-    # NOTE - FUNCTIONALIRY REPLACED IN EXTENDED HELP OFFER REPOSITORY
     def find_by_request_id(self, request_id):
         rows = self.connection.execute(
             "SELECT * FROM help_offers WHERE request_id = %s", [request_id]
@@ -89,7 +88,6 @@ class HelpOfferRepository:
 
     # user a help_offer_id to find all other help_offer_ids associated with that
     # request_id. I.e. all help_offer_ids belonging to request.
-    # UNTESTED
     def get_other_help_offer_ids_associated_with_request_id(self, help_offer_id):
         rows = self.connection.execute(
             """
@@ -111,7 +109,6 @@ class HelpOfferRepository:
         return help_offer_ids
 
     # accept help offer
-    # UNTESTED
     def accept_help_offer(self, help_offer_id):
         self.connection.execute(
             """
@@ -123,7 +120,6 @@ class HelpOfferRepository:
         )
 
     # reject help offer
-    # UNTESTED
     def reject_help_offer(self, help_offer_id):
         self.connection.execute(
             """
@@ -134,13 +130,12 @@ class HelpOfferRepository:
             [help_offer_id],
         )
 
-    # recind help offer
-    # UNTESTED
-    def recind_help_offer(self, help_offer_id):
+    # rescind help offer
+    def rescind_help_offer(self, help_offer_id):
         self.connection.execute(
             """
             UPDATE help_offers 
-            SET status='recinded'
+            SET status='rescinded'
             WHERE help_offers.id = %s;
             """,
             [help_offer_id],
