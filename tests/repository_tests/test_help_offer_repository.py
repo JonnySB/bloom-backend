@@ -559,3 +559,67 @@ def test_delete_offer(db_connection):
         HelpOffer(21, 1, 1, "willing to help", 3.75, "pending"),
         HelpOffer(22, 2, 1, "willing to help for cheaper", 3.25, "pending"),
     ]
+
+
+def test_get_associated_help_offer_ids(db_connection):
+    db_connection.seed("seeds/bloom.sql")
+    repo = HelpOfferRepository(db_connection)
+    associated_ids = repo.get_other_help_offer_ids_associated_with_request_id(2)
+
+    assert associated_ids == [2, 12]
+
+
+def test_accept_help_offer(db_connection):
+    db_connection.seed("seeds/bloom.sql")
+    repo = HelpOfferRepository(db_connection)
+    help_offer_before = repo.find_offer(2)
+
+    assert help_offer_before == HelpOffer(
+        2, 3, 7, "I am available to assist with your gardening needs.", 85.0, "pending"
+    )
+
+    repo.accept_help_offer(2)
+    help_offer_after = repo.find_offer(2)
+
+    assert help_offer_after == HelpOffer(
+        2, 3, 7, "I am available to assist with your gardening needs.", 85.0, "accepted"
+    )
+
+
+def test_reject_help_offer(db_connection):
+    db_connection.seed("seeds/bloom.sql")
+    repo = HelpOfferRepository(db_connection)
+    help_offer_before = repo.find_offer(2)
+
+    assert help_offer_before == HelpOffer(
+        2, 3, 7, "I am available to assist with your gardening needs.", 85.0, "pending"
+    )
+
+    repo.reject_help_offer(2)
+    help_offer_after = repo.find_offer(2)
+
+    assert help_offer_after == HelpOffer(
+        2, 3, 7, "I am available to assist with your gardening needs.", 85.0, "rejected"
+    )
+
+
+def test_rescind_help_offer(db_connection):
+    db_connection.seed("seeds/bloom.sql")
+    repo = HelpOfferRepository(db_connection)
+    help_offer_before = repo.find_offer(2)
+
+    assert help_offer_before == HelpOffer(
+        2, 3, 7, "I am available to assist with your gardening needs.", 85.0, "pending"
+    )
+
+    repo.rescind_help_offer(2)
+    help_offer_after = repo.find_offer(2)
+
+    assert help_offer_after == HelpOffer(
+        2,
+        3,
+        7,
+        "I am available to assist with your gardening needs.",
+        85.0,
+        "rescinded",
+    )

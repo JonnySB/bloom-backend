@@ -29,19 +29,21 @@ CREATE SEQUENCE plants_id_seq;
 -- Create plants table
 CREATE TABLE plants (
     id SERIAL PRIMARY KEY,
+    plant_id INT UNIQUE NOT NULL,
     common_name VARCHAR(255),
     latin_name VARCHAR(255),
     photo VARCHAR(255),
-    watering_frequency INT NOT NULL
+    watering_frequency INT
 );
+
 -- Create user_plants table
 CREATE TABLE user_plants (
     user_id INT NOT NULL,
-    plant_id INT NOT NULL,
+    plant_id INT NOT NULL, 
     quantity INT NOT NULL,
     PRIMARY KEY (user_id, plant_id),
-    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (id),
-    CONSTRAINT fk_plant FOREIGN KEY (plant_id) REFERENCES plants (id)
+    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id),
+    CONSTRAINT fk_plant FOREIGN KEY (plant_id) REFERENCES plants(plant_id) 
 );
 
 CREATE SEQUENCE chats_id_seq;
@@ -85,20 +87,24 @@ CREATE TABLE help_offers (
     CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
     CONSTRAINT fk_request FOREIGN KEY (request_id) REFERENCES help_requests (id) ON DELETE CASCADE
 );
+
+
 -- CREATE USER SEED --
 INSERT INTO users (first_name, last_name, username, email, hashed_password, avatar_url_string, address) VALUES ('Tom', 'Jones', 'tee-jay', 'tjones@email.com', '$2b$12$6Og77D1E.ObtWMOX9dw//.AJpsNFAR6/6E1OHputlDCUFRytgEQGq', 'https://res.cloudinary.com/dououppib/image/upload/v1708633707/MY_UPLOADS/aibxzxdpk6gl4u5xjgjg.jpg', 'test_address1');
 INSERT INTO users (first_name, last_name, username, email, hashed_password, avatar_url_string, address) VALUES ('Jane', 'Smith', 'jane95', 'jsmith@email.com', '$2b$12$6Og77D1E.ObtWMOX9dw//.AJpsNFAR6/6E1OHputlDCUFRytgEQGq', 'https://res.cloudinary.com/dououppib/image/upload/v1709830407/PLANTS/person4_kqdufy.jpg', 'test_address2');
 INSERT INTO users (first_name, last_name, username, email, hashed_password, avatar_url_string, address) VALUES ('Jilly', 'Smith', 'sm1thi', 'jsmith2@email.com', '$2b$12$6Og77D1E.ObtWMOX9dw//.AJpsNFAR6/6E1OHputlDCUFRytgEQGq', 'https://res.cloudinary.com/dououppib/image/upload/v1709830406/PLANTS/person2_jpuq5z.jpg', 'test_address3');
 INSERT INTO users (first_name, last_name, username, email, hashed_password, avatar_url_string, address) VALUES ('Barbra', 'Banes', 'barn-owl58', 'bbanes@email.com', '$2b$12$6Og77D1E.ObtWMOX9dw//.AJpsNFAR6/6E1OHputlDCUFRytgEQGq', 'https://res.cloudinary.com/dououppib/image/upload/v1709830406/PLANTS/person1_jdh4xm.jpg', 'test_address4');
 INSERT INTO users (first_name, last_name, username, email, hashed_password, avatar_url_string, address) VALUES ('Alice', 'Lane', 'laney', 'alane@email.com', '$2b$12$6Og77D1E.ObtWMOX9dw//.AJpsNFAR6/6E1OHputlDCUFRytgEQGq', 'https://res.cloudinary.com/dououppib/image/upload/v1709830407/PLANTS/person3_itrqub.jpg', 'test_address5');
+
 -- CREATE PLANTS SEED --
-INSERT INTO "public"."plants" ("common_name", "latin_name", "photo", "watering_frequency") VALUES
-('African sheepbush', 'Pentzia incana', 'https://res.cloudinary.com/dououppib/image/upload/v1709740425/PLANTS/African_sheepbush_lyorlf.jpg', 2),
-('Alder', 'Alnus. Black alder', 'https://res.cloudinary.com/dououppib/image/upload/v1709740428/PLANTS/Alder_jc4szc.jpg', 1),
-('Almond', 'Prunus dulcis', 'https://res.cloudinary.com/dououppib/image/upload/v1709740430/PLANTS/Almond_aikcyc.jpg', 1),
-('Bamboo', 'Fargesia', 'https://res.cloudinary.com/dououppib/image/upload/v1709740434/PLANTS/Bamboo_bkwm52.jpg', 1),
-('Barberry', 'Berberis', 'https://res.cloudinary.com/dououppib/image/upload/v1709740432/PLANTS/Barberry_copy_gseiuj.png', 1),
-('Bergamot', 'Monarda', 'https://res.cloudinary.com/dououppib/image/upload/v1709740426/PLANTS/Bergamot_k7ympf.jpg', 1);
+INSERT INTO "public"."plants" ("plant_id", "common_name", "latin_name", "photo", "watering_frequency") VALUES
+(1,'African sheepbush', 'Pentzia incana', 'https://res.cloudinary.com/dououppib/image/upload/v1709740425/PLANTS/African_sheepbush_lyorlf.jpg', 2),
+(2,'Alder', 'Alnus. Black alder', 'https://res.cloudinary.com/dououppib/image/upload/v1709740428/PLANTS/Alder_jc4szc.jpg', 1),
+(3,'Almond', 'Prunus dulcis', 'https://res.cloudinary.com/dououppib/image/upload/v1709740430/PLANTS/Almond_aikcyc.jpg', 1),
+(4,'Bamboo', 'Fargesia', 'https://res.cloudinary.com/dououppib/image/upload/v1709740434/PLANTS/Bamboo_bkwm52.jpg', 1),
+(5,'Barberry', 'Berberis', 'https://res.cloudinary.com/dououppib/image/upload/v1709740432/PLANTS/Barberry_copy_gseiuj.png', 1),
+(6,'Bergamot', 'Monarda', 'https://res.cloudinary.com/dououppib/image/upload/v1709740426/PLANTS/Bergamot_k7ympf.jpg', 1);
+
 -- CREATE USER PLANTS SEED --
 INSERT INTO user_plants (user_id, plant_id, quantity) VALUES (1, 1, 3);
 INSERT INTO user_plants (user_id, plant_id, quantity) VALUES (1, 5, 2);

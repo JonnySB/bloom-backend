@@ -4,8 +4,8 @@ from datetime import datetime, timedelta
 class ChatRepository:
     def __init__(self, connection):
         self._connection = connection
-     
     
+
     def find_messages_by_userid(self, user_id):
         query = '''
             SELECT 
@@ -20,18 +20,32 @@ class ChatRepository:
                 c.sender_id = %s OR c.recipient_id = %s
         '''
         rows = self._connection.execute(query, [user_id, user_id])
-        messages = []
+        
+        grouped_messages = {}
         for row in rows:
-            message_text = row['message']
+            key = frozenset([row['sender_id'], row['recipient_id']])
+            if key not in grouped_messages:
+                grouped_messages[key] = []
+            grouped_messages[key].append(row)
+
+        most_recent_messages = []
+        for messages in grouped_messages.values():
+            most_recent_message = max(messages, key=lambda msg: msg['end_date'])  
+            most_recent_messages.append(most_recent_message)
+
+        messages_cleaned = []
+        for msg in most_recent_messages:
+            message_text = msg['message']
             message = {
-                'message': Chat(row['id'], row['recipient_id'], message_text, row['start_date'], row['end_date'], row['sender_id']),
-                'receiver_username': row['receiver_username'],
-                'sender_username': row['sender_username']
+                'message': Chat(msg['id'], msg['recipient_id'], message_text, msg['start_date'], msg['end_date'], msg['sender_id']),
+                'receiver_username': msg['receiver_username'],
+                'sender_username': msg['sender_username']
             }
-            messages.append(message)
-        return messages
-        # the logic is we will only show messages that are 30 days old to avoid creating multiple messages in the database. if there is a chat between the users within the last 30 days, then we will append the new message to an array,
-        #otherwise we will create a new message
+            messages_cleaned.append(message)
+
+        return messages_cleaned
+    
+    
     
     def find_message_by_chat_id(self, chat_id):
            message = self._connection.execute('SELECT * from chats WHERE id=%s', [chat_id])
