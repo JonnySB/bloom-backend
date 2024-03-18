@@ -644,11 +644,19 @@ def get_plants_by_name():
         plant_data = response.json()
         my_plants = []
         for item in plant_data['data']:
-            plant_info = {"common_name": item['common_name'],"plant_id": item['id'], 'latin_name': item['scientific_name'], 'photo': item['image_url']}
+            print(item['image_url'])
+            image_url = item['image_url'] if item['image_url'] is not None else 'https://res.cloudinary.com/dououppib/image/upload/v1710761333/PLANTS/w5b1sesmmotgajdjmlux.webp'
+            plant_info = {
+                "common_name": item['common_name'],
+                "plant_id": item['id'],
+                'latin_name': item['scientific_name'],
+                'photo': image_url  
+            }
             my_plants.append(plant_info)
         return jsonify(my_plants)
     else:
         return jsonify({"error": "Failed to fetch data from Trefle API"}), response.status_code
+
 
 
 @app.route("/plants/user/update", methods=["POST"])
