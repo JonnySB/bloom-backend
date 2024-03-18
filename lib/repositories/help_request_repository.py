@@ -179,7 +179,7 @@ class HelpRequestRepository:
     
     def get_plant_photo_with_user_details_for_help_request(self):
         rows = self.db_connection.execute("""
-                SELECT 
+                SELECT distinct on (hr.id)
                     hr.*,
                     u.first_name,
                     u.last_name,
@@ -192,7 +192,7 @@ class HelpRequestRepository:
                 JOIN 
                     plants p ON up.plant_id = p.id
                 JOIN
-                    users u ON hr.user_id = u.id
+                    users u ON hr.user_id = u.id;
                 """)
         # rows = self.db_connection.execute(query)
 
