@@ -1162,7 +1162,6 @@ def test_edit_user_details(db_connection, test_web_address):
     assert updated_user_details["address"] == "Updated Address"
 
 
-@pytest.mark.skip  # THIS TEST PASS BUT IT DOES NOT PASS ON CI, REQUIRES Cloudinary KEYS
 def test_edit_user_avatar(db_connection, test_web_address):
     db_connection.seed("seeds/bloom.sql")
     login_data = {"username_email": "tee-jay", "password": "Password123!"}
@@ -1194,7 +1193,6 @@ def test_edit_user_avatar(db_connection, test_web_address):
 
 
 
-@pytest.mark.skip  # THIS TEST PASS LOCAL BUT IT DOES NOT PASS ON CI, REQUIRES API KEYS
 def test_search_plants_by_name(test_web_address, db_connection):
     db_connection.seed("seeds/bloom.sql")
     login_data = {"username_email": "tee-jay", "password": "Password123!"}
