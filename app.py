@@ -437,6 +437,19 @@ def get_all_help_requests():
     return jsonify({"message": "Unable to find all requests"}), 400
 
 
+@app.route("/help_request/user/delete", methods=["DELETE"])
+@jwt_required()
+def delete_help_request():
+    user_id = request.json.get("user_id")
+    request_id = request.json.get("request_id")
+    connection = get_flask_database_connection(app)
+    repository = HelpRequestRepository(connection)
+    repository.delete_request(user_id, request_id)
+
+    return jsonify({"message": "Plant deleted successfully"}), 200
+
+
+
 @app.route("/help_requests2", methods=["GET"])
 @cross_origin()
 def get_all_help_requests_with_user_details():
@@ -477,6 +490,7 @@ def get_help_requests_with_plant_photo_and_user_details():
 
     response_data = []
     for help_request, user_details, plant_photo in help_requests_with_details:
+
         response_data.append(
             {
                 "id": help_request.id,

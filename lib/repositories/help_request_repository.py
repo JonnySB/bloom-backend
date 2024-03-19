@@ -156,14 +156,14 @@ class HelpRequestRepository:
         return None
 
     # To delete an existing request from the database
-    def delete_request(self, request_id):
+    def delete_request(self, user_id, request_id):
         existing_request = self.find_request_by_id(request_id)
 
         if existing_request is None:
             return None
 
         self.db_connection.execute(
-            "DELETE FROM help_requests WHERE id = %s", [request_id]
+            "DELETE FROM help_requests WHERE user_id =%s AND id = %s", [user_id, request_id]
         )
         return None
     
@@ -211,6 +211,7 @@ class HelpRequestRepository:
         # rows = self.db_connection.execute(query)
 
         help_requests_with_details = []
+     
         for row in rows:
             help_request = HelpRequest(
                 row["id"],
