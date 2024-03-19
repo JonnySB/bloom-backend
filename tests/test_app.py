@@ -507,6 +507,7 @@ def test_get_one_help_request_from_db(test_web_address, db_connection):
             "username": "jane95",
         },
         "user_id": 2,
+        'plant_photo': 'https://res.cloudinary.com/dououppib/image/upload/v1709740432/PLANTS/Barberry_copy_gseiuj.png'
     }
     assert response.json() == expected_data
 
