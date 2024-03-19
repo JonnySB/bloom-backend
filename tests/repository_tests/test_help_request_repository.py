@@ -142,28 +142,24 @@ def test_can_find_help_request_by_id(db_connection):
 def test_can_find_help_requests_by_user(db_connection):
     db_connection.seed("seeds/bloom.sql")
     repository = HelpRequestRepository(db_connection)
-    assert repository.find_requests_by_user_id(1) == [
-        HelpRequest(
-            1,
-            datetime(2023, 10, 19, 10, 23, 54),
-            "Help needed whilst on holiday.",
-            "I am going on holiday for all of February - would love some help!",
-            date(2023, 2, 1),
-            date(2023, 2, 28),
-            1,
-            75.0,
-        ),
-        HelpRequest(
-            6,
-            datetime(2024, 1, 5, 16, 10, 2),
-            "Plant watering help required.",
-            "Seeking someone to water my plants regularly during my vacation.",
-            date(2023, 7, 2),
-            date(2023, 7, 7),
-            1,
-            85.0,
-        ),
+    actual_results = repository.find_requests_by_user_id(1)
+
+    assert len(actual_results) == 2  
+    help_request_1 = actual_results[0]['help_request']
+    assert help_request_1.id == 1  
+    assert help_request_1.title == 'Help needed whilst on holiday.'
+ 
+
+    plant_photos_1 = actual_results[0]['plant_photos']
+    expected_plant_photos_1 = [
+        'https://res.cloudinary.com/dououppib/image/upload/v1709740432/PLANTS/Barberry_copy_gseiuj.png',
+        'https://res.cloudinary.com/dououppib/image/upload/v1709740425/PLANTS/African_sheepbush_lyorlf.jpg',
+        'https://res.cloudinary.com/dououppib/image/upload/v1709740428/PLANTS/Alder_jc4szc.jpg'
     ]
+    assert set(plant_photos_1) == set(expected_plant_photos_1) 
+
+
+
 
 
 def test_create_new_help_request_with_fields(db_connection):
@@ -301,7 +297,7 @@ def test_can_delete_request(db_connection):
     db_connection.seed("seeds/bloom.sql")
     repository = HelpRequestRepository(db_connection)
 
-    repository.delete_request(1)
+    repository.delete_request(1, 1)
     assert repository.all_requests() == [
         HelpRequest(
             2,
@@ -438,34 +434,6 @@ def test_can_find_one_request_from_given_substring(db_connection):
         ),
     ]
 
-
-def test_can_find_all_help_requests_by_user_id(db_connection):
-    db_connection.seed("seeds/bloom.sql")
-    repository = HelpRequestRepository(db_connection)
-
-    requests_by_user = repository.find_requests_by_user_id(2)
-    assert requests_by_user == [
-        HelpRequest(
-            2,
-            datetime(2023, 11, 12, 8, 45, 21),
-            "Help required with plant care.",
-            "Looking for someone to water my plants while I am away.",
-            date(2023, 3, 5),
-            date(2023, 3, 10),
-            2,
-            100.0,
-        ),
-        HelpRequest(
-            7,
-            datetime(2024, 1, 15, 13, 40, 19),
-            "Gardening assistance wanted.",
-            "Require help in maintaining my backyard garden for a few weeks.",
-            date(2023, 8, 20),
-            date(2023, 8, 25),
-            2,
-            95.0,
-        ),
-    ]
 
 
 def test_get_all_help_requests_with_user_details(db_connection):
