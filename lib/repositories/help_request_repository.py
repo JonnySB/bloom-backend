@@ -29,12 +29,22 @@ class HelpRequestRepository:
         except ValueError:
             return None
 
-        rows = self.db_connection.execute(
-            "SELECT help_requests.*, users.first_name, users.last_name, users.username, users.avatar_url_string "
-            "FROM help_requests "
-            "JOIN users ON help_requests.user_id = users.id "
-            "WHERE help_requests.id = %s", 
-            [request_id])
+        rows = self.db_connection.execute("""
+            SELECT hr.*, 
+                u.first_name, 
+                u.last_name, 
+                u.username, 
+                u.avatar_url_string,
+                p.photo AS plant_photo
+            FROM help_requests hr
+            JOIN users u ON hr.user_id = u.id
+            JOIN user_plants up ON hr.user_id = up.user_id
+            JOIN plants p ON up.plant_id = p.id
+            WHERE hr.id = %s
+        """, [request_id])
+        
+        if not rows:
+            return None
         
         row = rows[0]
         help_request = HelpRequest(
@@ -53,7 +63,10 @@ class HelpRequestRepository:
             "username": row["username"],
             "avatar_url_string": row["avatar_url_string"]
         }
-        return help_request, user_details
+        plant_photo = row["plant_photo"]
+        
+        return help_request, user_details, plant_photo
+
 
 
 
