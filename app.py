@@ -479,12 +479,14 @@ def get_help_requests_with_plant_photo_and_user_details():
     for help_request, user_details, plant_photo in help_requests_with_details:
         response_data.append(
             {
+                "id": help_request.id,
+                "date": help_request.date.strftime("%Y-%m-%d %H:%M:%S"),
                 "title": help_request.title,
                 "message": help_request.message,
                 "start_date": help_request.start_date.strftime("%Y-%m-%d"),
                 "end_date": help_request.end_date.strftime("%Y-%m-%d"),
-                "maxprice": help_request.maxprice,
                 "user_id": help_request.user_id,
+                "maxprice": help_request.maxprice,
                 "first_name": user_details["first_name"],
                 "last_name": user_details["last_name"],
                 "avatar_url_string": user_details["avatar_url_string"],
