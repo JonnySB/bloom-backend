@@ -542,7 +542,6 @@ def get_one_help_request_by_id(request_id):
     return jsonify({"message": "Help Request not found"}), 400
 
 
-
 @app.route("/help_requests/user/<user_id>", methods=["GET"])
 @jwt_required()
 @cross_origin()
@@ -552,19 +551,20 @@ def get_all_requests_made_by_one_user(user_id):
     requests_by_user = request_repository.find_requests_by_user_id(user_id)
 
     formatted_requests = []
-    for request in requests_by_user:
+    for request_dict in requests_by_user:
+        help_request_obj = request_dict['help_request']
         formatted_request = {
-            "id": request.id,
-            "date": request.date.strftime("%Y-%m-%d %H:%M:%S"),
-            "title": request.title,
-            "message": request.message,
-            "start_date": request.start_date.strftime("%Y-%m-%d"),
-            "end_date": request.end_date.strftime("%Y-%m-%d"),
-            "user_id": request.user_id,
-            "maxprice": request.maxprice,
+            "id": help_request_obj.id,
+            "date": help_request_obj.date.strftime("%Y-%m-%d %H:%M:%S"),
+            "title": help_request_obj.title,
+            "message": help_request_obj.message,
+            "start_date": help_request_obj.start_date.strftime("%Y-%m-%d"),
+            "end_date": help_request_obj.end_date.strftime("%Y-%m-%d"),
+            "user_id": help_request_obj.user_id,
+            "maxprice": help_request_obj.maxprice,
+            "plant_photos": request_dict['plant_photos']
         }
         formatted_requests.append(formatted_request)
-
     return jsonify(formatted_requests), 200
 
 

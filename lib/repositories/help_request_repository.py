@@ -94,33 +94,43 @@ class HelpRequestRepository:
 
         return help_requests
 
-        # "id": offer.id,
-        # "user_id": offer.user_id,
-        # "request_id": offer.request_id,
-        # "message": offer.message,
-        # "bid": offer.bid,
-        # "status": offer.status
-
-    # to find all requests made to a specific user
     def find_requests_by_user_id(self, user_id):
-        query = "SELECT * FROM help_requests WHERE user_id = %s"
+        query = """SELECT 
+            hr.*,
+            ARRAY_AGG(p.photo) AS plant_photos
+        FROM 
+            help_requests hr
+        JOIN 
+            users u ON hr.user_id = u.id
+        LEFT JOIN 
+            user_plants up ON u.id = up.user_id
+        LEFT JOIN 
+            plants p ON up.plant_id = p.plant_id
+        WHERE 
+            hr.user_id = %s
+        GROUP BY hr.id
+        """
         rows = self.db_connection.execute(query, [user_id])
 
         help_requests_by_user = []
         for row in rows:
-            obj = HelpRequest(
-                row["id"],
-                row["date"],
-                row["title"],
-                row["message"],
-                row["start_date"],
-                row["end_date"],
-                row["user_id"],
-                row["maxprice"],
-            )
-            help_requests_by_user.append(obj)
-
+            help_request_with_photos = {
+                "help_request": HelpRequest(
+                    row["id"],
+                    row["date"],
+                    row["title"],
+                    row["message"],
+                    row["start_date"],
+                    row["end_date"],
+                    row["user_id"],
+                    row["maxprice"],
+                ),
+                "plant_photos": row["plant_photos"]
+            }
+            
+            help_requests_by_user.append(help_request_with_photos)
         return help_requests_by_user
+
 
     def create_request(self, help_request):
         self.db_connection.execute(
