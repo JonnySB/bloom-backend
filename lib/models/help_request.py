@@ -2,16 +2,18 @@ from datetime import datetime
 
 
 class HelpRequest:
-    def __init__(self, id, date, title, message, start_date, end_date, user_id, maxprice, plant_photos=None):
+
+    def __init__(
+        self, id, date, title, messsage, start_date, end_date, user_id, maxprice
+    ):
         self.id = id
-        self.date = date
+        self.date = date if date else datetime.now()
         self.title = title
-        self.message = message
+        self.message = messsage
         self.start_date = start_date
         self.end_date = end_date
         self.user_id = user_id
         self.maxprice = maxprice
-        self.plant_photos = plant_photos if plant_photos is not None else []
 
     def __eq__(self, other):
         return self.__dict__ == other.__dict__
