@@ -503,10 +503,10 @@ def get_help_requests_with_plant_photo_and_user_details():
 def get_one_help_request_by_id(request_id):
     connection = get_flask_database_connection(app)
     request_repository = HelpRequestRepository(connection)
-    request_with_user_details = request_repository.find_request_by_id(request_id)
+    request_with_user_and_plant_details = request_repository.find_request_by_id(request_id)
 
-    if request_with_user_details:
-        help_request, user_details = request_with_user_details
+    if request_with_user_and_plant_details:
+        help_request, user_details, plant_photo = request_with_user_and_plant_details
         response_data = {
             "id": help_request.id,
             "date": help_request.date.strftime("%Y-%m-%d %H:%M:%S"),
@@ -522,9 +522,11 @@ def get_one_help_request_by_id(request_id):
                 "username": user_details["username"],
                 "avatar_url_string": user_details["avatar_url_string"],
             },
+            "plant_photo": plant_photo
         }
         return jsonify(response_data), 200
     return jsonify({"message": "Help Request not found"}), 400
+
 
 
 @app.route("/help_requests/user/<user_id>", methods=["GET"])
