@@ -565,6 +565,7 @@ def get_all_requests_made_by_one_user(user_id):
             "plant_photos": request_dict['plant_photos']
         }
         formatted_requests.append(formatted_request)
+    print(formatted_requests)
     return jsonify(formatted_requests), 200
 
 

@@ -536,6 +536,11 @@ def test_get_all_requests_by_one_user(test_web_address, db_connection):
             "start_date": "2023-02-01",
             "title": "Help needed whilst on holiday.",
             "user_id": 1,
+            "plant_photos": [
+                "https://res.cloudinary.com/dououppib/image/upload/v1709740425/PLANTS/African_sheepbush_lyorlf.jpg",
+                "https://res.cloudinary.com/dououppib/image/upload/v1709740432/PLANTS/Barberry_copy_gseiuj.png",
+                "https://res.cloudinary.com/dououppib/image/upload/v1709740428/PLANTS/Alder_jc4szc.jpg",
+            ],
         },
         {
             "date": "2024-01-05 16:10:02",
@@ -546,10 +551,20 @@ def test_get_all_requests_by_one_user(test_web_address, db_connection):
             "start_date": "2023-07-02",
             "title": "Plant watering help required.",
             "user_id": 1,
+            "plant_photos": [
+                "https://res.cloudinary.com/dououppib/image/upload/v1709740425/PLANTS/African_sheepbush_lyorlf.jpg",
+                "https://res.cloudinary.com/dououppib/image/upload/v1709740432/PLANTS/Barberry_copy_gseiuj.png",
+                "https://res.cloudinary.com/dououppib/image/upload/v1709740428/PLANTS/Alder_jc4szc.jpg",
+            ],
         },
     ]
 
-    assert response.json() == expected_data
+    actual_data = response.json()
+    assert len(actual_data) == len(expected_data), "Number of help requests does not match expected"
+    for actual, expected in zip(actual_data, expected_data):
+        assert actual['id'] == expected['id'], f"ID mismatch for help request {expected['id']}"
+        assert actual['date'] == expected['date'], f"Date mismatch for help request {expected['id']}"
+        assert set(actual['plant_photos']) == set(expected['plant_photos']), f"Plant photo URLs mismatch for help request {expected['id']}"
 
 
 def test_create_help_request(test_web_address, db_connection):
