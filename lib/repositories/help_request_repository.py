@@ -30,7 +30,8 @@ class HelpRequestRepository:
             return None
 
         rows = self.db_connection.execute("""
-            SELECT hr.*, 
+            SELECT distinct on (hr.id)
+				hr.*, 
                 u.first_name, 
                 u.last_name, 
                 u.username, 
@@ -40,7 +41,7 @@ class HelpRequestRepository:
             JOIN users u ON hr.user_id = u.id
             JOIN user_plants up ON hr.user_id = up.user_id
             JOIN plants p ON up.plant_id = p.id
-            WHERE hr.id = %s
+            WHERE hr.id = %s;
         """, [request_id])
         
         if not rows:
