@@ -33,7 +33,7 @@ class UserRepository:
 
     
     def email_exists(self, email):
-        check_query = """SELECT EXISTS(SELECT 1 FROM users WHERE email = %s);"""  # Make sure to correct 'username' to 'email'
+        check_query = """SELECT EXISTS(SELECT 1 FROM users WHERE TRIM(LOWER(email)) = TRIM(LOWER(%s)));"""  
         result = self.connection.execute(check_query, [email])
         return result
     
