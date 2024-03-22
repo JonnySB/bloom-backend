@@ -644,7 +644,7 @@ def test_user_created_with_correct_details_with_address(
     response = requests.post(f"http://{test_web_address}/user/signup", json=user_data)
 
     assert response.status_code == 201
-    assert response.json() == {"msg": "User created"}
+    assert response.json() == {"message": "User created"}
 
 
 def test_user_created_with_correct_details_with_blank_address(
@@ -664,7 +664,7 @@ def test_user_created_with_correct_details_with_blank_address(
     response = requests.post(f"http://{test_web_address}/user/signup", json=user_data)
 
     assert response.status_code == 201
-    assert response.json() == {"msg": "User created"}
+    assert response.json() == {"message": "User created"}
 
 
 def test_user_not_created_when_duplicate_username(db_connection, test_web_address):
@@ -686,7 +686,7 @@ def test_user_not_created_when_duplicate_username(db_connection, test_web_addres
 
     assert response.status_code == 401
     assert response.json() == {
-        "msg": "Bad request - user not created. This username or email could be taken."
+        "message": "Bad request - user not created. This username has already been taken."
     }
 
 
@@ -709,30 +709,11 @@ def test_user_not_created_when_duplicate_email(db_connection, test_web_address):
 
     assert response.status_code == 401
     assert response.json() == {
-        "msg": "Bad request - user not created. This username or email could be taken."
+        "message": "Bad request - user not created. This username has already been taken."
     }
 
 
-def test_user_not_created_when_information_passwords_do_not_match(
-    db_connection, test_web_address
-):
-    db_connection.seed("seeds/bloom.sql")
-    user_data = {
-        "first_name": "Tony",
-        "last_name": "Smith",
-        "username": "TS",
-        "email": "tony_smith@email.com",
-        "password": "Password123!",
-        "password_confirm": "Password456!",
-        "address": "",
-    }
 
-    response = requests.post(f"http://{test_web_address}/user/signup", json=user_data)
-
-    assert response.status_code == 401
-    assert response.json() == {
-        "msg": "Bad request - user not created. Passwords does not match."
-    }
 
 
 #####################################

@@ -26,25 +26,23 @@ class UserRepository:
             users.append(user)
         return users
 
+    def user_exists(self, username):
+        check_query = """SELECT EXISTS(SELECT 1 FROM users WHERE username = %s);"""
+        result = self.connection.execute(check_query, [username])
+        return result
+
+    
+    def email_exists(self, email):
+        check_query = """SELECT EXISTS(SELECT 1 FROM users WHERE TRIM(LOWER(email)) = TRIM(LOWER(%s)));"""  
+        result = self.connection.execute(check_query, [email])
+        return result
+    
     # When called with a user object, a corresponding record is created in the
-    # db
     def add_user_to_db(self, user: User):
-        self.connection.execute(
-            """
-            INSERT INTO users
-            (first_name, last_name, username, email, hashed_password, avatar_url_string, address)
-            VALUES (%s, %s, %s, %s, %s, %s, %s);
-            """,
-            [
-                user.first_name,
-                user.last_name,
-                user.username,
-                user.email,
-                user.hashed_password,
-                user.avatar_url_string,
-                user.address,
-            ],
+        self.connection.execute( """INSERT INTO users(first_name, last_name, username, email, hashed_password, avatar_url_string, address)VALUES (%s, %s, %s, %s, %s, %s, %s);""",
+            [user.first_name,user.last_name,user.username,user.email,user.hashed_password,user.avatar_url_string, user.address,],
         )
+        
 
     # When called with either a username or email, the corresponding user id
     # is returned from the database. If not found, return False
