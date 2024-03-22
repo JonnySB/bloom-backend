@@ -29,16 +29,13 @@ class UserRepository:
     def user_exists(self, username):
         check_query = """SELECT EXISTS(SELECT 1 FROM users WHERE username = %s);"""
         result = self.connection.execute(check_query, [username])
-        if result:
-            return True
-        return False
+        return result
+
     
     def email_exists(self, email):
-        check_query = """SELECT EXISTS(SELECT 1 FROM users WHERE username = %s);"""
+        check_query = """SELECT EXISTS(SELECT 1 FROM users WHERE email = %s);"""  # Make sure to correct 'username' to 'email'
         result = self.connection.execute(check_query, [email])
-        if result:
-            return True
-        return False
+        return result
     
     # When called with a user object, a corresponding record is created in the
     def add_user_to_db(self, user: User):

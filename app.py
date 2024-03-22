@@ -100,11 +100,12 @@ def create_user():
         user_repository = UserRepository(connection)
         user_exists = user_repository.user_exists(username)
         email_exists = user_repository.user_exists(email)
-        if user_exists:
+        if user_exists[0]['exists'] == "True":
             return  (jsonify({"msg": "Bad request - user not created. This username has already been taken."}),401)
-        elif email_exists:
+        elif email_exists[0]['exists'] == "True":
             return  (jsonify({"msg": "Bad request - user not created. This email has already been taken."}),401)
         else:
+            print("HERE")
             user_repository.add_user_to_db(user)
             return jsonify({"msg": "User created"}), 201
     except Exception as e:
