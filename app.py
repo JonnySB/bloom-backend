@@ -92,34 +92,25 @@ def create_user():
     username = request.json.get("username")
     email = request.json.get("email")
     password = request.json.get("password")
-    password_confirm = request.json.get("password_confirm")
     address = request.json.get("address")
-
-    if password == password_confirm:
-        try:
-            user = User(
-                None, first_name, last_name, username, email, password, "", address
-            )
-
-            connection = get_flask_database_connection(app)
-            user_repository = UserRepository(connection)
+    
+    try:
+        user = User(None, first_name, last_name, username, email, password, "", address)
+        connection = get_flask_database_connection(app)
+        user_repository = UserRepository(connection)
+        user_exists = user_repository.user_exists(username)
+        email_exists = user_repository.user_exists(email)
+        if user_exists:
+            return  (jsonify({"msg": "Bad request - user not created. This username has already been taken."}),401)
+        elif email_exists:
+            return  (jsonify({"msg": "Bad request - user not created. This email has already been taken."}),401)
+        else:
             user_repository.add_user_to_db(user)
-
             return jsonify({"msg": "User created"}), 201
-        except:
-            return (
-                jsonify(
-                    {
-                        "msg": "Bad request - user not created. This username or email could be taken."
-                    }
-                ),
-                401,
-            )
-
-    return (
-        jsonify({"msg": "Bad request - user not created. Passwords does not match."}),
-        401,
-    )
+    except Exception as e:
+        response = make_response(jsonify({"error": "Internal Server Error"}), 500)
+        return response
+     
 
 
 # Takes user_id and returns user_details
@@ -565,7 +556,6 @@ def get_all_requests_made_by_one_user(user_id):
             "plant_photos": request_dict['plant_photos']
         }
         formatted_requests.append(formatted_request)
-    print(formatted_requests)
     return jsonify(formatted_requests), 200
 
 
@@ -691,7 +681,6 @@ def get_plants_by_name():
         plant_data = response.json()
         my_plants = []
         for item in plant_data['data']:
-            print(item['image_url'])
             image_url = item['image_url'] if item['image_url'] is not None else 'https://res.cloudinary.com/dououppib/image/upload/v1710761333/PLANTS/w5b1sesmmotgajdjmlux.webp'
             plant_info = {
                 "common_name": item['common_name'],
